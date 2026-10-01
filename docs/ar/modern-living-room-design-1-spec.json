@@ -1,0 +1,205 @@
+{
+  "designName": "Modern Living Room Design 1",
+  "room": {
+    "type": "Modern Lounge / Living Room",
+    "estimatedDimensions": {
+      "width": 6.2,
+      "depth": 4.8,
+      "height": 3.0
+    },
+    "surfaces": [
+      {
+        "name": "Floor",
+        "type": "Horizontal",
+        "material": "Polished Concrete / Micro-cement",
+        "color": "#CCC7C0"
+      },
+      {
+        "name": "Back Wall",
+        "type": "Vertical",
+        "material": "Matte Paint",
+        "color": "#EAE8E3"
+      },
+      {
+        "name": "Left Wall / Window",
+        "type": "Vertical",
+        "material": "Sheer Fabric / Glass",
+        "color": "#F0EFEA"
+      },
+      {
+        "name": "Right Wall Partition",
+        "type": "Vertical",
+        "material": "Matte Plaster",
+        "color": "#E8E6E1"
+      },
+      {
+        "name": "Ceiling",
+        "type": "Horizontal",
+        "material": "Matte Paint",
+        "color": "#EFECE7"
+      }
+    ]
+  },
+  "camera": {
+    "estimatedHeight": 1.2,
+    "position": "Center-Right Front",
+    "direction": "Facing North-West towards Bookshelf and Window corner",
+    "fieldOfView": 70.0
+  },
+  "objects": [
+    {
+      "id": "sofa_modular_green",
+      "name": "Modular Tufted Velvet Sofa",
+      "category": "Furniture",
+      "position": {
+        "relativeToRoom": "Center-Left Floor",
+        "relativeToOtherObjects": "In front of sheer curtains, left of bookshelf"
+      },
+      "estimatedDimensions": {
+        "width": 3.2,
+        "height": 0.67,
+        "depth": 1.0
+      },
+      "shape": "Modular bulbous tufted cushions",
+      "materials": ["Velvet", "Wood", "Metal"],
+      "colors": ["#5A6E4B"],
+      "texture": "Velvet plush pile",
+      "fixedOrMovable": "Movable",
+      "separate3DModelRequired": true
+    },
+    {
+      "id": "tv_easel_assembly",
+      "name": "TV Display on Tripod Easel Stand",
+      "category": "Electronics",
+      "position": {
+        "relativeToRoom": "Right-Center against Back Wall",
+        "relativeToOtherObjects": "Right of bookshelf, left of stair partition wall"
+      },
+      "estimatedDimensions": {
+        "width": 1.3,
+        "height": 1.35,
+        "depth": 0.6
+      },
+      "shape": "Rectangular panel on tripod legs",
+      "materials": ["Dark Wood", "Glass", "Matte Plastic"],
+      "colors": ["#1A1A1A", "#3D2B1F"],
+      "texture": "Smooth satin glass and wood grain",
+      "fixedOrMovable": "Movable",
+      "separate3DModelRequired": true
+    },
+    {
+      "id": "bookshelf_builtin",
+      "name": "Built-In Open Wall Bookshelf",
+      "category": "Storage / Architecture",
+      "position": {
+        "relativeToRoom": "Recessed in Back Wall Alcove",
+        "relativeToOtherObjects": "Behind right edge of green sofa"
+      },
+      "estimatedDimensions": {
+        "width": 1.5,
+        "height": 2.8,
+        "depth": 0.35
+      },
+      "shape": "Tall rectangular divided shelving unit",
+      "materials": ["Painted MDF Wood"],
+      "colors": ["#EAE7E2"],
+      "texture": "Smooth matte",
+      "fixedOrMovable": "Fixed",
+      "separate3DModelRequired": true
+    },
+    {
+      "id": "pendant_light_dome",
+      "name": "Large Hemisphere Pendant Light",
+      "category": "Lighting",
+      "position": {
+        "relativeToRoom": "Suspended from Ceiling, Upper Left Space",
+        "relativeToOtherObjects": "Floating above left section of green sofa"
+      },
+      "estimatedDimensions": {
+        "width": 0.9,
+        "height": 0.45,
+        "depth": 0.9
+      },
+      "shape": "Hemispherical Dome",
+      "materials": ["Molded Fiberglass / Metal"],
+      "colors": ["#E8E5DF"],
+      "texture": "Matte fine stipple",
+      "fixedOrMovable": "Fixed",
+      "separate3DModelRequired": true
+    },
+    {
+      "id": "floor_lamp_minimal",
+      "name": "Slim White Floor Lamp",
+      "category": "Lighting",
+      "position": {
+        "relativeToRoom": "Floor level, Center-Left",
+        "relativeToOtherObjects": "Behind right end of sofa, in front of lower bookshelf cabinet"
+      },
+      "estimatedDimensions": {
+        "width": 0.25,
+        "height": 1.2,
+        "depth": 0.25
+      },
+      "shape": "Slender rod with small shade",
+      "materials": ["Powder-coated Metal"],
+      "colors": ["#F0ECE6"],
+      "texture": "Smooth satin",
+      "fixedOrMovable": "Movable",
+      "separate3DModelRequired": true
+    },
+    {
+      "id": "curtains_sheer",
+      "name": "Full-Height Sheer Curtains",
+      "category": "Textiles",
+      "position": {
+        "relativeToRoom": "Entire Left Wall Perimeter",
+        "relativeToOtherObjects": "Behind sofa and pendant light"
+      },
+      "estimatedDimensions": {
+        "width": 4.5,
+        "height": 3.0,
+        "depth": 0.15
+      },
+      "shape": "Vertical folded draped plane",
+      "materials": ["Semi-sheer Fabric"],
+      "colors": ["#F5F4EF"],
+      "texture": "Fine woven mesh",
+      "fixedOrMovable": "Fixed",
+      "separate3DModelRequired": true
+    }
+  ],
+  "lighting": [
+    {
+      "type": "Directional / Daylight",
+      "source": "Large Window behind Left Curtains",
+      "colorTemperature": "5800K Cool Daylight",
+      "intensity": "High / Diffused",
+      "shadows": "Soft, broad, rightward direction"
+    },
+    {
+      "type": "Ambient Skylight",
+      "source": "Curved Ceiling Cutout Void",
+      "colorTemperature": "6000K",
+      "intensity": "Medium",
+      "shadows": "Very soft top-down ambient fill"
+    }
+  ],
+  "spatialRelationships": [
+    "Modular green sofa sits parallel to left curtain wall on polished concrete floor.",
+    "Built-in bookshelf is recessed into back wall alcove directly behind right side of green sofa.",
+    "Easel TV stand is positioned against right portion of back wall, clear of sofa and bookshelf.",
+    "Oversized dome pendant light hangs suspended directly over left-center section of green sofa.",
+    "Right architectural partition wall hides staircase steps and bounds living area on the right."
+  ],
+  "arRequirements": [
+    "Floor plane detection required as primary placement anchor.",
+    "Modular sofa and TV stand must retain individual transform controls for custom user layouts.",
+    "PBR shaders must support Velvet Sheen, Glass Transmission, and Roughness Maps for Realistic AR rendering in WebGL/WebXR."
+  ],
+  "uncertainties": [
+    "Exact rear profile and geometry of modular sofa back rest.",
+    "Exact cable wiring layout behind TV stand.",
+    "Exact depth of stairwell corridor on far right.",
+    "Exact ceiling aperture depth above atrium cutout."
+  ]
+}

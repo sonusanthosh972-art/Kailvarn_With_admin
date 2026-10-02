@@ -19,14 +19,14 @@ const SUGGESTIONS = [
 const STORAGE_KEY = 'kailvarn-chat';
 
 // Turn site paths (/book-consultation) and the phone number in a reply into links.
-const LINK_PATTERN = /(\/(?:book-consultation|get-free-quote|services|our-design|contact|about)\b|8401226123)/g;
+const LINK_PATTERN = /(\/(?:book-consultation|get-free-quote|services|our-design|contact|about)\b|8460150027)/g;
 
 function ReplyText({ text }) {
   // split() with a capture group puts the matches at the odd indexes.
   return text.split(LINK_PATTERN).map((part, i) => {
     if (i % 2 === 0) return <React.Fragment key={i}>{part}</React.Fragment>;
-    if (part === '8401226123') {
-      return <a key={i} href="tel:+918401226123" className="font-semibold text-[#8A6A1C] underline">{part}</a>;
+    if (part === '8460150027') {
+      return <a key={i} href="tel:+918460150027" className="font-semibold text-[#8A6A1C] underline">{part}</a>;
     }
     return <Link key={i} href={part} className="font-semibold text-[#8A6A1C] underline">{part}</Link>;
   });

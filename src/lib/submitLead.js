@@ -11,10 +11,10 @@ export async function submitLead(endpoint, data) {
     if (res.ok && json?.ok) return { ok: true };
     return {
       ok: false,
-      message: json?.error?.message || 'We could not send your request. Please try again, or call/WhatsApp 8401226123.',
+      message: json?.error?.message || 'We could not send your request. Please try again, or call/WhatsApp 8460150027.',
       fields: json?.error?.fields || {},
     };
   } catch {
-    return { ok: false, message: 'No internet connection? Please try again, or call/WhatsApp 8401226123.', fields: {} };
+    return { ok: false, message: 'No internet connection? Please try again, or call/WhatsApp 8460150027.', fields: {} };
   }
 }

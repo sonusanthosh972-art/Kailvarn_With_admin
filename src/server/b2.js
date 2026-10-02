@@ -2,7 +2,7 @@ import 'server-only';
 import crypto from 'node:crypto';
 import { S3Client, PutObjectCommand, HeadObjectCommand, DeleteObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { IMAGE_TYPES, slugify } from '@/server/models.js';
+import { IMAGE_TYPES, VIDEO_TYPES, slugify } from '@/server/models.js';
 
 // Backblaze B2 through its S3-compatible API. Keys never leave the server;
 // the browser only ever receives short-lived presigned PUT URLs.
@@ -38,6 +38,16 @@ export function buildImageKeys({ category, projectSlug, contentType }) {
   const id = `${Date.now().toString(36)}-${crypto.randomBytes(8).toString('hex')}`;
   const base = `${prefix()}designs/${slugify(category)}/${slugify(projectSlug)}/${id}`;
   return { uploadId: id, b2Key: `${base}.${ext}`, thumbKey: `${base}-thumb.webp` };
+}
+
+// designs/<category-slug>/<project-slug>/<random>.<ext> for walkthrough videos.
+// Deliberately under the same designs/ prefix as the images so isOwnedDesignKey,
+// /api/media and deleteObjects all accept it without widening what they allow.
+export function buildVideoKey({ category, projectSlug, contentType }) {
+  const ext = VIDEO_TYPES[contentType];
+  const id = `${Date.now().toString(36)}-${crypto.randomBytes(8).toString('hex')}`;
+  const base = `${prefix()}designs/${slugify(category)}/${slugify(projectSlug)}/${id}`;
+  return { uploadId: id, b2Key: `${base}.${ext}` };
 }
 
 // Keys this app is allowed to read/serve/delete.

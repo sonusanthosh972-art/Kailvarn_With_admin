@@ -331,7 +331,7 @@ export default function ServicesPage() {
             duration: 0.6
           }} className="order-2 lg:order-1 h-full">
               <div className="relative rounded-lg overflow-hidden aspect-[4/5] shadow-lg group">
-                <img src="https://images.unsplash.com/photo-1693748792488-c0374f6ceb74" alt="Full Home Interior by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
+                <img loading="lazy" src="https://images.unsplash.com/photo-1693748792488-c0374f6ceb74" alt="Full Home Interior by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
               </div>
             </motion.div>
             
@@ -544,7 +544,7 @@ export default function ServicesPage() {
             duration: 0.6
           }} className="order-1 lg:order-2 h-full">
               <div className="relative rounded-lg overflow-hidden aspect-[4/5] shadow-lg group">
-                <img src="https://images.unsplash.com/photo-1588854337236-6889d631faa8" alt="Modern Modular Kitchen by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
+                <img loading="lazy" src="https://images.unsplash.com/photo-1588854337236-6889d631faa8" alt="Modern Modular Kitchen by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
               </div>
             </motion.div>
           </div>
@@ -577,7 +577,7 @@ export default function ServicesPage() {
             <div className="flex overflow-x-auto hide-scrollbar snap-x snap-mandatory gap-4 pb-6 mb-20">
               {kitchenTypes.map((type, i) => <div key={i} className="snap-center shrink-0 w-[260px] group cursor-pointer">
                   <div className="h-[200px] rounded-xl overflow-hidden mb-3 shadow-sm">
-                    <img src={type.img} alt={type.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <img loading="lazy" src={type.img} alt={type.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
                   <h4 className="font-nunito font-bold text-[15px] text-[#111111] text-center">{type.name}</h4>
                 </div>)}
@@ -651,7 +651,7 @@ export default function ServicesPage() {
             duration: 0.6
           }} className="order-2 lg:order-1 h-full">
               <div className="relative rounded-lg overflow-hidden aspect-[4/5] shadow-lg group">
-                <img src="https://images.unsplash.com/photo-1631889993877-71e193bf79b8" alt="Custom Furniture by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
+                <img loading="lazy" src="https://images.unsplash.com/photo-1631889993877-71e193bf79b8" alt="Custom Furniture by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
               </div>
             </motion.div>
             
@@ -893,7 +893,7 @@ export default function ServicesPage() {
             duration: 0.6
           }} className="order-1 lg:order-2 h-full">
               <div className="relative rounded-lg overflow-hidden aspect-[4/5] shadow-lg group">
-                <img src="https://images.unsplash.com/photo-1566288940339-fc6dd14a5849" alt="Painting & Wall Finishes by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
+                <img loading="lazy" src="https://images.unsplash.com/photo-1566288940339-fc6dd14a5849" alt="Painting & Wall Finishes by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
               </div>
             </motion.div>
           </div>
@@ -926,7 +926,7 @@ export default function ServicesPage() {
             <div className="flex overflow-x-auto hide-scrollbar snap-x snap-mandatory gap-4 pb-6 mb-20">
               {wallFinishes.map((type, i) => <div key={i} className="snap-center shrink-0 w-[220px] group cursor-pointer relative overflow-hidden rounded-xl">
                   <div className="h-[280px]">
-                    <img src={type.img} alt={type.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <img loading="lazy" src={type.img} alt={type.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
                     <h4 className="font-nunito font-bold text-[16px] text-white leading-tight">{type.name}</h4>
@@ -1013,12 +1013,12 @@ export default function ServicesPage() {
             <Link href="/book-consultation" className="btn-primary w-full sm:w-auto">
               Book Free Consultation
             </Link>
-            <a href="https://wa.me/918401226123" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[16px] px-10 py-4 rounded-lg shadow-xl transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2 active:scale-[0.98]">
+            <a href="https://wa.me/918460150027" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[16px] px-10 py-4 rounded-lg shadow-xl transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2 active:scale-[0.98]">
               <MessageCircle className="w-5 h-5" /> WhatsApp Us Now
             </a>
           </div>
           <div className="flex flex-wrap justify-center gap-6 font-nunito text-[14px] text-white/50 border-t border-white/10 pt-8">
-            <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> 8401226123</span>
+            <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> 8460150027</span>
             <span className="flex items-center gap-2"><MessageCircle className="w-4 h-4" /> kailvarn0@gmail.com</span>
             <span className="flex items-center gap-2"><PenTool className="w-4 h-4" /> Silvassa & Vapi</span>
           </div>

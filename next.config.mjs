@@ -42,6 +42,32 @@ const nextConfig = {
   // (Framer Motion animations, filter clicks) stays stuck at its initial
   // state while server-rendered markup (header/footer) still shows.
   allowedDevOrigins: ['172.29.7.22', '172.29.7.101'],
+  // Sent with every response. X-Frame-Options stops other sites from loading
+  // these pages in a frame (clickjacking -- the admin login especially);
+  // nosniff stops browsers guessing a file's type from its contents; the
+  // referrer policy keeps full URLs (and their query strings) from leaking to
+  // other sites while still telling them which site the visitor came from.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        ],
+      },
+    ];
+  },
+  // The kailvarn-* pages were exact copies of /our-design and /services,
+  // which split search ranking between two URLs. Nothing on the site links to
+  // them any more; the permanent redirects keep any old outside links working.
+  async redirects() {
+    return [
+      { source: '/kailvarn-our-design', destination: '/our-design', permanent: true },
+      { source: '/kailvarn-services', destination: '/services', permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -8,7 +8,7 @@ const CHATBOT_NAME = 'KailVarn Assistant';
 const BUSINESS_FACTS = `
 Company: KailVarn — complete interior design AND execution by one expert team.
 Service area: Silvassa, Vapi and surrounding areas within about 50 km (including Daman, Bhilad, Kachigam, Surangi, Dunetha, Nani Daman).
-Contact: Phone / WhatsApp 8401226123 · Email kailvarn0@gmail.com
+Contact: Phone / WhatsApp 8460150027 · Email kailvarn0@gmail.com
 Website pages: Book Free Consultation (/book-consultation), Get Free Quote (/get-free-quote), Services (/services), Our Design portfolio (/our-design), Contact (/contact).
 
 Services:
@@ -60,7 +60,7 @@ const FAQS = [
 
 const RULES = `
 Rules:
-- Answer ONLY using the information above. If something isn't covered (exact prices, exact warranty years, availability dates, discounts), say you don't have that detail and suggest calling/WhatsApp 8401226123 or booking a free consultation.
+- Answer ONLY using the information above. If something isn't covered (exact prices, exact warranty years, availability dates, discounts), say you don't have that detail and suggest calling/WhatsApp 8460150027 or booking a free consultation.
 - Never invent prices, numbers, addresses, offers or promises.
 - Keep replies short: 2–4 sentences or a few bullet points. Friendly and professional.
 - Reply in the language the customer uses (English, Hindi or Hinglish, Gujarati).

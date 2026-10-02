@@ -29,7 +29,7 @@ function StylePicker({ selectedId, onSelect }) {
               selectedId === style.id ? 'border-[#D9A441] scale-[1.04]' : 'border-white/15 hover:border-white/40'
             }`}
           >
-            <img src={style.thumbnailUrl} alt={style.label} className="w-full h-full object-cover" />
+            <img loading="lazy" src={style.thumbnailUrl} alt={style.label} className="w-full h-full object-cover" />
             {selectedId === style.id && (
               <div className="absolute inset-0 bg-[#F2B21B]/25 flex items-center justify-center">
                 <div className="w-5 h-5 rounded-full bg-[#F2B21B] flex items-center justify-center">

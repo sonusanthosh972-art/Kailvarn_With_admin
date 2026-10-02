@@ -7,7 +7,7 @@ const TOOLTIP_SHOW_DELAY_MS = 3000;
 const TOOLTIP_VISIBLE_MS = 4000;
 
 function FloatingWhatsApp() {
-  const whatsappUrl = "https://wa.me/918401226123?text=Hi KailVarn, I am interested in your interior services.";
+  const whatsappUrl = "https://wa.me/918460150027?text=Hi KailVarn, I am interested in your interior services.";
   // Tooltip peeks out once shortly after load, then auto-hides; after that it
   // only appears on hover. It never shows on touch / small screens (see the
   // `hidden md:block` + hover media query below), where a tap leaves :hover

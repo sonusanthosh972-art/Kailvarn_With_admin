@@ -118,7 +118,7 @@ export default function OurDesignContentPage() {
       {/* Live hero preview */}
       <Card className="mb-6 overflow-hidden">
         <div className="relative isolate bg-[#070A25] px-6 py-10 sm:px-10">
-          {content.heroImages[0] && <img src={content.heroImages[0].url} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover opacity-35" />}
+          {content.heroImages[0] && <img loading="lazy" src={content.heroImages[0].url} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover opacity-35" />}
           <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.3em] text-[#F2B21B]">Preview · {fields.heroEyebrow}</p>
           <p className="font-serif text-[28px] sm:text-[36px] leading-tight text-white">{titleMain}{titleEm && <em className="italic text-[#F6D47C]">{titleEm}</em>}</p>
           <p className="mt-3 max-w-[60ch] text-[14px] text-white/75">{fields.heroLead}</p>
@@ -164,7 +164,7 @@ export default function OurDesignContentPage() {
               <ul className="mb-4 grid grid-cols-2 gap-2.5">
                 {content.heroImages.map((img) => (
                   <li key={img.id} className="group relative overflow-hidden rounded-lg border border-[#0B103B]/10">
-                    <img src={img.thumbUrl} alt="" className="aspect-[4/3] w-full object-cover" />
+                    <img loading="lazy" src={img.thumbUrl} alt="" className="aspect-[4/3] w-full object-cover" />
                     <button type="button" onClick={() => setRemoving(img)} aria-label="Remove hero image" className="absolute right-1.5 top-1.5 flex h-8 w-8 items-center justify-center rounded-md bg-white/95 text-[#B3261E] shadow">
                       <Trash2 className="h-4 w-4" />
                     </button>

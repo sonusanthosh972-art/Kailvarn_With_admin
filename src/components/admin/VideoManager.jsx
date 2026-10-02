@@ -3,48 +3,85 @@
 import React, { useState, useRef } from 'react';
 import { Video, UploadCloud, Trash2, CheckCircle2, AlertCircle, Loader2, Play } from 'lucide-react';
 import { adminApi } from '@/lib/adminApi.js';
-import { Button, Alert } from '@/components/admin/ui.jsx';
+import { putWithProgress } from '@/lib/imageProcess.js';
+import { Button, Alert, ConfirmDialog } from '@/components/admin/ui.jsx';
+
+const ACCEPTED_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
+const MAX_VIDEO_BYTES = 120 * 1024 * 1024;
 
 export default function VideoManager({ projectId, currentVideoUrl, onVideoUpdated }) {
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
   const fileInputRef = useRef(null);
 
+  // Three steps, the same as the image uploader: ask the server for a presigned
+  // PUT, send the file straight to B2 (never through the server -- a serverless
+  // body is capped at 4.5 MB), then have the server confirm it landed.
   async function handleFileUpload(file) {
     if (!file) return;
     setError('');
     setSuccess('');
+
+    if (!ACCEPTED_TYPES.includes(file.type) && !/\.(mp4|webm|mov|m4v)$/i.test(file.name)) {
+      setError('Please upload an MP4, WebM or MOV video file.');
+      return;
+    }
+    if (file.size > MAX_VIDEO_BYTES) {
+      setError('Video is larger than 120 MB. Please compress or trim it first.');
+      return;
+    }
+
     setUploading(true);
+    setProgress(0);
 
     try {
-      const formData = new FormData();
-      formData.append('video', file);
-
-      const res = await fetch(`/api/admin/designs/${projectId}/video`, {
+      const type = ACCEPTED_TYPES.includes(file.type) ? file.type : 'video/mp4';
+      const pres = await adminApi(`/api/admin/designs/${projectId}/video`, {
         method: 'POST',
-        body: formData,
+        body: { name: file.name, type, size: file.size },
       });
+      if (!pres.ok) throw new Error(pres.error?.message || 'Could not start the upload.');
 
-      const json = await res.json();
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error?.message || 'Failed to upload video');
+      try {
+        await putWithProgress(pres.data.uploadUrl, file, type, setProgress);
+      } catch (err) {
+        // No server-side fallback is possible for a file this size, so say what
+        // actually needs fixing instead of a bare network error.
+        if (err?.status === 0) {
+          throw new Error('Storage rejected the upload. This domain may be missing from the B2 bucket CORS rule.');
+        }
+        throw err;
       }
 
-      setSuccess('Walkthrough video uploaded and optimized successfully!');
-      onVideoUpdated(json.data.videoUrl);
+      const done = await adminApi(`/api/admin/designs/${projectId}/video`, {
+        method: 'PUT',
+        body: {
+          uploadId: pres.data.uploadId,
+          b2Key: pres.data.b2Key,
+          fileName: file.name,
+          contentType: type,
+          size: file.size,
+        },
+      });
+      if (!done.ok) throw new Error(done.error?.message || 'Could not save the video.');
+
+      setSuccess('Walkthrough video uploaded successfully!');
+      onVideoUpdated(done.data.videoUrl);
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.message || 'Error uploading video');
     } finally {
       setUploading(false);
+      setProgress(0);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   }
 
   async function handleRemoveVideo() {
-    if (!confirm('Are you sure you want to remove the video from this design?')) return;
     setError('');
     setSuccess('');
     setUploading(true);
@@ -65,6 +102,7 @@ export default function VideoManager({ projectId, currentVideoUrl, onVideoUpdate
       setError(err.message || 'Error removing video');
     } finally {
       setUploading(false);
+      setConfirmRemove(false);
     }
   }
 
@@ -89,6 +127,15 @@ export default function VideoManager({ projectId, currentVideoUrl, onVideoUpdate
 
   return (
     <div className="space-y-4">
+      <ConfirmDialog
+        open={confirmRemove}
+        onClose={() => !uploading && setConfirmRemove(false)}
+        onConfirm={handleRemoveVideo}
+        loading={uploading}
+        title="Remove this video?"
+        text="The walkthrough video will be removed from this design, and visitors will see its photos instead."
+        confirmLabel="Remove video"
+      />
       {error && <Alert>{error}</Alert>}
       {success && (
         <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-md text-[13.5px] flex items-center gap-2">
@@ -142,7 +189,7 @@ export default function VideoManager({ projectId, currentVideoUrl, onVideoUpdate
                 type="button"
                 variant="danger"
                 size="sm"
-                onClick={handleRemoveVideo}
+                onClick={() => setConfirmRemove(true)}
                 disabled={uploading}
               >
                 <Trash2 className="w-4 h-4" /> Remove
@@ -186,15 +233,25 @@ export default function VideoManager({ projectId, currentVideoUrl, onVideoUpdate
 
             <div>
               <p className="text-[14px] font-bold text-[#0B103B]">
-                {uploading ? 'Uploading and compressing video…' : 'Upload Walkthrough Video'}
+                {uploading ? `Uploading to storage… ${Math.round(progress * 100)}%` : 'Upload Walkthrough Video'}
               </p>
               <p className="text-[12px] text-[#6B675F] mt-0.5">
                 Drag and drop your video file here, or browse from computer.
               </p>
               <p className="text-[11px] text-[#6B675F]/75 mt-0.5">
-                Supports MP4, WebM, MOV (up to 120 MB). Automatically compressed for web playback.
+                Supports MP4, WebM, MOV (up to 120 MB). Please compress before uploading —
+                MP4 (H.264) plays back most reliably.
               </p>
             </div>
+
+            {uploading && (
+              <div className="w-full max-w-xs h-1.5 rounded-full bg-[#0B103B]/10 overflow-hidden mt-1">
+                <div
+                  className="h-full bg-[#F2B21B] transition-[width] duration-200"
+                  style={{ width: `${Math.max(2, Math.round(progress * 100))}%` }}
+                />
+              </div>
+            )}
 
             <Button
               type="button"

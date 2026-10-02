@@ -71,7 +71,7 @@ export async function POST(request) {
     if (result.status && result.status < 500 && result.status !== 429) break; // bad key/request: other models won't help
   }
   return NextResponse.json(
-    { error: 'The assistant is busy right now. Please try again in a minute, or call/WhatsApp 8401226123.' },
+    { error: 'The assistant is busy right now. Please try again in a minute, or call/WhatsApp 8460150027.' },
     { status: 503 }
   );
 }

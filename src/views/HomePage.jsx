@@ -586,7 +586,7 @@ export default function HomePage() {
 
           <div className="mt-12 flex flex-wrap justify-center items-center gap-x-5 gap-y-3 text-[14px] text-white/60">
             <span>Or reach us directly —</span>
-            <a href="tel:8401226123" className="hover:text-[#F2B21B] transition-colors flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" /> 8401226123</a>
+            <a href="tel:8460150027" className="hover:text-[#F2B21B] transition-colors flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" /> 8460150027</a>
             <span className="hidden sm:inline text-white/25">|</span>
             <button type="button" onClick={() => openWhatsApp()} className="hover:text-[#25D366] transition-colors flex items-center gap-1.5"><MessageCircle className="w-3.5 h-3.5" /> WhatsApp</button>
             <span className="hidden sm:inline text-white/25">|</span>

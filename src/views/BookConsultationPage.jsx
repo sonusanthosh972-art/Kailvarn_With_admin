@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { submitLead } from '@/lib/submitLead.js';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,6 +9,15 @@ import PageHero from '@/components/kv/PageHero.jsx';
 function BookConsultationPage() {
   const [submittedData, setSubmittedData] = useState(null);
   const [submitError, setSubmitError] = useState('');
+  // Earliest selectable slot, in the visitor's own clock. This page is
+  // prerendered, so computing it during render would freeze it at build time
+  // (and toISOString() is UTC -- 5.5 hours behind India). Set it after mount.
+  const [minDateTime, setMinDateTime] = useState('');
+  useEffect(() => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    setMinDateTime(now.toISOString().slice(0, 16));
+  }, []);
   const {
     register,
     handleSubmit,
@@ -103,25 +112,25 @@ function BookConsultationPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Full Name */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Full Name *</label>
-                          <input type="text" placeholder="e.g. Rahul Patel" {...register("name", {
+                          <label htmlFor="bc-name" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Full Name *</label>
+                          <input id="bc-name" type="text" autoComplete="name" aria-invalid={errors.name ? true : undefined} aria-describedby={errors.name ? "bc-name-error" : undefined} placeholder="e.g. Rahul Patel" {...register("name", {
                         required: "Name is required",
                         minLength: {
                           value: 2,
                           message: "Min 2 characters"
                         }
                       })} className={`form-input-base ${errors.name ? 'form-input-error' : 'form-input-focus'}`} />
-                          {errors.name && <p className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.name.message}</p>}
+                          {errors.name && <p id="bc-name-error" className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.name.message}</p>}
                         </div>
 
                         {/* Phone Number */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Mobile Number *</label>
+                          <label htmlFor="bc-phone" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Mobile Number *</label>
                           <div className="relative">
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 font-nunito text-[15px] text-[#6B675F]">
                               +91 |
                             </span>
-                            <input type="tel" placeholder="8401226123" {...register("phone", {
+                            <input id="bc-phone" type="tel" inputMode="numeric" autoComplete="tel-national" aria-invalid={errors.phone ? true : undefined} aria-describedby={errors.phone ? "bc-phone-error" : undefined} placeholder="10-digit mobile number" {...register("phone", {
                           required: "Phone is required",
                           pattern: {
                             value: /^[6-9]\d{9}$/,
@@ -129,38 +138,38 @@ function BookConsultationPage() {
                           }
                         })} className={`form-input-base pl-[60px] ${errors.phone ? 'form-input-error' : 'form-input-focus'}`} />
                           </div>
-                          {errors.phone && <p className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.phone.message}</p>}
+                          {errors.phone && <p id="bc-phone-error" className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.phone.message}</p>}
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Email */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Email Address</label>
-                          <input type="email" placeholder="e.g. name@example.com" {...register("email", {
+                          <label htmlFor="bc-email" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Email Address</label>
+                          <input id="bc-email" type="email" autoComplete="email" aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? "bc-email-error" : undefined} placeholder="e.g. name@example.com" {...register("email", {
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                           message: "Valid email required"
                         }
                       })} className={`form-input-base ${errors.email ? 'form-input-error' : 'form-input-focus'}`} />
-                          {errors.email && <p className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.email.message}</p>}
+                          {errors.email && <p id="bc-email-error" className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.email.message}</p>}
                         </div>
 
                         {/* City */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">City / Locality *</label>
-                          <input type="text" placeholder="e.g. Silvassa, Vapi..." {...register("city", {
+                          <label htmlFor="bc-city" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">City / Locality *</label>
+                          <input id="bc-city" type="text" autoComplete="address-level2" aria-invalid={errors.city ? true : undefined} aria-describedby={errors.city ? "bc-city-error" : undefined} placeholder="e.g. Silvassa, Vapi..." {...register("city", {
                         required: "City is required"
                       })} className={`form-input-base ${errors.city ? 'form-input-error' : 'form-input-focus'}`} />
-                          {errors.city && <p className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.city.message}</p>}
+                          {errors.city && <p id="bc-city-error" className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.city.message}</p>}
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Service Required */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Service Interested In *</label>
-                          <select {...register("service", {
+                          <label htmlFor="bc-service" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Service Interested In *</label>
+                          <select id="bc-service" aria-invalid={errors.service ? true : undefined} aria-describedby={errors.service ? "bc-service-error" : undefined} {...register("service", {
                         required: "Please select a service"
                       })} className={`form-input-base appearance-none ${errors.service ? 'form-input-error' : 'form-input-focus'}`} style={{
                         backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
@@ -174,23 +183,25 @@ function BookConsultationPage() {
                             <option value="Painting & Wall Finishes">Painting & Wall Finishes</option>
                             <option value="Not Sure">Not Sure</option>
                           </select>
-                          {errors.service && <p className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.service.message}</p>}
+                          {errors.service && <p id="bc-service-error" className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.service.message}</p>}
                         </div>
 
                         {/* Preferred Date/Time */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Preferred Date/Time *</label>
-                          <input type="datetime-local" min={new Date().toISOString().slice(0, 16)} {...register("datetime", {
-                        required: "Please select a date and time"
+                          <label htmlFor="bc-datetime" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Preferred Date/Time *</label>
+                          <input id="bc-datetime" type="datetime-local" min={minDateTime || undefined} aria-invalid={errors.datetime ? true : undefined} aria-describedby={errors.datetime ? "bc-datetime-error" : undefined} {...register("datetime", {
+                        required: "Please select a date and time",
+                        // A datetime-local value has no zone, so new Date() reads it as local time.
+                        validate: v => !v || new Date(v).getTime() > Date.now() - 60_000 || "Please choose a date and time in the future"
                       })} className={`form-input-base ${errors.datetime ? 'form-input-error' : 'form-input-focus'}`} />
-                          {errors.datetime && <p className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.datetime.message}</p>}
+                          {errors.datetime && <p id="bc-datetime-error" className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.datetime.message}</p>}
                         </div>
                       </div>
 
                       {/* Project Type */}
                       <div>
-                        <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[8px]">Project Type *</label>
-                        <div className="flex flex-wrap gap-6">
+                        <span id="bc-projectType-label" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[8px]">Project Type *</span>
+                        <div role="radiogroup" aria-labelledby="bc-projectType-label" className="flex flex-wrap gap-6">
                           {['Residential', 'Commercial'].map(method => <label key={method} className="flex items-center gap-2 cursor-pointer group">
                               <div className="relative flex items-center justify-center">
                                 <input type="radio" value={method} {...register("projectType")} className="peer appearance-none w-[18px] h-[18px] border-[1.5px] border-[#D9A441] rounded-full checked:bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-[#F2B21B]/30 transition-all" />
@@ -204,16 +215,16 @@ function BookConsultationPage() {
                       {/* Additional Requirements */}
                       <div>
                         <div className="flex justify-between items-end mb-[6px]">
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333]">Message or Requirement (Optional)</label>
+                          <label htmlFor="bc-message" className="block font-nunito font-semibold text-[13px] text-[#333]">Message or Requirement (Optional)</label>
                           <span className="font-nunito text-[11px] text-[#999]">{messageValue.length}/500</span>
                         </div>
-                        <textarea rows={4} placeholder="Tell us about your space, preferred style, or specific questions..." {...register("message", {
+                        <textarea id="bc-message" aria-invalid={errors.message ? true : undefined} aria-describedby={errors.message ? "bc-message-error" : undefined} rows={4} placeholder="Tell us about your space, preferred style, or specific questions..." {...register("message", {
                       maxLength: {
                         value: 500,
                         message: "Max 500 characters"
                       }
                     })} className={`form-input-base resize-y ${errors.message ? 'form-input-error' : 'form-input-focus'}`} />
-                        {errors.message && <p className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.message.message}</p>}
+                        {errors.message && <p id="bc-message-error" className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.message.message}</p>}
                       </div>
 
                       {/* Submit Button */}
@@ -262,7 +273,7 @@ function BookConsultationPage() {
                       </ul>
                     </div>
 
-                    <a href={`https://wa.me/918401226123?text=Hi, I just booked a consultation. My name is ${submittedData.name}.`} target="_blank" rel="noreferrer" className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[16px] px-8 py-[16px] rounded-lg transition-transform active:scale-[0.98] shadow-md flex items-center justify-center gap-2">
+                    <a href={`https://wa.me/918460150027?text=Hi, I just booked a consultation. My name is ${submittedData.name}.`} target="_blank" rel="noreferrer" className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[16px] px-8 py-[16px] rounded-lg transition-transform active:scale-[0.98] shadow-md flex items-center justify-center gap-2">
                       <MessageCircle className="w-5 h-5" /> Say Hi on WhatsApp
                     </a>
                   </motion.div>}

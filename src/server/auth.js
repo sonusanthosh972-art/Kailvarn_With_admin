@@ -14,8 +14,12 @@ import { SESSION_COOKIE, verifySession } from '@/server/session.js';
 const normalizeEmail = (e) => String(e || '').trim().toLowerCase();
 
 // Constant-ish work even when the email is unknown, so response time doesn't
-// reveal whether an account exists.
-const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', 12);
+// reveal whether an account exists. Built on first use, not at module load:
+// src/server/http.js imports from this file, so every API route -- public
+// ones included -- would otherwise pay a cost-12 bcrypt hash (~0.5s on a
+// 2-core serverless instance) on each cold start.
+let dummyHash;
+const getDummyHash = () => (dummyHash ??= bcrypt.hashSync('not-a-real-password', 12));
 
 export async function verifyAdminCredentials(email, password) {
   const e = normalizeEmail(email);
@@ -35,7 +39,7 @@ export async function verifyAdminCredentials(email, password) {
       );
       admin = res;
     } else {
-      await bcrypt.compare(password, DUMMY_HASH);
+      await bcrypt.compare(password, getDummyHash());
       return null;
     }
   } else if (!(await bcrypt.compare(password, admin.passwordHash))) {

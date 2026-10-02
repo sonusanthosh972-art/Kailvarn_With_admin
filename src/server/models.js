@@ -9,6 +9,8 @@ export const PROJECT_STATUSES = ['draft', 'published'];
 export const LEAD_STATUSES = ['NEW', 'CONTACTED', 'IN_PROGRESS', 'COMPLETED', 'CLOSED'];
 export const IMAGE_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
 export const MAX_IMAGE_BYTES = 15 * 1024 * 1024; // per file, after client-side optimisation
+export const VIDEO_TYPES = { 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov', 'video/x-m4v': 'm4v' };
+export const MAX_VIDEO_BYTES = 120 * 1024 * 1024; // walkthrough videos go browser -> B2 directly
 
 // ---- Helpers
 const str = (max) => z.string().trim().max(max);
@@ -48,6 +50,18 @@ export const contactInput = z.object({
   message: optStr(2000),
 });
 
+// A datetime-local value ("2026-10-02T15:30") carries no time zone. It is read
+// as India time, but a visitor abroad picks it on their own clock, so a slot
+// that is in the future for them can look up to ~18 hours past from India.
+// Allowing that window still rejects genuinely stale dates.
+const BOOKING_GRACE_MS = 18 * 60 * 60 * 1000;
+function isBookableDateTime(value) {
+  if (!value) return true;
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return false;
+  const when = Date.parse(`${value}:00+05:30`);
+  return Number.isFinite(when) && when > Date.now() - BOOKING_GRACE_MS;
+}
+
 export const consultationInput = z.object({
   name: str(120).min(2, 'Enter your name'),
   phone,
@@ -55,7 +69,7 @@ export const consultationInput = z.object({
   city: str(120).min(2, 'Enter your city'),
   service: str(80).min(1, 'Choose a service'),
   projectType: optStr(80),
-  datetime: optStr(40),          // <input type="datetime-local"> value, split below
+  datetime: optStr(40).refine(isBookableDateTime, 'Please choose a date and time in the future'), // <input type="datetime-local"> value, split below
   message: optStr(2000),
 });
 
@@ -124,6 +138,21 @@ export const uploadComplete = z.object({
 });
 
 export const imageUpdate = z.object({ altText: str(300) });
+
+// ---- Walkthrough video (same browser -> B2 -> confirm flow as images)
+export const videoPresign = z.object({
+  name: str(200).min(1),
+  type: z.enum(Object.keys(VIDEO_TYPES)),
+  size: z.number().int().positive().max(MAX_VIDEO_BYTES, 'Video is larger than 120 MB'),
+});
+
+export const videoComplete = z.object({
+  uploadId: z.string().min(8).max(64),
+  b2Key: z.string().min(5).max(400),
+  fileName: str(200),
+  contentType: z.enum(Object.keys(VIDEO_TYPES)),
+  size: z.number().int().positive().max(MAX_VIDEO_BYTES),
+});
 
 // ---- Editable page content (site_content collection, one doc per page)
 const href = z.string().trim().max(300).refine(

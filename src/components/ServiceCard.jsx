@@ -15,7 +15,7 @@ function ServiceCard({ service, index = 0 }) {
       className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
     >
       <div className="relative h-64 overflow-hidden">
-        <img
+        <img loading="lazy"
           src={service.image}
           alt={service.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

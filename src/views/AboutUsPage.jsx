@@ -98,16 +98,16 @@ function AboutUsPage() {
               className="lg:w-[45%] w-full h-[400px] md:h-[500px] grid grid-cols-2 grid-rows-2 gap-4"
             >
               <div className="rounded-lg overflow-hidden shadow-md">
-                <img src="https://images.unsplash.com/photo-1693748792488-c0374f6ceb74" alt="Interior space" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                <img loading="lazy" src="https://images.unsplash.com/photo-1693748792488-c0374f6ceb74" alt="Interior space" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
               </div>
               <div className="rounded-lg overflow-hidden shadow-md mt-8">
-                <img src="https://images.unsplash.com/photo-1585128833500-ec98262cb4f5" alt="Interior detail" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                <img loading="lazy" src="https://images.unsplash.com/photo-1585128833500-ec98262cb4f5" alt="Interior detail" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
               </div>
               <div className="rounded-lg overflow-hidden shadow-md -mt-8">
-                <img src="https://images.unsplash.com/photo-1688584270387-01810506c2ec" alt="Modern room" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                <img loading="lazy" src="https://images.unsplash.com/photo-1688584270387-01810506c2ec" alt="Modern room" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
               </div>
               <div className="rounded-lg overflow-hidden shadow-md">
-                <img src="https://images.unsplash.com/photo-1686040087857-9e3ab3947f41" alt="Kids bedroom design" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                <img loading="lazy" src="https://images.unsplash.com/photo-1686040087857-9e3ab3947f41" alt="Kids bedroom design" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
               </div>
             </motion.div>
           </div>
@@ -301,7 +301,7 @@ function AboutUsPage() {
                 className="text-center flex flex-col items-center"
               >
                 <div className="w-[100px] h-[100px] md:w-[120px] md:h-[120px] rounded-full overflow-hidden mb-4 border-[3px] border-white shadow-md">
-                  <img src={member.img} alt={member.role} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={member.img} alt={member.role} className="w-full h-full object-cover" />
                 </div>
                 <h4 className="font-playfair font-bold text-[18px] md:text-[20px] text-[#0B103B] leading-tight">{member.name}</h4>
                 <p className="font-nunito font-bold text-[13px] md:text-[14px] text-[#D9A441] mb-2 uppercase tracking-wide">{member.role}</p>
@@ -336,7 +336,7 @@ function AboutUsPage() {
               <p className="font-nunito text-[14px] text-[#6B675F] mb-6 bg-[#F5F1E8] p-4 rounded-lg border border-[#D9A441]/40">
                 <strong>Not sure if we cover your area?</strong> Call or WhatsApp us — we'll confirm immediately.
               </p>
-              <a href="tel:8401226123" className="btn-navy inline-flex">
+              <a href="tel:8460150027" className="btn-navy inline-flex">
                 <Phone className="w-4 h-4" /> Check Your Area
               </a>
             </motion.div>
@@ -374,8 +374,8 @@ function AboutUsPage() {
               <Link href="/book-consultation" className="btn-primary">
                 Book Free Consultation
               </Link>
-              <a href="tel:8401226123" className="btn-outline">
-                <Phone className="w-4 h-4"/> Call 8401226123
+              <a href="tel:8460150027" className="btn-outline">
+                <Phone className="w-4 h-4"/> Call 8460150027
               </a>
             </div>
           </motion.div>

@@ -1,5 +1,5 @@
 export function useWhatsAppLink() {
-  const phoneNumber = '918401226123';
+  const phoneNumber = '918460150027';
 
   const generateLink = (serviceName = '', customMessage = '') => {
     let message = customMessage;

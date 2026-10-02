@@ -76,7 +76,7 @@ function ContactUsPage() {
     a: "Absolutely! You don't have to take all services. If you only need painting, or only want a modular kitchen, or only need custom furniture — KailVarn handles single-service projects too. Each service is available independently."
   }, {
     q: "What is the process to get started?",
-    a: "(1) Call or fill the form to book a free consultation. (2) We do a site visit and understand your requirements. (3) We create a 3D design at zero cost. (4) We share a detailed cost estimate. (5) You approve design and cost, we sign an agreement. (6) Work begins. You can start the process in 5 minutes by calling 8401226123 or clicking 'Get Free Quote.'"
+    a: "(1) Call or fill the form to book a free consultation. (2) We do a site visit and understand your requirements. (3) We create a 3D design at zero cost. (4) We share a detailed cost estimate. (5) You approve design and cost, we sign an agreement. (6) Work begins. You can start the process in 5 minutes by calling 8460150027 or clicking 'Get Free Quote.'"
   }, {
     q: "Do you work on commercial spaces like offices, cafés, and shops?",
     a: "Yes! KailVarn designs and executes commercial interiors for offices, cafés, restaurants, retail shops, showrooms, clinics, and other commercial spaces. Our team understandsboth residential and commercial requirements. Check our design portfolio for commercial interior examples."
@@ -84,15 +84,15 @@ function ContactUsPage() {
   const contactItems = [{
     icon: Phone,
     label: "CALL US",
-    value: "8401226123",
+    value: "8460150027",
     note: "Mon–Sat, 9 AM – 7 PM",
-    link: "tel:+918401226123"
+    link: "tel:+918460150027"
   }, {
     icon: Phone,
     label: "WHATSAPP",
-    value: "8401226123",
+    value: "8460150027",
     note: "Quick response on WhatsApp",
-    link: "https://wa.me/918401226123?text=Hi KailVarn, I want to enquire about interior services."
+    link: "https://wa.me/918460150027?text=Hi KailVarn, I want to enquire about interior services."
   }, {
     icon: Mail,
     label: "EMAIL",
@@ -185,10 +185,10 @@ function ContactUsPage() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <a href="tel:+918401226123" className="btn-primary w-full">
+                  <a href="tel:+918460150027" className="btn-primary w-full">
                     <Phone className="w-[18px] h-[18px]" /> Call Now
                   </a>
-                  <a href="https://wa.me/918401226123" target="_blank" rel="noreferrer" className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] py-3 rounded-lg flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
+                  <a href="https://wa.me/918460150027" target="_blank" rel="noreferrer" className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] py-3 rounded-lg flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
                     <MessageCircle className="w-[18px] h-[18px]" /> WhatsApp Now
                   </a>
                 </div>
@@ -246,7 +246,7 @@ function ContactUsPage() {
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 font-nunito text-[15px] text-[#6B675F] flex items-center gap-1.5">
                               +91 |
                             </span>
-                            <input type="tel" placeholder="e.g. 8401226123" {...register("phone", {
+                            <input type="tel" placeholder="e.g. 8460150027" {...register("phone", {
                           required: "Phone number is required",
                           pattern: {
                             value: /^[6-9]\d{9}$/,
@@ -346,7 +346,7 @@ function ContactUsPage() {
                       <p className="font-nunito text-[16px] text-[#6B675F] mb-8 max-w-[300px] leading-relaxed">
                         Thank you for reaching out! Our team will call or WhatsApp you within a few hours to discuss your project.
                       </p>
-                      <a href="https://wa.me/918401226123" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] px-8 py-3.5 rounded-lg transition-transform active:scale-[0.98] shadow-md">
+                      <a href="https://wa.me/918460150027" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] px-8 py-3.5 rounded-lg transition-transform active:scale-[0.98] shadow-md">
                         <MessageCircleIcon className="w-5 h-5" /> WhatsApp Us for Faster Reply
                       </a>
                     </motion.div>}
@@ -444,10 +444,10 @@ function ContactUsPage() {
               The best way to understand your project needs is a quick 10-minute conversation. Call us, WhatsApp us, or book a free site visit.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-              <a href="tel:+918401226123" className="btn-outline w-full sm:w-auto">
-                <Phone className="w-[18px] h-[18px]" /> Call 8401226123
+              <a href="tel:+918460150027" className="btn-outline w-full sm:w-auto">
+                <Phone className="w-[18px] h-[18px]" /> Call 8460150027
               </a>
-              <a href="https://wa.me/918401226123?text=Hi KailVarn, I want to enquire about interior services" target="_blank" rel="noreferrer" className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] px-8 py-3.5 rounded-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+              <a href="https://wa.me/918460150027?text=Hi KailVarn, I want to enquire about interior services" target="_blank" rel="noreferrer" className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] px-8 py-3.5 rounded-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2">
                 <MessageCircleIcon className="w-[18px] h-[18px]" /> WhatsApp Now
               </a>
               <Link href="/book-consultation" className="btn-primary w-full sm:w-auto">

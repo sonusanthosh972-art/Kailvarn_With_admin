@@ -121,7 +121,7 @@ function GetFreeQuotePage() {
                               </span>
                               <input 
                                 type="tel"
-                                placeholder="8401226123"
+                                placeholder="8460150027"
                                 {...register("phone", { 
                                   required: "Phone is required", 
                                   pattern: { value: /^[6-9]\d{9}$/, message: "Valid 10-digit number required" }
@@ -279,10 +279,10 @@ function GetFreeQuotePage() {
                         </ul>
                       </div>
 
-                      <a href="https://wa.me/918401226123" target="_blank" rel="noreferrer" className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[16px] py-[16px] rounded-lg transition-transform active:scale-[0.98] shadow-md flex items-center justify-center gap-2 mb-4">
+                      <a href="https://wa.me/918460150027" target="_blank" rel="noreferrer" className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[16px] py-[16px] rounded-lg transition-transform active:scale-[0.98] shadow-md flex items-center justify-center gap-2 mb-4">
                         <MessageCircleIcon className="w-5 h-5" /> WhatsApp Us for Faster Response
                       </a>
-                      <p className="font-nunito text-[13px] text-[#6B675F]">Or call us directly at <a href="tel:8401226123" className="text-[#D9A441] font-bold hover:underline">8401226123</a></p>
+                      <p className="font-nunito text-[13px] text-[#6B675F]">Or call us directly at <a href="tel:8460150027" className="text-[#D9A441] font-bold hover:underline">8460150027</a></p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -311,10 +311,10 @@ function GetFreeQuotePage() {
               <div className="bg-[#F5F1E8] rounded-lg p-5 border border-[#0B103B]/10">
                 <h4 className="font-nunito font-bold text-[15px] text-[#111111] mb-3">Still have questions?</h4>
                 <div className="flex flex-col gap-2">
-                  <a href="tel:8401226123" className="font-nunito font-bold text-[15px] text-[#D9A441] hover:underline flex items-center gap-2">
-                    📞 Call 8401226123
+                  <a href="tel:8460150027" className="font-nunito font-bold text-[15px] text-[#D9A441] hover:underline flex items-center gap-2">
+                    📞 Call 8460150027
                   </a>
-                  <a href="https://wa.me/918401226123" target="_blank" rel="noreferrer" className="font-nunito font-bold text-[15px] text-[#25D366] hover:underline flex items-center gap-2">
+                  <a href="https://wa.me/918460150027" target="_blank" rel="noreferrer" className="font-nunito font-bold text-[15px] text-[#25D366] hover:underline flex items-center gap-2">
                     💬 WhatsApp Us
                   </a>
                 </div>
@@ -381,9 +381,9 @@ function GetFreeQuotePage() {
                 <Phone className="w-[28px] h-[28px] text-[#D9A441]" />
               </div>
               <h4 className="font-nunito font-bold text-[18px] text-[#111111] mb-1">Call Us Directly</h4>
-              <a href="tel:8401226123" className="block font-playfair font-bold text-[24px] text-[#D9A441] mb-2 hover:underline">8401226123</a>
+              <a href="tel:8460150027" className="block font-playfair font-bold text-[24px] text-[#D9A441] mb-2 hover:underline">8460150027</a>
               <p className="font-nunito text-[14px] text-[#6B675F] mb-6">Mon–Sat, 9 AM – 7 PM</p>
-              <a href="tel:8401226123" className="btn-primary block w-full">
+              <a href="tel:8460150027" className="btn-primary block w-full">
                 📞 Tap to Call
               </a>
             </motion.div>
@@ -394,9 +394,9 @@ function GetFreeQuotePage() {
                 <MessageCircleIcon className="w-[28px] h-[28px] text-[#25D366]" />
               </div>
               <h4 className="font-nunito font-bold text-[18px] text-[#111111] mb-1">WhatsApp Us</h4>
-              <a href="https://wa.me/918401226123" target="_blank" rel="noreferrer" className="block font-playfair font-bold text-[24px] text-[#25D366] mb-2 hover:underline">8401226123</a>
+              <a href="https://wa.me/918460150027" target="_blank" rel="noreferrer" className="block font-playfair font-bold text-[24px] text-[#25D366] mb-2 hover:underline">8460150027</a>
               <p className="font-nunito text-[14px] text-[#6B675F] mb-6">Quick response guaranteed</p>
-              <a href="https://wa.me/918401226123?text=Hi KailVarn, I'd like a free interior quote." target="_blank" rel="noreferrer" className="block w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] py-3 rounded-lg transition-transform active:scale-[0.98]">
+              <a href="https://wa.me/918460150027?text=Hi KailVarn, I'd like a free interior quote." target="_blank" rel="noreferrer" className="block w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] py-3 rounded-lg transition-transform active:scale-[0.98]">
                 💬 Chat on WhatsApp
               </a>
             </motion.div>

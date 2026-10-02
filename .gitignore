@@ -33,3 +33,4 @@ certificates/
 # build/upload packages (tools/package-deploy.sh)
 /deploy/
 /.static-build/
+.env*

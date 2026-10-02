@@ -1,4 +1,5 @@
 import { col } from '@/server/db.js';
+import { deleteObjects } from '@/server/b2.js';
 import { deleteImages, findProject, uniqueSlug, withImages } from '@/server/designs.js';
 import { projectUpdate, toObjectId } from '@/server/models.js';
 import { fail, ok, readJson, requireAdmin, serverError, validate } from '@/server/http.js';
@@ -46,7 +47,20 @@ export async function PATCH(request, { params }) {
       const ids = imageOrder.map(toObjectId).filter(Boolean);
       await images.bulkWrite(ids.map((_id, order) => ({ updateOne: { filter: { _id, projectId: p._id }, update: { $set: { order } } } })));
     }
-    await (await col('projects')).updateOne({ _id: p._id }, { $set: set });
+    // videoUrl is also a free-text field in the admin form. If it has been
+    // pointed somewhere else by hand, the tracked B2 object is no longer the
+    // one playing, so drop the reference. The object itself is left alone --
+    // deleting storage as a side effect of a text edit would be too eager.
+    const unset = {};
+    if (fields.videoUrl !== undefined && fields.videoUrl !== p.videoUrl && p.videoKey) {
+      unset.videoKey = '';
+      unset.videoSize = '';
+      unset.videoContentType = '';
+    }
+    await (await col('projects')).updateOne(
+      { _id: p._id },
+      { $set: set, ...(Object.keys(unset).length ? { $unset: unset } : {}) }
+    );
     const [project] = await withImages([await findProject(String(p._id))]);
     return ok(project);
   } catch (err) {
@@ -55,7 +69,7 @@ export async function PATCH(request, { params }) {
 }
 
 // DELETE /api/admin/designs/:id — removes the project, its image records
-// and the image files in Backblaze B2.
+// and the image and video files in Backblaze B2.
 export async function DELETE(_request, { params }) {
   const { response } = await requireAdmin();
   if (response) return response;
@@ -63,6 +77,7 @@ export async function DELETE(_request, { params }) {
   if (!p) return fail('Not found', 404);
   try {
     const removedImages = await deleteImages({ projectId: p._id });
+    if (p.videoKey) await deleteObjects([p.videoKey]).catch(() => {});
     await (await col('projects')).deleteOne({ _id: p._id });
     return ok({ deleted: true, removedImages });
   } catch (err) {

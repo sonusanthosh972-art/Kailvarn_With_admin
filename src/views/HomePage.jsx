@@ -35,7 +35,7 @@ const services = [
     title: 'Custom Furniture',
     ctaText: 'Explore Custom Furniture',
     desc: 'Custom-made beds, wardrobes, racks, partitions & all wooden work — crafted to fit your exact space and style.',
-    img: 'https://images.unsplash.com/photo-1697550077312-ff2e9d3603f3',
+    img: 'https://images.unsplash.com/photo-1631889993877-71e193bf79b8',
     icon: Armchair,
     usps: ['Custom to your space', 'Premium wood & finish', 'Guaranteed quality']
   },
@@ -87,7 +87,7 @@ const recentProjects = [
   { img: 'https://images.unsplash.com/photo-1680007889201-114ac772447d', title: 'Open-Plan Living & Kitchen', tag: 'Full Home' },
   { img: '/Kitchen.jpeg', title: 'Modular Kitchen', tag: 'Kitchen' },
   { img: 'https://images.unsplash.com/photo-1668586704152-36f3504f9823', title: 'Living Room with Wall Panelling', tag: 'Full Home' },
-  { img: 'https://images.unsplash.com/photo-1697550077312-ff2e9d3603f3', title: 'Bedroom Wardrobe', tag: 'Furniture' },
+  { img: 'https://images.unsplash.com/photo-1631889993877-71e193bf79b8', title: 'Bedroom Wardrobe', tag: 'Furniture' },
   { img: 'https://images.unsplash.com/photo-1561022775-cd329b9cc314', title: 'Textured Feature Wall', tag: 'Painting' },
   { img: 'https://images.unsplash.com/photo-1558442086-8ea19a79cd4d', title: 'Living Room & False Ceiling', tag: 'Full Home' }
 ];

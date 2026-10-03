@@ -1,6 +1,8 @@
 import { Manrope, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import MotionProvider from '@/components/kv/MotionProvider.jsx';
+import { siteUrl } from '@/server/siteUrl.js';
+import { pageMetadata, SITE_NAME } from '@/lib/seo.js';
 
 // Self-hosted by next/font (no external request, no layout shift). Exposed
 // as CSS variables consumed by globals.css and tailwind.config.js.
@@ -18,20 +20,30 @@ const sans = Manrope({
   display: 'swap',
 });
 
-export const metadata = {
-  title: {
-    default: 'KailVarn - Complete Interior Design & Execution in Silvassa, Vapi',
-    template: '%s',
-  },
+// Defaults for every page; public pages override them through pageMetadata().
+// The canonical URL is left to each page so it never leaks to admin/404 pages.
+const { alternates: _canonical, ...siteDefaults } = pageMetadata({
+  absoluteTitle: 'Interior Designers in Silvassa & Vapi | KailVarn',
   description:
-    'Transform Your Space Into Your Dream Home. Complete Interior Design & Execution — Full Home, Kitchen, Furniture & Painting. One Expert Team.',
+    'Complete home interiors in Silvassa, Vapi & Daman. Free 3D design, then one team builds it all: kitchen, furniture, ceiling, painting. Fixed written price.',
+});
+
+export const metadata = {
+  metadataBase: new URL(siteUrl()),
+  ...siteDefaults,
+  title: {
+    default: 'Interior Designers in Silvassa & Vapi | KailVarn',
+    template: `%s | ${SITE_NAME}`,
+  },
+  applicationName: SITE_NAME,
+  formatDetection: { telephone: false },
 };
 
 // Root shell shared by the public site (app/(site)) and the admin (app/admin).
 // Each of those groups adds its own chrome in its own layout.
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable}`}>
+    <html lang="en-IN" className={`${serif.variable} ${sans.variable}`}>
       <body>
         <MotionProvider>{children}</MotionProvider>
       </body>

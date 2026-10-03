@@ -9,6 +9,9 @@ import {
 } from 'lucide-react';
 import PageHero from '@/components/kv/PageHero.jsx';
 
+// Unsplash originals are 2-4 MB; ask for roughly the rendered size instead.
+const sized = (url, w) => `${url}?auto=format&fit=crop&w=${w}&q=72`;
+
 function AboutUsPage() {
   const scrollVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -49,12 +52,12 @@ function AboutUsPage() {
   ];
 
   const team = [
-    { name: 'KailVarn Studio', role: 'Interior Designer', bio: 'Creates stunning 3D layouts and manages material selection.', img: 'https://images.unsplash.com/photo-1531497258014-b5736f376b1b' },
-    { name: 'On-Site Experts', role: 'Project Manager', bio: 'Ensures everything matches the design perfectly.', img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a' },
-    { name: 'Master Craftsmen', role: 'Lead Carpenter', bio: 'Precision woodworking and custom furniture builds.', img: 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a' },
-    { name: 'Civil Team', role: 'Civil & Tile Expert', bio: 'Flawless flooring, wall modifications, and structural work.', img: 'https://images.unsplash.com/photo-1506801462054-05bb84394982' },
-    { name: 'Finishing Crew', role: 'Painter & Finish Expert', bio: 'Premium textures, deep color application, and detailing.', img: 'https://images.unsplash.com/photo-1520699049698-acd2fceb8cc0' },
-    { name: 'MEP Specialists', role: 'Electrical & Plumbing', bio: 'Safe, hidden wiring and leak-proof plumbing solutions.', img: 'https://images.unsplash.com/photo-1581092921461-7031e4bf0e5e' }
+    { name: 'KailVarn Studio', role: 'Interior Designer', bio: 'Creates stunning 3D layouts and manages material selection.', img: 'https://images.unsplash.com/photo-1781888688940-5730c3fd5baf' },
+    { name: 'On-Site Experts', role: 'Project Manager', bio: 'Ensures everything matches the design perfectly.', img: 'https://images.unsplash.com/photo-1716037991590-c975184b37df' },
+    { name: 'Master Craftsmen', role: 'Lead Carpenter', bio: 'Precision woodworking and custom furniture builds.', img: 'https://images.unsplash.com/photo-1659930087003-2d64e33181f7' },
+    { name: 'Civil Team', role: 'Civil & Tile Expert', bio: 'Flawless flooring, wall modifications, and structural work.', img: 'https://images.unsplash.com/photo-1706629503571-c165023a7792' },
+    { name: 'Finishing Crew', role: 'Painter & Finish Expert', bio: 'Premium textures, deep color application, and detailing.', img: 'https://images.unsplash.com/photo-1688372199140-cade7ae820fe' },
+    { name: 'MEP Specialists', role: 'Electrical & Plumbing', bio: 'Safe, hidden wiring and leak-proof plumbing solutions.', img: 'https://images.unsplash.com/photo-1620566160204-017b23cf046d' }
   ];
 
   return (
@@ -62,7 +65,7 @@ function AboutUsPage() {
 
       {/* 1. HERO SECTION */}
       <PageHero
-        image="https://images.unsplash.com/photo-1699842223719-630261e5b56c"
+        image="https://images.unsplash.com/photo-1724582586529-62622e50c0b3"
         eyebrow="About KailVarn"
         title="We Don't Just Design Homes — We Build Dreams In Affordable Pricing"
         emphasis="Affordable Pricing"
@@ -95,19 +98,25 @@ function AboutUsPage() {
 
             <motion.div 
               initial="hidden" whileInView="visible" viewport={{ once: true }} variants={{ hidden: { opacity: 0, x: 30 }, visible: { opacity: 1, x: 0, transition: { duration: 0.6 } } }}
-              className="lg:w-[45%] w-full h-[400px] md:h-[500px] grid grid-cols-2 grid-rows-2 gap-4"
+              className="lg:w-[45%] w-full h-[400px] md:h-[500px] grid grid-cols-2 gap-4"
             >
-              <div className="rounded-lg overflow-hidden shadow-md">
-                <img loading="lazy" src="https://images.unsplash.com/photo-1693748792488-c0374f6ceb74" alt="Interior space" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+              {/* Two columns, the right one starting lower: a staggered look
+                  where no photo can overlap another. */}
+              <div className="flex flex-col gap-4 pb-8 min-h-0">
+                <div className="flex-1 min-h-0 rounded-lg overflow-hidden shadow-md">
+                  <img loading="lazy" decoding="async" src={sized("https://images.unsplash.com/photo-1713192706971-03900dcf5706", 640)} alt="Modern living room with warm lighting" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                </div>
+                <div className="flex-1 min-h-0 rounded-lg overflow-hidden shadow-md">
+                  <img loading="lazy" decoding="async" src={sized("https://images.unsplash.com/photo-1771327811766-5f4149190b3d", 640)} alt="Bedroom with wooden wall panelling" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                </div>
               </div>
-              <div className="rounded-lg overflow-hidden shadow-md mt-8">
-                <img loading="lazy" src="https://images.unsplash.com/photo-1585128833500-ec98262cb4f5" alt="Interior detail" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-              </div>
-              <div className="rounded-lg overflow-hidden shadow-md -mt-8">
-                <img loading="lazy" src="https://images.unsplash.com/photo-1688584270387-01810506c2ec" alt="Modern room" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-              </div>
-              <div className="rounded-lg overflow-hidden shadow-md">
-                <img loading="lazy" src="https://images.unsplash.com/photo-1686040087857-9e3ab3947f41" alt="Kids bedroom design" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+              <div className="flex flex-col gap-4 pt-8 min-h-0">
+                <div className="flex-1 min-h-0 rounded-lg overflow-hidden shadow-md">
+                  <img loading="lazy" decoding="async" src={sized("https://images.unsplash.com/photo-1585128833500-ec98262cb4f5", 640)} alt="Bright modular kitchen with wooden worktop" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                </div>
+                <div className="flex-1 min-h-0 rounded-lg overflow-hidden shadow-md">
+                  <img loading="lazy" decoding="async" src={sized("https://images.unsplash.com/photo-1686040087857-9e3ab3947f41", 640)} alt="Kids bedroom design" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                </div>
               </div>
             </motion.div>
           </div>
@@ -301,7 +310,7 @@ function AboutUsPage() {
                 className="text-center flex flex-col items-center"
               >
                 <div className="w-[100px] h-[100px] md:w-[120px] md:h-[120px] rounded-full overflow-hidden mb-4 border-[3px] border-white shadow-md">
-                  <img loading="lazy" src={member.img} alt={member.role} className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={sized(member.img, 256)} alt={member.role} className="w-full h-full object-cover" />
                 </div>
                 <h4 className="font-playfair font-bold text-[18px] md:text-[20px] text-[#0B103B] leading-tight">{member.name}</h4>
                 <p className="font-nunito font-bold text-[13px] md:text-[14px] text-[#D9A441] mb-2 uppercase tracking-wide">{member.role}</p>

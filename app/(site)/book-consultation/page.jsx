@@ -1,10 +1,12 @@
+import { pageMetadata } from '@/lib/seo.js';
 import BookConsultationPage from '@/views/BookConsultationPage.jsx';
 
-export const metadata = {
-  title: 'Book Free Consultation — KailVarn Interior Design | Silvassa',
+export const metadata = pageMetadata({
+  title: 'Book a Free Interior Design Consultation',
   description:
-    'Schedule a personalized, free interior design consultation with KailVarn experts. Discuss your vision, timeline, and budget.',
-};
+    'Pick a time for a free consultation with a KailVarn interior designer in Silvassa or Vapi. Talk through your space, style and budget. No charge, no obligation.',
+  path: '/book-consultation',
+});
 
 export default function Page() {
   return <BookConsultationPage />;

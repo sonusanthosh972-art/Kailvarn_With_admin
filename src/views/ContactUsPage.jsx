@@ -116,7 +116,7 @@ function ContactUsPage() {
 
       {/* 1. PAGE HERO SECTION */}
       <PageHero
-        image="https://images.unsplash.com/photo-1688584270387-01810506c2ec"
+        image="https://images.unsplash.com/photo-1678762200388-51e11225d4de"
         breadcrumb="Contact Us"
         eyebrow="Get In Touch"
         title="We'd Love to Hear From You"

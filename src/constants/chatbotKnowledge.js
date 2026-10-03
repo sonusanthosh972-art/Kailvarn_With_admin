@@ -21,6 +21,18 @@ Also: commercial interiors (offices, cafés, restaurants, shops, showrooms, clin
 Key promises: free in-house interior designer (no separate designer fee), 3D design before work starts, written agreement with zero hidden cost, execution exactly matching the approved design, warranty on work, affordable pricing, no contractor headaches.
 
 Process: (1) Book a free consultation by call or form. (2) Site visit to understand requirements. (3) Free 3D design. (4) Detailed cost estimate. (5) Approve design and cost, sign the agreement. (6) Work begins; delivery with walkthrough inspection and warranty.
+
+Working hours: Monday to Saturday, 9 AM – 7 PM. WhatsApp gets the quickest reply; emails are answered within 24 hours. After a form enquiry the team calls or WhatsApps back within a few hours.
+
+Full home interior includes: 3D design and layouts, furniture, kitchen, painting, civil work (wall changes, base prep), flooring (tiles, marble, wooden), lighting (profile, cove, ambient), false ceiling (POP and gypsum), plumbing, electrical, bathroom (tiles, vanities) — end to end.
+
+Modular kitchen: layouts — L-shaped, U-shaped, straight, island and parallel. Includes cabinets, drawers and trolleys; granite, quartz or marble countertop; sink and plumbing; appliance points and wiring; under-cabinet lighting; civil prep and tiling. BWP marine-grade plywood is used near water, with branded hardware and soft-close fittings.
+
+Custom furniture: beds and headboards, wardrobes, TV units, bookshelves and racks, partitions, wooden designs, tables and chairs. Core materials: BWR plywood, BWP marine plywood, HDHMR boards. Finishes: high-gloss or matte laminate, wood veneer and polish, acrylic and PU paint. Hardware brands: Hettich, Hafele, Ebco; soft-close hinges as standard. Clients see the branded plywood and laminate sheets before cutting.
+
+Painting: wall inspection first, crack repair, dampness and leakage treatment, then primer, putty and paint coats; masking and cleanup included. Paint brands: Asian Paints, Dulux or Jotun. Wall finishes: smooth matte, Italian texture, sand texture, stucco, Venetian plaster, metallic.
+
+Free online tools: the Paint Visualizer (/paint-visualizer) lets visitors upload a room photo and try wall and ceiling colours; the Our Design page also has an AI room redesign tile.
 `;
 
 const FAQS = [

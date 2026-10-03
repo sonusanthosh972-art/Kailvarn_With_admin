@@ -6,6 +6,20 @@ import { motion } from 'framer-motion';
 import { ChevronRight, Phone, MessageCircle, PenTool, Armchair, ChefHat, Paintbrush as PaintRoller, Hammer, Lightbulb, Box, Droplets, Zap, Bath, CheckCircle2, Bed, DoorClosed, Tv, Library, LayoutGrid, Sofa, Settings, Home, X, Check, Gift, FileText, ShieldCheck } from 'lucide-react';
 import PageHero from '@/components/kv/PageHero.jsx';
 
+// Unsplash originals are 2-4 MB each (~36 MB for this page). Ask for roughly
+// the rendered size in WebP/AVIF instead, with smaller files for phones.
+const unsplash = (url, w) => `${url}?auto=format&fit=crop&w=${w}&q=72`;
+function photoProps(url, widths, sizes) {
+  if (!url.startsWith('https://images.unsplash.com')) return { src: url };
+  return {
+    src: unsplash(url, widths[widths.length - 1]),
+    srcSet: widths.map((w) => `${unsplash(url, w)} ${w}w`).join(', '),
+    sizes,
+  };
+}
+// Large 4:5 feature photo beside each service's intro text
+const FEATURE = [[480, 720, 960], '(min-width: 1024px) 560px, 100vw'];
+
 // --- DATA STRUCTURES TO KEEP JSX CLEAN ---
 
 const fullHomeInclusions = [{
@@ -122,19 +136,19 @@ const kitchenInclusions = [{
 }];
 const kitchenTypes = [{
   name: 'L-Shaped Kitchen',
-  img: 'https://images.unsplash.com/photo-1556910103-1c02745a872f'
+  img: 'https://images.unsplash.com/photo-1556911220-bff31c812dba'
 }, {
   name: 'U-Shaped Kitchen',
-  img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a'
+  img: 'https://images.unsplash.com/photo-1659851904977-99ea7cf27b16'
 }, {
   name: 'Straight Kitchen',
-  img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c'
+  img: 'https://images.unsplash.com/photo-1663811396777-05505d999151'
 }, {
   name: 'Island Kitchen',
-  img: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3'
+  img: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae'
 }, {
   name: 'Parallel Kitchen',
-  img: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae'
+  img: 'https://images.unsplash.com/photo-1721523235834-eca62b5884a4'
 }];
 const furnitureTypes = [{
   icon: Bed,
@@ -189,27 +203,27 @@ const paintingInclusions = [{
 const wallFinishes = [{
   name: 'Smooth Matte',
   desc: 'Clean, elegant, non-reflective',
-  img: 'https://images.unsplash.com/photo-1562184552-997c461abbe6'
+  img: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85'
 }, {
   name: 'Italian Texture',
   desc: 'Luxurious marble-like feel',
-  img: 'https://images.unsplash.com/photo-1604014237800-1c9102c219da'
+  img: 'https://images.unsplash.com/photo-1636477889313-a8f8e5f0779a'
 }, {
   name: 'Sand Texture',
   desc: 'Granular and tactile finish',
-  img: 'https://images.unsplash.com/photo-1506806732259-39c2d0268443'
+  img: 'https://images.unsplash.com/photo-1678794792858-1d3a7b2a0367'
 }, {
   name: 'Stucco',
   desc: 'Classic, durable, deep texture',
-  img: 'https://images.unsplash.com/photo-1510172951991-856a654063f9'
+  img: 'https://images.unsplash.com/photo-1641663129836-69b7dd203e74'
 }, {
   name: 'Venetian Plaster',
   desc: 'High-gloss polished look',
-  img: 'https://images.unsplash.com/photo-1558211583-d26f610c1eb1'
+  img: 'https://images.unsplash.com/photo-1708894462826-ba3fa93b41b7'
 }, {
   name: 'Metallic Finish',
   desc: 'Subtle shimmer and glow',
-  img: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853'
+  img: 'https://images.unsplash.com/photo-1636654680586-0be30d650c79'
 }];
 
 // --- COMPONENT ---
@@ -264,7 +278,7 @@ export default function ServicesPage() {
 
       {/* SECTION 1 — PAGE HERO BANNER */}
       <PageHero
-        image="https://images.unsplash.com/photo-1699842223719-630261e5b56c"
+        image="https://images.unsplash.com/photo-1720247520862-7e4b14176fa8"
         breadcrumb="Services"
         eyebrow="What We Offer"
         title="Our Interior Services"
@@ -331,7 +345,7 @@ export default function ServicesPage() {
             duration: 0.6
           }} className="order-2 lg:order-1 h-full">
               <div className="relative rounded-lg overflow-hidden aspect-[4/5] shadow-lg group">
-                <img loading="lazy" src="https://images.unsplash.com/photo-1693748792488-c0374f6ceb74" alt="Full Home Interior by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
+                <img loading="lazy" decoding="async" {...photoProps("https://images.unsplash.com/photo-1745429523617-0d837856ca35", ...FEATURE)} alt="Full Home Interior by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
               </div>
             </motion.div>
             
@@ -544,7 +558,7 @@ export default function ServicesPage() {
             duration: 0.6
           }} className="order-1 lg:order-2 h-full">
               <div className="relative rounded-lg overflow-hidden aspect-[4/5] shadow-lg group">
-                <img loading="lazy" src="https://images.unsplash.com/photo-1588854337236-6889d631faa8" alt="Modern Modular Kitchen by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
+                <img loading="lazy" decoding="async" {...photoProps("https://images.unsplash.com/photo-1588854337236-6889d631faa8", ...FEATURE)} alt="Modern Modular Kitchen by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
               </div>
             </motion.div>
           </div>
@@ -577,7 +591,7 @@ export default function ServicesPage() {
             <div className="flex overflow-x-auto hide-scrollbar snap-x snap-mandatory gap-4 pb-6 mb-20">
               {kitchenTypes.map((type, i) => <div key={i} className="snap-center shrink-0 w-[260px] group cursor-pointer">
                   <div className="h-[200px] rounded-xl overflow-hidden mb-3 shadow-sm">
-                    <img loading="lazy" src={type.img} alt={type.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <img loading="lazy" decoding="async" {...photoProps(type.img, [280, 560], '260px')} alt={type.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
                   <h4 className="font-nunito font-bold text-[15px] text-[#111111] text-center">{type.name}</h4>
                 </div>)}
@@ -651,7 +665,7 @@ export default function ServicesPage() {
             duration: 0.6
           }} className="order-2 lg:order-1 h-full">
               <div className="relative rounded-lg overflow-hidden aspect-[4/5] shadow-lg group">
-                <img loading="lazy" src="https://images.unsplash.com/photo-1631889993877-71e193bf79b8" alt="Custom Furniture by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
+                <img loading="lazy" decoding="async" {...photoProps("https://images.unsplash.com/photo-1631889993877-71e193bf79b8", ...FEATURE)} alt="Custom Furniture by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
               </div>
             </motion.div>
             
@@ -893,7 +907,7 @@ export default function ServicesPage() {
             duration: 0.6
           }} className="order-1 lg:order-2 h-full">
               <div className="relative rounded-lg overflow-hidden aspect-[4/5] shadow-lg group">
-                <img loading="lazy" src="https://images.unsplash.com/photo-1566288940339-fc6dd14a5849" alt="Painting & Wall Finishes by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
+                <img loading="lazy" decoding="async" {...photoProps("https://images.unsplash.com/photo-1688372198189-de6a51777a81", ...FEATURE)} alt="Painting & Wall Finishes by KailVarn" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-104" />
               </div>
             </motion.div>
           </div>
@@ -926,7 +940,7 @@ export default function ServicesPage() {
             <div className="flex overflow-x-auto hide-scrollbar snap-x snap-mandatory gap-4 pb-6 mb-20">
               {wallFinishes.map((type, i) => <div key={i} className="snap-center shrink-0 w-[220px] group cursor-pointer relative overflow-hidden rounded-xl">
                   <div className="h-[280px]">
-                    <img loading="lazy" src={type.img} alt={type.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <img loading="lazy" decoding="async" {...photoProps(type.img, [240, 480], '220px')} alt={type.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
                     <h4 className="font-nunito font-bold text-[16px] text-white leading-tight">{type.name}</h4>

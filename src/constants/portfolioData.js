@@ -61,7 +61,8 @@ const imgPools = {
 
 const getImageUrl = (poolName, index) => {
   const pool = imgPools[poolName] || imgPools.feature;
-  return pool[index % pool.length];
+  // Originals are 2-4 MB each; 1200px is enough for the cards and the lightbox.
+  return `${pool[index % pool.length]}?auto=format&fit=crop&w=1200&q=72`;
 };
 
 const FEATURED_VIDEOS = {

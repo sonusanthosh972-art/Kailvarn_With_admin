@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { CHATBOT_SYSTEM_PROMPT } from '@/constants/chatbotKnowledge.js';
 import { siteUrl } from '@/server/siteUrl.js';
+import { isDailyCapReached } from '@/server/dailyCap.js';
+import { hasPromptInjection } from '@/server/promptGuard.js';
 
 // Website chatbot: forwards the visitor's conversation, plus the KailVarn
 // knowledge prompt, to OpenRouter's OpenAI-compatible chat API. The API key
@@ -49,7 +51,15 @@ export async function POST(request) {
 
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'local';
   if (isRateLimited(ip)) {
+    console.warn(`[ABUSE] chat rate-limited | IP: ${ip}`);
     return NextResponse.json({ error: 'Too many messages — please wait a minute and try again.' }, { status: 429 });
+  }
+
+  if (isDailyCapReached('chat', 5000)) {
+    return NextResponse.json(
+      { error: 'The assistant has reached its daily limit. Please call/WhatsApp 8460150027.' },
+      { status: 503 }
+    );
   }
 
   let body;
@@ -61,6 +71,15 @@ export async function POST(request) {
   const messages = cleanMessages(body?.messages);
   if (!messages) {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
+  }
+
+  // Block prompt injection attempts ("ignore all instructions", "you are now", etc.).
+  const lastUserMsg = messages[messages.length - 1].content;
+  if (hasPromptInjection(lastUserMsg)) {
+    console.warn(`[ABUSE] chat prompt-injection blocked | IP: ${ip} | msg: ${lastUserMsg.slice(0, 120)}`);
+    return NextResponse.json({
+      reply: "I'm the KailVarn Assistant — I can only help with interior design and home improvement questions. How can I help you with your home project?",
+    });
   }
 
   // Free models are rate-limited, so OPENROUTER_MODEL may list several

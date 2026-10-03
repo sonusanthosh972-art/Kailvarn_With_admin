@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { SURFACE_SEGMENTATION_MODEL } from '@/constants/segmentationConfig.js';
+import { rateLimit } from '@/server/http.js';
+import { isDailyCapReached } from '@/server/dailyCap.js';
+import { validateImage } from '@/server/imageValidation.js';
 
 const PAINTABLE_LABELS = ['wall', 'ceiling'];
 
@@ -13,6 +16,14 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Surface detection is not configured on the server.' }, { status: 500 });
   }
 
+  if (rateLimit(request, { key: 'segment-hf', max: 5, windowMs: 60_000 })) {
+    console.warn(`[ABUSE] segment-surfaces rate-limited | IP: ${request.headers.get('x-forwarded-for')?.split(',')[0] || 'local'}`);
+    return NextResponse.json({ error: 'Too many requests. Please wait a minute.' }, { status: 429 });
+  }
+  if (isDailyCapReached('segment-hf', 500)) {
+    return NextResponse.json({ error: 'This feature has reached its daily limit. Please try again tomorrow.' }, { status: 503 });
+  }
+
   let formData;
   try {
     formData = await request.formData();
@@ -20,8 +31,9 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Missing photo.' }, { status: 400 });
   }
   const photo = formData.get('photo');
-  if (!photo || typeof photo === 'string') {
-    return NextResponse.json({ error: 'Missing photo.' }, { status: 400 });
+  const imageError = validateImage(photo);
+  if (imageError) {
+    return NextResponse.json({ error: imageError }, { status: 400 });
   }
 
   const buffer = Buffer.from(await photo.arrayBuffer());

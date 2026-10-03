@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { ROOM_ADVISOR_MODEL, ROOM_ADVISOR_MAX_OUTPUT_TOKENS } from '@/constants/advisorConfig.js';
+import { rateLimit } from '@/server/http.js';
+import { isDailyCapReached } from '@/server/dailyCap.js';
+import { validateImage } from '@/server/imageValidation.js';
 
 // Isolated, single-purpose route: takes one uploaded room photo and asks
 // Gemini for a short, KailVarn-relevant interior design read on it. The
@@ -34,6 +37,14 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Room advisor is not configured on the server.' }, { status: 500 });
   }
 
+  if (rateLimit(request, { key: 'analyze-room', max: 5, windowMs: 60_000 })) {
+    console.warn(`[ABUSE] analyze-room rate-limited | IP: ${request.headers.get('x-forwarded-for')?.split(',')[0] || 'local'}`);
+    return NextResponse.json({ error: 'Too many requests. Please wait a minute.' }, { status: 429 });
+  }
+  if (isDailyCapReached('analyze-room', 500)) {
+    return NextResponse.json({ error: 'This feature has reached its daily limit. Please try again tomorrow.' }, { status: 503 });
+  }
+
   let formData;
   try {
     formData = await request.formData();
@@ -41,8 +52,9 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Missing photo.' }, { status: 400 });
   }
   const photo = formData.get('photo');
-  if (!photo || typeof photo === 'string') {
-    return NextResponse.json({ error: 'Missing photo.' }, { status: 400 });
+  const imageError = validateImage(photo);
+  if (imageError) {
+    return NextResponse.json({ error: imageError }, { status: 400 });
   }
 
   const buffer = Buffer.from(await photo.arrayBuffer());

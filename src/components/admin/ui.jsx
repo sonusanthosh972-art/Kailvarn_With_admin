@@ -12,7 +12,7 @@ export function PageHeader({ title, subtitle, actions }) {
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
       <div>
         <h1 className="font-serif text-[30px] lg:text-[36px] leading-tight text-[#0B103B]">{title}</h1>
-        {subtitle && <p className="mt-1.5 text-[14.5px] text-[#6B675F]">{subtitle}</p>}
+        {subtitle && <p className="mt-1.5 text-[14.5px] text-[#57534C]">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2.5">{actions}</div>}
     </div>
@@ -51,13 +51,13 @@ export function Field({ label, error, hint, children, htmlFor, className = '' })
         </label>
       )}
       {children}
-      {error ? <p className="mt-1.5 text-[12.5px] text-[#B3261E]">{error}</p> : hint ? <p className="mt-1.5 text-[12.5px] text-[#6B675F]">{hint}</p> : null}
+      {error ? <p className="mt-1.5 text-[12.5px] text-[#B3261E]">{error}</p> : hint ? <p className="mt-1.5 text-[12.5px] text-[#57534C]">{hint}</p> : null}
     </div>
   );
 }
 
 export const inputClass =
-  'w-full min-h-[44px] rounded-lg border border-[#0B103B]/20 bg-white px-3.5 py-2.5 text-[14.5px] text-[#111] placeholder:text-[#6B675F]/70 outline-none transition-[border-color,box-shadow] focus:border-[#D9A441] focus:shadow-[0_0_0_3px_rgba(242,178,27,0.18)]';
+  'w-full min-h-[44px] rounded-lg border border-[#0B103B]/20 bg-white px-3.5 py-2.5 text-[14.5px] text-[#111] placeholder:text-[#57534C]/70 outline-none transition-[border-color,box-shadow] focus:border-[#D9A441] focus:shadow-[0_0_0_3px_rgba(242,178,27,0.18)]';
 
 export function Card({ className = '', children, ...props }) {
   return (
@@ -72,9 +72,9 @@ const STATUS_STYLES = {
   CONTACTED: 'bg-[#0B103B]/[0.07] text-[#0B103B] border-[#0B103B]/20',
   IN_PROGRESS: 'bg-[#2B5DD8]/10 text-[#1E3F9A] border-[#2B5DD8]/25',
   COMPLETED: 'bg-[#1F7A4D]/10 text-[#16613C] border-[#1F7A4D]/25',
-  CLOSED: 'bg-[#6B675F]/10 text-[#55524B] border-[#6B675F]/25',
+  CLOSED: 'bg-[#57534C]/10 text-[#55524B] border-[#57534C]/25',
   published: 'bg-[#1F7A4D]/10 text-[#16613C] border-[#1F7A4D]/25',
-  draft: 'bg-[#6B675F]/10 text-[#55524B] border-[#6B675F]/25',
+  draft: 'bg-[#57534C]/10 text-[#55524B] border-[#57534C]/25',
 };
 
 export function StatusBadge({ status }) {
@@ -96,7 +96,7 @@ export function EmptyState({ icon: Icon, title, text, action }) {
         </span>
       )}
       <p className="font-serif text-[21px] text-[#0B103B]">{title}</p>
-      {text && <p className="mt-1.5 max-w-[42ch] text-[14px] text-[#6B675F]">{text}</p>}
+      {text && <p className="mt-1.5 max-w-[42ch] text-[14px] text-[#57534C]">{text}</p>}
       {action && <div className="mt-5">{action}</div>}
     </div>
   );
@@ -104,7 +104,7 @@ export function EmptyState({ icon: Icon, title, text, action }) {
 
 export function Spinner({ label = 'Loading…' }) {
   return (
-    <div className="flex items-center justify-center gap-2.5 py-16 text-[14px] text-[#6B675F]" role="status">
+    <div className="flex items-center justify-center gap-2.5 py-16 text-[14px] text-[#57534C]" role="status">
       <Loader2 className="h-5 w-5 animate-spin text-[#D9A441]" aria-hidden="true" /> {label}
     </div>
   );

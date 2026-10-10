@@ -2,6 +2,7 @@ import 'server-only';
 import { z } from 'zod';
 import { ObjectId } from 'mongodb';
 import { OUR_DESIGN_DEFAULTS } from '@/constants/pageContent.js';
+import { ADD_ONS, HOME_TYPES, LOCATIONS, PACKAGES, PROPERTY_STATUS, ROOM_ITEMS } from '@/constants/estimateConfig.js';
 
 // ---- Shared enums (also mirrored for the admin UI in src/constants/adminEnums.js)
 export const DESIGN_CATEGORIES = ['Full Home', 'Living Room', 'Bedroom', 'Kids Bedroom', 'Kitchen', 'Furniture', 'Painting', 'Commercial'];
@@ -39,6 +40,22 @@ export const quoteInput = z.object({
   projectType: optStr(80),
   budget: optStr(80),
   message: optStr(2000),
+});
+
+// Online estimate calculator: the customer's choices plus contact details.
+// Prices are never accepted from the browser; the route recalculates them.
+export const estimateInput = z.object({
+  name: str(120).min(2, 'Enter your name'),
+  phone: z.string().trim().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit mobile number'),
+  email: z.email('Enter a valid email address').max(160),
+  whatsapp: z.boolean().optional().default(true),
+  home: z.enum(HOME_TYPES.map((h) => h.id)),
+  status: z.enum(PROPERTY_STATUS.map((s) => s.id)),
+  city: z.enum(LOCATIONS),
+  locality: optStr(120),
+  package: z.enum(PACKAGES.map((p) => p.id)),
+  rooms: z.object(Object.fromEntries(ROOM_ITEMS.map((i) => [i.id, z.number().int().min(0).max(i.max)]))),
+  addOns: z.object(Object.fromEntries(ADD_ONS.map((a) => [a.id, z.boolean()]))),
 });
 
 export const contactInput = z.object({
@@ -186,7 +203,11 @@ export const PAGE_CONTENT = {
 // ---- Serialisers: never leak internal fields to the client
 // Images either live in B2 (b2Key) or, for portfolio items imported from the
 // old site, point at an external URL (externalUrl, sized on request).
-const sizedExternal = (url, w) => (url.startsWith('https://images.unsplash.com') ? `${url.split('?')[0]}?auto=format&fit=crop&w=${w}&q=78` : url);
+function sizedExternal(url, w) {
+  if (url.startsWith('https://images.unsplash.com')) return `${url.split('?')[0]}?auto=format&fit=crop&w=${w}&q=78`;
+  if (url.startsWith('https://images.pexels.com')) return `${url.split('?')[0]}?auto=compress&cs=tinysrgb&w=${w}`;
+  return url;
+}
 
 export function serializeImage(img, mediaUrl) {
   const external = img.externalUrl || null;

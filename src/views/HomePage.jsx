@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Home, ChefHat, Armchair, Paintbrush as PaintRoller, Users, PencilRuler, FileText, CheckSquare, Umbrella, ShieldCheck, BadgeIndianRupee, PenTool, FileSignature, Hammer, CircleCheck, MessageCircle, Gift, Zap, Phone, Mail, Star, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, ChefHat, Armchair, Paintbrush as PaintRoller, Users, PencilRuler, FileText, CheckSquare, Umbrella, ShieldCheck, BadgeIndianRupee, PenTool, FileSignature, Hammer, CircleCheck, MessageCircle, Gift, Zap, Phone, Mail, Star, ArrowRight } from 'lucide-react';
 
 import { useWhatsAppLink } from '@/hooks/useWhatsAppLink.js';
 import Reveal, { ImageReveal } from '@/components/kv/Reveal.jsx';
 import SectionHeading from '@/components/kv/SectionHeading.jsx';
+import SnapSlider from '@/components/kv/SnapSlider.jsx';
 
 // --- DATA CONSTANTS ---
 
@@ -128,77 +129,41 @@ const projectLayout = [
   'lg:col-span-8',
 ];
 
+// Testimonials as cards in a swipe slider: 1 per view on phones, 2 on
+// tablets, 3 on desktop. Cards stretch to the tallest quote in view.
 function TestimonialSlider() {
-  const [index, setIndex] = useState(0);
-  const count = testimonials.length;
-  const go = (dir) => setIndex((i) => (i + dir + count) % count);
-
   return (
-    <div className="max-w-[880px] mx-auto text-center">
-      <span className="block font-serif text-[110px] leading-[0.6] text-[#F2B21B] mb-8 select-none" aria-hidden="true">&ldquo;</span>
-
-      {/* Every quote sits in the same grid cell, so the block is always as
-          tall as the longest quote — switching never shifts the page. */}
-      <div className="grid" aria-live="polite">
-        {testimonials.map((test, i) => (
-          <figure
-            key={test.author}
-            aria-hidden={i !== index}
-            className={`[grid-area:1/1] transition-[opacity,transform] duration-700 ease-kv-expo ${
-              i === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3 pointer-events-none'
-            }`}
-          >
-            <div className="flex justify-center gap-1 mb-7" role="img" aria-label="Rated 5 out of 5 stars">
+    <SnapSlider label="Client testimonials" autoPlay={6000} trackClassName="items-stretch lg:gap-6">
+      {testimonials.map((test) => (
+        <figure
+          key={test.author}
+          className="w-[86%] sm:w-[calc((100%-20px)/2)] lg:w-[calc((100%-48px)/3)] m-0 flex flex-col bg-white rounded-lg border border-[#0B103B]/10 p-7 lg:p-8 shadow-[0_18px_40px_-30px_rgba(11,16,59,0.35)] transition-[box-shadow,border-color] duration-300 hover:border-[#D9A441]/60 hover:shadow-[0_26px_50px_-30px_rgba(11,16,59,0.45)]"
+        >
+          <div className="flex items-start justify-between mb-5">
+            <span className="font-serif text-[64px] leading-[0.7] text-[#F2B21B] select-none" aria-hidden="true">&ldquo;</span>
+            <div className="flex gap-0.5" role="img" aria-label="Rated 5 out of 5 stars">
               {[1, 2, 3, 4, 5].map((star) => (
-                <Star key={star} className="w-[18px] h-[18px] text-[#F2B21B] fill-[#F2B21B]" aria-hidden="true" />
+                <Star key={star} className="w-4 h-4 text-[#F2B21B] fill-[#F2B21B]" aria-hidden="true" />
               ))}
             </div>
-            <blockquote className="font-serif italic text-[22px] sm:text-[27px] lg:text-[33px] leading-[1.5] text-[#0B103B]">
-              "{test.text}"
-            </blockquote>
-            <figcaption className="mt-9">
-              <span className="block text-[13.5px] font-extrabold uppercase tracking-[0.24em] text-[#0B103B]">{test.author}</span>
-              <span className="block mt-1.5 text-[14px] tracking-[0.06em] text-[#6B675F]">
+          </div>
+          <blockquote className="flex-1 font-serif italic text-[18px] lg:text-[19px] leading-[1.65] text-[#0B103B]">
+            {test.text}
+          </blockquote>
+          <figcaption className="mt-7 pt-5 border-t border-[#0B103B]/10 flex items-center gap-3.5">
+            <span className="w-11 h-11 shrink-0 rounded-full bg-[#0B103B] text-[#F2B21B] flex items-center justify-center font-serif text-[18px]" aria-hidden="true">
+              {test.author.charAt(0)}
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[13px] font-extrabold uppercase tracking-[0.18em] text-[#0B103B]">{test.author}</span>
+              <span className="block mt-0.5 text-[13.5px] text-[#57534C]">
                 {test.location} | {test.service}
               </span>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-
-      <div className="flex items-center justify-center gap-6 mt-12">
-        <button
-          type="button"
-          onClick={() => go(-1)}
-          aria-label="Previous testimonial"
-          className="w-[52px] h-[52px] rounded-full border border-[#0B103B]/25 text-[#0B103B] flex items-center justify-center hover:bg-[#0B103B] hover:text-white hover:border-[#0B103B] transition-colors duration-300"
-        >
-          <ChevronLeft className="w-5 h-5" strokeWidth={1.75} />
-        </button>
-        <div className="flex items-center gap-2.5">
-          {testimonials.map((test, i) => (
-            <button
-              key={test.author}
-              type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Show testimonial from ${test.author}`}
-              aria-current={i === index}
-              className="p-1.5"
-            >
-              <span className={`block h-2 rounded-full transition-all duration-500 ease-kv-expo ${i === index ? 'w-6 bg-[#D9A441]' : 'w-2 bg-[#0B103B]/20'}`} />
-            </button>
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={() => go(1)}
-          aria-label="Next testimonial"
-          className="w-[52px] h-[52px] rounded-full border border-[#0B103B]/25 text-[#0B103B] flex items-center justify-center hover:bg-[#0B103B] hover:text-white hover:border-[#0B103B] transition-colors duration-300"
-        >
-          <ChevronRight className="w-5 h-5" strokeWidth={1.75} />
-        </button>
-      </div>
-    </div>
+            </span>
+          </figcaption>
+        </figure>
+      ))}
+    </SnapSlider>
   );
 }
 
@@ -313,13 +278,18 @@ export default function HomePage() {
             split
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 lg:gap-x-12 gap-y-16">
+          {/* Phones: swipe slider. From md: 2-col grid where cards keep their
+              natural height (items-start) so each button sits right under its
+              list; the right column's stagger is a transform, which doesn't
+              change layout — rows stay evenly spaced. */}
+          <SnapSlider label="Our interior services" trackClassName="items-start md:grid md:grid-cols-2 md:gap-x-8 lg:gap-x-14 md:gap-y-16 lg:gap-y-20 md:pb-20 md:mx-0 md:px-0 md:overflow-visible">
             {services.map((svc, i) => {
               const Icon = svc.icon;
               return (
-                <Reveal key={svc.id} delay={(i % 2) * 0.12} className={i % 2 === 1 ? 'md:mt-20' : ''}>
-                  <article className="group flex flex-col h-full">
-                    <Link href={`/services#${svc.id}`} className="block relative overflow-hidden rounded-md bg-[#0B103B] aspect-[4/3]" tabIndex={-1} aria-hidden="true">
+                <div key={svc.id} className={`w-[86%] sm:w-[68%] md:w-auto ${i % 2 === 1 ? 'md:translate-y-20' : ''}`}>
+                <Reveal delay={(i % 2) * 0.12}>
+                  <article className="group">
+                    <Link href={`/services#${svc.id}`} className="block relative overflow-hidden rounded-md bg-[#0B103B] aspect-[4/3] shadow-[0_24px_50px_-30px_rgba(11,16,59,0.55)]" tabIndex={-1} aria-hidden="true">
                       <img
                         src={sized(svc.img, 1200)}
                         alt=""
@@ -330,15 +300,18 @@ export default function HomePage() {
                         <Icon className="w-[22px] h-[22px] text-[#8A6A1C]" strokeWidth={1.5} />
                       </span>
                     </Link>
-                    <div className="pt-7 flex flex-col flex-1">
-                      <h3 className="font-serif text-[28px] lg:text-[34px] leading-tight text-[#0B103B]">
+                    <div className="pt-6 md:pt-8">
+                      <span className="block text-[11px] font-extrabold uppercase tracking-[0.3em] text-[#8A6A1C] mb-3" aria-hidden="true">
+                        {String(i + 1).padStart(2, '0')} / {String(services.length).padStart(2, '0')}
+                      </span>
+                      <h3 className="font-serif text-[27px] md:text-[30px] lg:text-[36px] leading-[1.12] text-[#0B103B]">
                         <Link href={`/services#${svc.id}`} className="hover:text-[#8A6A1C] transition-colors">{svc.title}</Link>
                       </h3>
-                      <p className="mt-3 text-[15.5px] leading-[1.75] text-[#6B675F] max-w-[34em]">{svc.desc}</p>
-                      <ul className="list-none p-0 mt-5 mb-7 border-t border-[#0B103B]/10">
+                      <p className="mt-4 text-[16px] lg:text-[16.5px] leading-[1.8] text-[#57534C] max-w-[34em]">{svc.desc}</p>
+                      <ul className="list-none p-0 mt-6 border-t border-[#0B103B]/10">
                         {svc.usps.map((usp) => (
-                          <li key={usp} className="flex items-center gap-3 py-3 border-b border-[#0B103B]/10 text-[14px] font-semibold tracking-[0.02em] text-[#0B103B]">
-                            <CircleCheck className="w-[18px] h-[18px] shrink-0 fill-[#F2B21B] text-[#FAFAF7]" aria-hidden="true" />
+                          <li key={usp} className="flex items-center gap-3 py-3.5 border-b border-[#0B103B]/10 text-[15px] font-semibold text-[#0B103B]">
+                            <CircleCheck className="w-[19px] h-[19px] shrink-0 fill-[#F2B21B] text-[#FAFAF7]" aria-hidden="true" />
                             {usp}
                           </li>
                         ))}
@@ -346,7 +319,7 @@ export default function HomePage() {
                       {/* Clear call to action: opens this service's full details on the Services page */}
                       <Link
                         href={`/services#${svc.id}`}
-                        className="btn-outline-dark mt-auto w-full sm:w-auto sm:self-start !min-h-[54px] !px-6 !text-[13.5px] group-hover:border-[#0B103B]"
+                        className="btn-outline-dark mt-8 w-full sm:w-auto !min-h-[54px] !px-6 !text-[13px] group-hover:border-[#0B103B]"
                       >
                         {svc.ctaText}
                         <ArrowRight className="kv-arrow w-[18px] h-[18px] shrink-0 group-hover:translate-x-1" strokeWidth={2} aria-hidden="true" />
@@ -354,9 +327,10 @@ export default function HomePage() {
                     </div>
                   </article>
                 </Reveal>
+                </div>
               );
             })}
-          </div>
+          </SnapSlider>
         </div>
       </section>
 
@@ -372,9 +346,9 @@ export default function HomePage() {
             split
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 lg:auto-rows-[300px] gap-4 lg:gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-12 lg:auto-rows-[300px] gap-3 sm:gap-4 lg:gap-5">
             {recentProjects.map((project, i) => (
-              <Reveal key={project.title} delay={(i % 3) * 0.08} className={`${projectLayout[i % projectLayout.length]} min-h-[280px] sm:min-h-[300px]`}>
+              <Reveal key={project.title} delay={(i % 3) * 0.08} className={`${projectLayout[i % projectLayout.length]} h-[190px] sm:h-[280px] lg:h-auto`}>
                 <figure className="group relative h-full overflow-hidden rounded-md bg-[#11184D] m-0">
                   <img
                     src={sized(project.img, 1200)}
@@ -382,17 +356,17 @@ export default function HomePage() {
                     loading="lazy"
                     className="kv-photo absolute inset-0 w-full h-full object-cover"
                   />
-                  <figcaption className="absolute inset-0 flex flex-col justify-end p-6 lg:p-7 bg-gradient-to-t from-[#070A25]/85 via-[#070A25]/20 to-transparent lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-500 ease-kv-out">
-                    <span className="text-[11px] font-extrabold uppercase tracking-[0.3em] text-[#F2B21B] mb-2">{project.tag}</span>
-                    <span className="font-serif text-[22px] lg:text-[26px] leading-snug text-white">{project.title}</span>
-                    <span className="block mt-3 h-[2px] w-16 bg-[#F2B21B] origin-left lg:scale-x-0 lg:group-hover:scale-x-100 transition-transform duration-500 delay-100 ease-kv-out" aria-hidden="true" />
+                  <figcaption className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6 lg:p-7 bg-gradient-to-t from-[#070A25]/85 via-[#070A25]/20 to-transparent lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-500 ease-kv-out">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.24em] sm:tracking-[0.3em] text-[#F2B21B] mb-1.5 sm:mb-2">{project.tag}</span>
+                    <span className="font-serif text-[16px] sm:text-[22px] lg:text-[26px] leading-snug text-white">{project.title}</span>
+                    <span className="hidden sm:block mt-3 h-[2px] w-16 bg-[#F2B21B] origin-left lg:scale-x-0 lg:group-hover:scale-x-100 transition-transform duration-500 delay-100 ease-kv-out" aria-hidden="true" />
                   </figcaption>
                 </figure>
               </Reveal>
             ))}
           </div>
 
-          <div className="mt-12 lg:mt-14 flex justify-center">
+          <div className="mt-10 lg:mt-14 flex justify-center">
             <Link href="/our-design" className="btn-outline w-full sm:w-auto">
               View All Designs <ArrowRight className="kv-arrow w-4 h-4" />
             </Link>
@@ -402,7 +376,7 @@ export default function HomePage() {
 
       {/* ============ WHY KAILVARN ============ */}
       <section className="kv-section bg-[#FAFAF7]">
-        <div className="kv-wrap grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-14 lg:gap-20 items-start">
+        <div className="kv-wrap grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-4 lg:gap-20 items-start">
           <div className="lg:sticky lg:top-[120px]">
             <SectionHeading
               eyebrow="Our Advantage"
@@ -428,13 +402,13 @@ export default function HomePage() {
             {whyUsData.map((item, i) => {
               const Icon = item.icon;
               return (
-                <Reveal as="li" key={item.title} delay={Math.min(i, 3) * 0.06} y={16} className="grid grid-cols-[56px_1fr] sm:grid-cols-[72px_1fr] gap-5 sm:gap-6 py-8 lg:py-9 border-b border-[#0B103B]/12">
-                  <span className="w-14 h-14 rounded-full border border-[#D9A441]/60 flex items-center justify-center">
+                <Reveal as="li" key={item.title} delay={Math.min(i, 3) * 0.06} y={16} className="grid grid-cols-[48px_1fr] sm:grid-cols-[72px_1fr] gap-4 sm:gap-6 py-6 sm:py-8 lg:py-9 border-b border-[#0B103B]/12">
+                  <span className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#D9A441]/60 flex items-center justify-center">
                     <Icon className="w-6 h-6 text-[#8A6A1C]" strokeWidth={1.5} aria-hidden="true" />
                   </span>
                   <div>
                     <h3 className="font-sans font-extrabold text-[19px] lg:text-[21px] tracking-[0.01em] text-[#0B103B] mb-2">{item.title}</h3>
-                    <p className="text-[15.5px] leading-[1.75] text-[#6B675F] max-w-[34em]">{item.desc}</p>
+                    <p className="text-[16px] leading-[1.8] text-[#57534C] max-w-[34em]">{item.desc}</p>
                   </div>
                 </Reveal>
               );
@@ -466,7 +440,7 @@ export default function HomePage() {
               aria-hidden="true"
             />
 
-            <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-12 relative">
+            <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-10 lg:gap-y-12 relative">
               {processSteps.map((step, i) => {
                 const Icon = step.icon;
                 return (
@@ -480,7 +454,7 @@ export default function HomePage() {
                       <Icon className="w-5 h-5 text-[#D9A441] shrink-0" strokeWidth={1.75} aria-hidden="true" />
                       {step.title}
                     </h3>
-                    <p className="text-[15px] leading-[1.75] text-[#6B675F]">{step.desc}</p>
+                    <p className="text-[15.5px] leading-[1.8] text-[#57534C]">{step.desc}</p>
                   </Reveal>
                 );
               })}

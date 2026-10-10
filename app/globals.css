@@ -25,7 +25,7 @@
     --color-white: 0 0% 100%;
     --color-text: 0 0% 7%; /* ink #111111 */
     --color-subtext: 0 0% 16%; /* ink-2 #2A2A2A */
-    --color-muted: 40 6% 40%; /* taupe #6B675F (5.4:1 on paper) */
+    --color-muted: 40 6% 32%; /* taupe #57534C (7:1 on paper) — body copy people actually read */
     --color-border: 220 5% 87%; /* hairline — navy at 12% on paper */
     --color-green: 142 70% 49%;
     --color-success: 123 46% 33%;
@@ -195,6 +195,28 @@
     color: hsl(var(--color-primary));
   }
   .kv-h2--dark { color: #fff; }
+  /* Centred sub-section heading with a short gold rule under it */
+  .kv-subhead {
+    font-family: var(--font-serif), Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(28px, 3.4vw, 44px);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    text-align: center;
+    color: hsl(var(--color-primary));
+    margin-bottom: 48px;
+  }
+  .kv-subhead::after {
+    content: '';
+    display: block;
+    width: 56px;
+    height: 2px;
+    margin: 20px auto 0;
+    background: hsl(var(--color-accent));
+  }
+  @media (min-width: 1024px) {
+    .kv-subhead { margin-bottom: 56px; }
+  }
   .kv-h1 em, .kv-h2 em, .kv-em {
     font-style: italic;
     color: hsl(var(--color-accent-dark));
@@ -206,16 +228,26 @@
     color: hsl(var(--color-muted));
     max-width: 38em;
   }
+  @media (min-width: 1024px) {
+    .kv-lead { font-size: 18px; }
+  }
   .kv-lead--dark { color: rgba(255, 255, 255, 0.72); }
 
-  /* Buttons — 8px radius, tracked caps, 52px tall. Primary = solid gold,
-     secondary = outline. */
+  /* Buttons — 8px radius, tracked caps, 52px tall.
+     Primary = gold with a glossy top edge and a light sheen that sweeps
+     across on hover. Outline = frosted glass whose colour wipes in from the
+     left on hover. Effects live on ::before (fill wipe) and ::after (sheen),
+     both behind the label thanks to `isolation`. Hover effects only apply
+     on devices that can hover, so taps on phones never leave a stuck state. */
   .kv-btn,
   .btn-primary,
   .btn-gold,
   .btn-outline,
   .btn-outline-dark,
   .btn-navy {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -231,50 +263,136 @@
     text-transform: uppercase;
     line-height: 1.3;
     text-align: center;
-    transition: transform 0.25s var(--ease-out), background-color 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.35s var(--ease-expo), background-color 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.35s var(--ease-out);
   }
+
+  /* Sheen: a soft diagonal band of light parked off the left edge. */
+  .kv-btn::after,
+  .btn-primary::after,
+  .btn-gold::after,
+  .btn-navy::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.55) 48%, rgba(255, 255, 255, 0.15) 56%, transparent 70%);
+    transform: translateX(-120%);
+  }
+  .btn-navy::after {
+    background: linear-gradient(105deg, transparent 30%, rgba(246, 212, 124, 0.28) 48%, rgba(246, 212, 124, 0.08) 56%, transparent 70%);
+  }
+
+  /* Fill wipe for outline buttons: scales in from the left. */
+  .btn-outline::before,
+  .btn-outline-dark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.5s var(--ease-expo);
+  }
+
   .kv-btn:active, .btn-primary:active, .btn-gold:active, .btn-outline:active, .btn-outline-dark:active, .btn-navy:active {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.12s;
   }
+  .kv-btn:focus-visible, .btn-primary:focus-visible, .btn-gold:focus-visible,
+  .btn-outline:focus-visible, .btn-outline-dark:focus-visible, .btn-navy:focus-visible {
+    outline: 2px solid hsl(var(--color-accent));
+    outline-offset: 3px;
+  }
+
+  /* Gold */
   .btn-primary, .btn-gold {
     background-color: hsl(var(--color-accent));
+    background-image: linear-gradient(180deg, #F7C64A 0%, #F2B21B 52%, #E3A10F 100%);
     color: hsl(var(--color-primary));
+    border-color: rgba(176, 124, 12, 0.35);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      inset 0 -2px 0 rgba(120, 80, 0, 0.14),
+      0 6px 16px -8px rgba(217, 164, 65, 0.55);
   }
-  .btn-primary:hover, .btn-gold:hover:not(:disabled) {
-    background-color: hsl(var(--color-accent-dark));
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-cta);
-  }
+
+  /* Glass outline on dark backgrounds -> gold fill */
   .btn-outline {
-    background: transparent;
-    border-color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.05);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border-color: rgba(255, 255, 255, 0.5);
     color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
-  .btn-outline:hover {
-    border-color: hsl(var(--color-accent));
-    color: hsl(var(--color-accent));
-    transform: translateY(-2px);
-  }
+  .btn-outline::before { background: linear-gradient(180deg, #F7C64A 0%, #F2B21B 100%); }
+
+  /* Outline on light backgrounds -> navy fill */
   .btn-outline-dark {
-    background: transparent;
-    border-color: hsl(var(--color-primary) / 0.35);
+    background: rgba(255, 255, 255, 0.6);
+    border-color: hsl(var(--color-primary) / 0.3);
     color: hsl(var(--color-primary));
   }
-  .btn-outline-dark:hover {
-    background: hsl(var(--color-primary));
-    border-color: hsl(var(--color-primary));
-    color: #fff;
-    transform: translateY(-2px);
-  }
+  .btn-outline-dark::before { background: linear-gradient(180deg, #161E5C 0%, #0B103B 100%); }
+
+  /* Navy */
   .btn-navy {
-    background: hsl(var(--color-primary));
+    background-color: hsl(var(--color-primary));
+    background-image: linear-gradient(180deg, #19226A 0%, #0B103B 100%);
     color: #fff;
+    border-color: rgba(246, 212, 124, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 20px -12px rgba(11, 16, 59, 0.7);
   }
-  .btn-navy:hover {
-    background: hsl(var(--color-primary-2));
-    transform: translateY(-2px);
+
+  /* kv-btn takes its colour from utilities (e.g. WhatsApp green); add depth only. */
+  .kv-btn {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -2px 0 rgba(0, 0, 0, 0.1), 0 6px 16px -10px rgba(0, 0, 0, 0.45);
   }
-  .kv-btn:disabled, .btn-primary:disabled, .btn-gold:disabled, .btn-navy:disabled {
+
+  @media (hover: hover) {
+    .kv-btn:hover:not(:disabled), .btn-primary:hover:not(:disabled), .btn-gold:hover:not(:disabled),
+    .btn-outline:hover, .btn-outline-dark:hover, .btn-navy:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+    .kv-btn:hover:not(:disabled)::after, .btn-primary:hover:not(:disabled)::after,
+    .btn-gold:hover:not(:disabled)::after, .btn-navy:hover:not(:disabled)::after {
+      transform: translateX(120%);
+      transition: transform 0.85s var(--ease-out);
+    }
+    .btn-outline:hover::before, .btn-outline-dark:hover::before {
+      transform: scaleX(1);
+      transform-origin: left center;
+    }
+    .btn-primary:hover:not(:disabled), .btn-gold:hover:not(:disabled) {
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -2px 0 rgba(120, 80, 0, 0.14),
+        0 14px 30px -12px rgba(242, 178, 27, 0.75),
+        0 0 0 4px rgba(242, 178, 27, 0.12);
+    }
+    .btn-outline:hover {
+      border-color: hsl(var(--color-accent));
+      color: hsl(var(--color-primary));
+      box-shadow: 0 14px 30px -14px rgba(242, 178, 27, 0.7);
+    }
+    .btn-outline-dark:hover {
+      border-color: hsl(var(--color-primary));
+      color: #fff;
+      box-shadow: 0 14px 30px -16px rgba(11, 16, 59, 0.65);
+    }
+    .btn-navy:hover:not(:disabled) {
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 14px 30px -12px rgba(11, 16, 59, 0.75);
+    }
+    .kv-btn:hover:not(:disabled) {
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.1), 0 14px 28px -12px rgba(0, 0, 0, 0.45);
+    }
+  }
+
+  .kv-btn:disabled, .btn-primary:disabled, .btn-gold:disabled, .btn-navy:disabled,
+  .btn-outline:disabled, .btn-outline-dark:disabled {
     opacity: 0.55;
     cursor: not-allowed;
     transform: none;
@@ -316,6 +434,37 @@
     outline-offset: 6px;
   }
 
+  /* Swipe track for SnapSlider: bleeds to the screen edge on phones so the
+     next card peeks in (a cue that it scrolls). Breakpoint utilities like
+     lg:grid / lg:mx-0 / lg:px-0 turn it back into a normal layout. */
+  .kv-track {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    scroll-padding-left: 20px;
+    scroll-padding-right: 20px;
+    scrollbar-width: none;
+  }
+  .kv-track::-webkit-scrollbar { display: none; }
+  .kv-track > * { flex: none; scroll-snap-align: start; }
+  @media (min-width: 640px) {
+    .kv-track {
+      gap: 20px;
+      margin-left: -32px;
+      margin-right: -32px;
+      padding-left: 32px;
+      padding-right: 32px;
+      scroll-padding-left: 32px;
+      scroll-padding-right: 32px;
+    }
+  }
+
   /* Frosted pill used on top of hero photos */
   .glass-panel {
     background-color: rgba(255, 255, 255, 0.07);
@@ -341,6 +490,8 @@
   .img-zoom-wrap { overflow: hidden; position: relative; }
   .img-zoom-wrap img { transition: transform 1.1s var(--ease-out); }
   .img-zoom-wrap:hover img { transform: scale(1.035); }
+  .hover-lift { transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), border-color 0.35s; }
+  .hover-lift:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
   .card-hover { transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out); }
   .card-hover:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
 
@@ -374,6 +525,7 @@
 @layer utilities {
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .shadow-card { box-shadow: var(--shadow-card); }
   .text-shadow-sm { text-shadow: 0 2px 18px rgba(7, 10, 37, 0.35); }
   /* Kept for markup compatibility — the looping pulse and shimmer were
      removed: decoration that runs forever doesn't earn its place. */
@@ -382,6 +534,10 @@
   /* Hero photograph settling from 1.06 to 1 on load */
   @keyframes kvSettle { from { transform: scale(1.06); } to { transform: scale(1); } }
   .kv-settle { animation: kvSettle 2.2s var(--ease-out) both; }
+
+  /* Success tick popping in after a form is sent */
+  @keyframes kvScaleIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .animate-scale-in { animation: kvScaleIn 0.5s var(--ease-expo) both; }
 
   /* Architectural rule that draws itself (width via transform, no layout) */
   @keyframes kvDraw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
@@ -397,6 +553,17 @@
       animation-iteration-count: 1 !important;
     }
     .kv-btn:hover, .btn-primary:hover, .btn-gold:hover, .btn-outline:hover,
-    .btn-outline-dark:hover, .btn-navy:hover, .card-hover:hover { transform: none; }
+    .btn-outline-dark:hover, .btn-navy:hover, .card-hover:hover, .hover-lift:hover { transform: none; }
+    /* No sweeping sheen or wipe; outline buttons just fill instantly. */
+    .kv-btn::after, .btn-primary::after, .btn-gold::after, .btn-navy::after { display: none; }
+    .btn-outline::before, .btn-outline-dark::before { transition: none; }
   }
+}
+
+/* "Save as PDF" on the estimate result: print only the estimate card. */
+@media print {
+  body:has(#estimate-print) * { visibility: hidden; }
+  #estimate-print, #estimate-print * { visibility: visible; }
+  #estimate-print { position: absolute; inset: 0 auto auto 0; width: 100%; padding: 24px; }
+  #estimate-print * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }

@@ -186,7 +186,7 @@ export default function DesignEditorPage() {
           {/* WALKTHROUGH VIDEO CARD */}
           <Card className="p-5">
             <h2 className="mb-2 font-serif text-[21px] text-[#0B103B]">Walkthrough video</h2>
-            <p className="mb-4 text-[13px] text-[#6B675F]">
+            <p className="mb-4 text-[13px] text-[#57534C]">
               Upload a video walkthrough for this design. If added, clicking this design plays the video full-page. If empty, the site displays its images in the photo lightbox.
             </p>
             <VideoManager
@@ -204,11 +204,11 @@ export default function DesignEditorPage() {
 
           <Card>
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#0B103B]/10 px-5 py-4">
-              <h2 className="font-serif text-[21px] text-[#0B103B]">Images <span className="text-[#6B675F] text-[16px]">({images.length})</span></h2>
-              {images.length > 1 && <p className="text-[12.5px] text-[#6B675F]">Drag the handle (or use the arrows) to reorder. The first image shows first on the site.</p>}
+              <h2 className="font-serif text-[21px] text-[#0B103B]">Images <span className="text-[#57534C] text-[16px]">({images.length})</span></h2>
+              {images.length > 1 && <p className="text-[12.5px] text-[#57534C]">Drag the handle (or use the arrows) to reorder. The first image shows first on the site.</p>}
             </div>
             {images.length === 0 ? (
-              <p className="px-5 py-10 text-center text-[14px] text-[#6B675F]">No images yet — upload some above.</p>
+              <p className="px-5 py-10 text-center text-[14px] text-[#57534C]">No images yet — upload some above.</p>
             ) : (
               <Reorder.Group axis="y" values={images} onReorder={commitOrder} className="divide-y divide-[#0B103B]/[0.07]">
                 {images.map((img, idx) => (
@@ -263,7 +263,7 @@ function ImageRow({ img, idx, count, isCover, onMove, onCover, onDelete, onSaveA
       <button type="button" onPointerDown={(e) => controls.start(e)} className="hidden sm:flex h-10 w-7 cursor-grab touch-none items-center justify-center text-[#0B103B]/35 hover:text-[#0B103B] active:cursor-grabbing" aria-label="Drag to reorder">
         <GripVertical className="h-5 w-5" />
       </button>
-      <span className="w-6 text-center font-serif text-[15px] text-[#6B675F] tabular-nums">{String(idx + 1).padStart(2, '0')}</span>
+      <span className="w-6 text-center font-serif text-[15px] text-[#57534C] tabular-nums">{String(idx + 1).padStart(2, '0')}</span>
       <a href={img.publicUrl} target="_blank" rel="noopener noreferrer" className="relative shrink-0">
         <img src={img.thumbUrl} alt={img.altText} loading="lazy" className="h-16 w-24 rounded-md object-cover bg-[#F5F1E8]" />
         {isCover && <span className="absolute -left-1.5 -top-1.5 flex items-center gap-1 rounded-md bg-[#F2B21B] px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#0B103B]"><Star className="h-3 w-3 fill-current" /> Cover</span>}
@@ -278,8 +278,8 @@ function ImageRow({ img, idx, count, isCover, onMove, onCover, onDelete, onSaveA
           maxLength={300}
           className={`${inputClass} !min-h-[38px] !py-1.5 !text-[13.5px]`}
         />
-        <p className="mt-1 truncate text-[11.5px] text-[#6B675F]">
-          {img.external ? <span className="mr-1 rounded bg-[#0B103B]/[0.07] px-1.5 py-0.5 font-bold text-[#0B103B]" title="Imported from the old website. To replace it, upload a new photo above, set it as cover, then delete this one.">From old site</span> : null}
+        <p className="mt-1 truncate text-[11.5px] text-[#57534C]">
+          {img.external ? <span className="mr-1 rounded bg-[#0B103B]/[0.07] px-1.5 py-0.5 font-bold text-[#0B103B]" title="A stock photo (not uploaded to your storage). To replace it with your own project photo, upload a new photo above, set it as cover, then delete this one.">Stock photo</span> : null}
           {img.fileName}{img.width && img.height ? ` · ${img.width}×${img.height}` : ''}{img.size ? ` · ${formatBytes(img.size)}` : ''}
           {altState === 'saving' && ' · saving…'}{altState === 'saved' && ' · saved ✓'}{altState === 'error' && ' · could not save'}
         </p>

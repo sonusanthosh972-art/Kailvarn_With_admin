@@ -248,7 +248,7 @@ function OurDesignPage() {
           </motion.div>
 
           {mode === 'loading' && (
-            <div className="flex items-center justify-center gap-2 py-20 font-nunito text-[#6B675F]" role="status">
+            <div className="flex items-center justify-center gap-2 py-20 font-nunito text-[#57534C]" role="status">
               <Loader2 className="w-5 h-5 animate-spin text-[#D9A441]" aria-hidden="true" /> Loading designs…
             </div>
           )}
@@ -263,7 +263,7 @@ function OurDesignPage() {
 
           {mode !== 'loading' && filteredItems.length === 0 && (
             <div className="text-center py-20">
-              <p className="font-nunito text-[#6B675F] text-lg">{t.galleryEmptyText}</p>
+              <p className="font-nunito text-[#57534C] text-lg">{t.galleryEmptyText}</p>
             </div>
           )}
         </div>

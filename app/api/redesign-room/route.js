@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { NextResponse } from 'next/server';
+import { recordGeminiUsage } from '@/server/aiUsage.js';
 import { ROOM_REDESIGN_MODEL, ROOM_REDESIGN_PROMPT } from '@/constants/redesignConfig.js';
 import { REDESIGN_STYLES } from '@/constants/redesignStyles.js';
 import { rateLimit } from '@/server/http.js';
@@ -136,6 +137,7 @@ export async function POST(request) {
   }
 
   const json = await geminiRes.json();
+  await recordGeminiUsage('room-redesign', ROOM_REDESIGN_MODEL, json);
   const parts = json?.candidates?.[0]?.content?.parts || [];
   const imagePart = parts.find((p) => p.inlineData || p.inline_data);
   const image = imagePart?.inlineData || imagePart?.inline_data;

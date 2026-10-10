@@ -196,7 +196,7 @@ export default function VideoManager({ projectId, currentVideoUrl, onVideoUpdate
               </Button>
             </div>
           </div>
-          <p className="text-[12px] text-[#6B675F]">
+          <p className="text-[12px] text-[#57534C]">
             This design has an active video. When clicked on the site, it will play the video.
           </p>
         </div>
@@ -235,10 +235,10 @@ export default function VideoManager({ projectId, currentVideoUrl, onVideoUpdate
               <p className="text-[14px] font-bold text-[#0B103B]">
                 {uploading ? `Uploading to storage… ${Math.round(progress * 100)}%` : 'Upload Walkthrough Video'}
               </p>
-              <p className="text-[12px] text-[#6B675F] mt-0.5">
+              <p className="text-[12px] text-[#57534C] mt-0.5">
                 Drag and drop your video file here, or browse from computer.
               </p>
-              <p className="text-[11px] text-[#6B675F]/75 mt-0.5">
+              <p className="text-[11px] text-[#57534C]/75 mt-0.5">
                 Supports MP4, WebM, MOV (up to 120 MB). Please compress before uploading —
                 MP4 (H.264) plays back most reliably.
               </p>

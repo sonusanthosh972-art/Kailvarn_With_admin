@@ -42,7 +42,7 @@ export default {
           DEFAULT: "#111111",
           2: "#2A2A2A",
         },
-        taupe: "#6B675F",
+        taupe: "#57534C",
         hairline: "rgba(11,16,59,0.12)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

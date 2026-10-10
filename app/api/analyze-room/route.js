@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { recordGeminiUsage } from '@/server/aiUsage.js';
 import { ROOM_ADVISOR_MODEL, ROOM_ADVISOR_MAX_OUTPUT_TOKENS } from '@/constants/advisorConfig.js';
 import { rateLimit } from '@/server/http.js';
 import { isDailyCapReached } from '@/server/dailyCap.js';
@@ -91,6 +92,7 @@ export async function POST(request) {
   }
 
   const json = await geminiRes.json();
+  await recordGeminiUsage('room-advisor', ROOM_ADVISOR_MODEL, json);
   const text = json?.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') || '';
   const parsed = parseAdvisorText(text);
 

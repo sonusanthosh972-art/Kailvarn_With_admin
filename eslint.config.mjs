@@ -50,5 +50,5 @@ export default [
 			'import/no-cycle': 'off', // AI rarely makes this error, and the rule is very slow to run
 		},
 	},
-	{ files: ['tools/**/*.js', 'tailwind.config.js', 'next.config.mjs', 'postcss.config.js', 'app/api/**/*.js', 'instrumentation.js', 'src/server/**/*.js', 'proxy.js'], languageOptions: { globals: globals.node } },
+	{ files: ['tools/**/*.js', 'tailwind.config.js', 'next.config.mjs', 'postcss.config.js', 'app/api/**/*.js', 'instrumentation.js', 'src/server/**/*.js', 'proxy.js', 'app/admin/(panel)/ai-usage/**/*.jsx'], languageOptions: { globals: globals.node } },
 ];

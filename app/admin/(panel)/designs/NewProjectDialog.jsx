@@ -43,7 +43,7 @@ export default function NewProjectDialog({ open, onClose, onCreated }) {
         <Field label="Walkthrough video URL (optional)" htmlFor="np-video" hint="e.g. /videos/living-room.mp4 (or leave blank for category video)">
           <input id="np-video" value={form.videoUrl} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })} className={inputClass} maxLength={500} placeholder="/videos/living-room.mp4" />
         </Field>
-        <p className="text-[13px] text-[#6B675F]">It starts as a draft — add images, then publish it when ready.</p>
+        <p className="text-[13px] text-[#57534C]">It starts as a draft — add images, then publish it when ready.</p>
         {error && <Alert>{error}</Alert>}
       </form>
     </Dialog>

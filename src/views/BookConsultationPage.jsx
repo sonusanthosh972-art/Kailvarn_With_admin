@@ -101,7 +101,7 @@ function BookConsultationPage() {
                         <CalendarDays className="w-6 h-6 text-[#D9A441]" />
                       </div>
                       <h2 className="font-playfair font-medium text-[28px] text-[#0B103B] mb-2 tracking-[-0.015em] leading-[1.12]">Schedule Your Free Consultation</h2>
-                      <p className="font-nunito text-[15px] text-[#6B675F]">
+                      <p className="font-nunito text-[15px] text-[#57534C]">
                         Select a time that works for you, and we'll confirm your appointment shortly.
                       </p>
                     </div>
@@ -112,7 +112,7 @@ function BookConsultationPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Full Name */}
                         <div>
-                          <label htmlFor="bc-name" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Full Name *</label>
+                          <label htmlFor="bc-name" className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[6px]">Full Name *</label>
                           <input id="bc-name" type="text" autoComplete="name" aria-invalid={errors.name ? true : undefined} aria-describedby={errors.name ? "bc-name-error" : undefined} placeholder="e.g. Rahul Patel" {...register("name", {
                         required: "Name is required",
                         minLength: {
@@ -125,9 +125,9 @@ function BookConsultationPage() {
 
                         {/* Phone Number */}
                         <div>
-                          <label htmlFor="bc-phone" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Mobile Number *</label>
+                          <label htmlFor="bc-phone" className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[6px]">Mobile Number *</label>
                           <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 font-nunito text-[15px] text-[#6B675F]">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 font-nunito text-[15px] text-[#57534C]">
                               +91 |
                             </span>
                             <input id="bc-phone" type="tel" inputMode="numeric" autoComplete="tel-national" aria-invalid={errors.phone ? true : undefined} aria-describedby={errors.phone ? "bc-phone-error" : undefined} placeholder="10-digit mobile number" {...register("phone", {
@@ -145,7 +145,7 @@ function BookConsultationPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Email */}
                         <div>
-                          <label htmlFor="bc-email" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Email Address</label>
+                          <label htmlFor="bc-email" className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[6px]">Email Address</label>
                           <input id="bc-email" type="email" autoComplete="email" aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? "bc-email-error" : undefined} placeholder="e.g. name@example.com" {...register("email", {
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -157,7 +157,7 @@ function BookConsultationPage() {
 
                         {/* City */}
                         <div>
-                          <label htmlFor="bc-city" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">City / Locality *</label>
+                          <label htmlFor="bc-city" className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[6px]">City / Locality *</label>
                           <input id="bc-city" type="text" autoComplete="address-level2" aria-invalid={errors.city ? true : undefined} aria-describedby={errors.city ? "bc-city-error" : undefined} placeholder="e.g. Silvassa, Vapi..." {...register("city", {
                         required: "City is required"
                       })} className={`form-input-base ${errors.city ? 'form-input-error' : 'form-input-focus'}`} />
@@ -168,7 +168,7 @@ function BookConsultationPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Service Required */}
                         <div>
-                          <label htmlFor="bc-service" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Service Interested In *</label>
+                          <label htmlFor="bc-service" className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[6px]">Service Interested In *</label>
                           <select id="bc-service" aria-invalid={errors.service ? true : undefined} aria-describedby={errors.service ? "bc-service-error" : undefined} {...register("service", {
                         required: "Please select a service"
                       })} className={`form-input-base appearance-none ${errors.service ? 'form-input-error' : 'form-input-focus'}`} style={{
@@ -188,7 +188,7 @@ function BookConsultationPage() {
 
                         {/* Preferred Date/Time */}
                         <div>
-                          <label htmlFor="bc-datetime" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Preferred Date/Time *</label>
+                          <label htmlFor="bc-datetime" className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[6px]">Preferred Date/Time *</label>
                           <input id="bc-datetime" type="datetime-local" min={minDateTime || undefined} aria-invalid={errors.datetime ? true : undefined} aria-describedby={errors.datetime ? "bc-datetime-error" : undefined} {...register("datetime", {
                         required: "Please select a date and time",
                         // A datetime-local value has no zone, so new Date() reads it as local time.
@@ -200,14 +200,14 @@ function BookConsultationPage() {
 
                       {/* Project Type */}
                       <div>
-                        <span id="bc-projectType-label" className="block font-nunito font-semibold text-[13px] text-[#333] mb-[8px]">Project Type *</span>
+                        <span id="bc-projectType-label" className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[8px]">Project Type *</span>
                         <div role="radiogroup" aria-labelledby="bc-projectType-label" className="flex flex-wrap gap-6">
                           {['Residential', 'Commercial'].map(method => <label key={method} className="flex items-center gap-2 cursor-pointer group">
                               <div className="relative flex items-center justify-center">
                                 <input type="radio" value={method} {...register("projectType")} className="peer appearance-none w-[18px] h-[18px] border-[1.5px] border-[#D9A441] rounded-full checked:bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-[#F2B21B]/30 transition-all" />
                                 <div className="absolute w-2.5 h-2.5 bg-[#F2B21B] rounded-full opacity-0 peer-checked:opacity-100 transition-opacity"></div>
                               </div>
-                              <span className="font-nunito text-[15px] text-[#6B675F] group-hover:text-[#111111] transition-colors">{method}</span>
+                              <span className="font-nunito text-[15px] text-[#57534C] group-hover:text-[#111111] transition-colors">{method}</span>
                             </label>)}
                         </div>
                       </div>
@@ -215,7 +215,7 @@ function BookConsultationPage() {
                       {/* Additional Requirements */}
                       <div>
                         <div className="flex justify-between items-end mb-[6px]">
-                          <label htmlFor="bc-message" className="block font-nunito font-semibold text-[13px] text-[#333]">Message or Requirement (Optional)</label>
+                          <label htmlFor="bc-message" className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A]">Message or Requirement (Optional)</label>
                           <span className="font-nunito text-[11px] text-[#999]">{messageValue.length}/500</span>
                         </div>
                         <textarea id="bc-message" aria-invalid={errors.message ? true : undefined} aria-describedby={errors.message ? "bc-message-error" : undefined} rows={4} placeholder="Tell us about your space, preferred style, or specific questions..." {...register("message", {
@@ -233,7 +233,7 @@ function BookConsultationPage() {
                           {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" /> Booking...</> : '📅 Book My Consultation'}
                         </button>
                         {submitError && <p role="alert" className="mt-4 rounded-lg border border-[#C62828]/30 bg-[#C62828]/[0.06] px-4 py-3 font-nunito text-[14px] text-[#8C1D18]">{submitError}</p>}
-                        <p className="flex items-center justify-center gap-1.5 mt-4 font-nunito text-[12px] text-[#6B675F]">
+                        <p className="flex items-center justify-center gap-1.5 mt-4 font-nunito text-[12px] text-[#57534C]">
                           <Lock className="w-[12px] h-[12px]" /> Your details are safe and confidential.
                         </p>
                       </div>
@@ -249,7 +249,7 @@ function BookConsultationPage() {
                       <CheckCircle className="w-[40px] h-[40px] text-[#25D366]" />
                     </div>
                     <h3 className="font-playfair font-medium text-[28px] text-[#0B103B] mb-4">Your Consultation is Booked! 🎉</h3>
-                    <p className="font-nunito text-[16px] text-[#6B675F] mb-8 max-w-[400px] leading-relaxed">
+                    <p className="font-nunito text-[16px] text-[#57534C] mb-8 max-w-[400px] leading-relaxed">
                       Thank you, <strong className="text-[#111111]">{submittedData.name.split(' ')[0]}</strong>. We have received your booking for a <strong className="text-[#111111]">{submittedData.projectType}</strong> consultation on <strong className="text-[#111111]">{new Date(submittedData.datetime).toLocaleDateString('en-IN', {
                       weekday: 'short',
                       month: 'short',
@@ -263,17 +263,17 @@ function BookConsultationPage() {
                       <h4 className="font-nunito font-bold text-[15px] text-[#111111] mb-4 uppercase tracking-wider">What happens next?</h4>
                       <ul className="space-y-4">
                         <li className="flex items-start gap-3">
-                          <span className="w-6 h-6 rounded-full bg-[#F2B21B]/20 text-[#D9A441] flex items-center justify-center font-bold text-[12px] shrink-0 mt-0.5">1</span> 
-                          <span className="font-nunito text-[15px] text-[#6B675F]">Our expert will review your requirement for <strong className="text-[#333]">{submittedData.service}</strong>.</span>
+                          <span className="w-6 h-6 rounded-full bg-[#F2B21B]/20 text-[#8A6A1C] flex items-center justify-center font-bold text-[12px] shrink-0 mt-0.5">1</span> 
+                          <span className="font-nunito text-[15px] text-[#57534C]">Our expert will review your requirement for <strong className="text-[#333]">{submittedData.service}</strong>.</span>
                         </li>
                         <li className="flex items-start gap-3">
-                          <span className="w-6 h-6 rounded-full bg-[#F2B21B]/20 text-[#D9A441] flex items-center justify-center font-bold text-[12px] shrink-0 mt-0.5">2</span> 
-                          <span className="font-nunito text-[15px] text-[#6B675F]">We will call you on <strong className="text-[#333]">{submittedData.phone}</strong> to confirm the exact time and location.</span>
+                          <span className="w-6 h-6 rounded-full bg-[#F2B21B]/20 text-[#8A6A1C] flex items-center justify-center font-bold text-[12px] shrink-0 mt-0.5">2</span> 
+                          <span className="font-nunito text-[15px] text-[#57534C]">We will call you on <strong className="text-[#333]">{submittedData.phone}</strong> to confirm the exact time and location.</span>
                         </li>
                       </ul>
                     </div>
 
-                    <a href={`https://wa.me/918460150027?text=Hi, I just booked a consultation. My name is ${submittedData.name}.`} target="_blank" rel="noreferrer" className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[16px] px-8 py-[16px] rounded-lg transition-transform active:scale-[0.98] shadow-md flex items-center justify-center gap-2">
+                    <a href={`https://wa.me/918460150027?text=Hi, I just booked a consultation. My name is ${submittedData.name}.`} target="_blank" rel="noreferrer" className="kv-btn w-full sm:w-auto bg-[#25D366] hover:bg-[#1FB457] text-white">
                       <MessageCircle className="w-5 h-5" /> Say Hi on WhatsApp
                     </a>
                   </motion.div>}

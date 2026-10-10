@@ -146,7 +146,7 @@ function ContactUsPage() {
             }
           }}>
               <h2 className="font-playfair font-medium text-[28px] text-[#0B103B] mb-2 tracking-[-0.015em] leading-[1.12]">Contact Information</h2>
-              <p className="font-nunito text-[15px] text-[#6B675F] mb-8">Reach us through any channel — we respond quickly.</p>
+              <p className="font-nunito text-[15px] text-[#57534C] mb-8">Reach us through any channel — we respond quickly.</p>
               
               <div className="space-y-6 mb-10">
                 {contactItems.map((item, idx) => {
@@ -156,9 +156,9 @@ function ContactUsPage() {
                         <Icon className="w-[20px] h-[20px] text-[#D9A441] group-hover:text-white transition-colors duration-300" />
                       </div>
                       <div>
-                        <div className="font-nunito font-semibold text-[11px] tracking-[1.5px] text-[#D9A441] uppercase mb-1">{item.label}</div>
+                        <div className="font-nunito font-extrabold text-[11px] tracking-[0.2em] text-[#8A6A1C] uppercase mb-1">{item.label}</div>
                         <div className="font-nunito font-semibold text-[16px] text-[#111111] mb-0.5">{item.value}</div>
-                        <div className="font-nunito text-[13px] text-[#6B675F]">{item.note}</div>
+                        <div className="font-nunito text-[14px] text-[#57534C]">{item.note}</div>
                       </div>
                     </div>;
                 return item.link ? <a key={idx} href={item.link} target={item.link.startsWith('http') ? '_blank' : '_self'} rel="noreferrer" className="block outline-none focus-visible:ring-2 focus-visible:ring-[#F2B21B] rounded-lg">
@@ -168,18 +168,21 @@ function ContactUsPage() {
               </div>
 
               <div className="pt-6 border-t border-[#0B103B]/10">
-                <h3 className="font-nunito font-semibold text-[13px] text-[#6B675F] mb-4 uppercase tracking-wider">Follow Us</h3>
+                <h3 className="font-nunito font-semibold text-[13px] text-[#57534C] mb-4 uppercase tracking-wider">Follow Us</h3>
                 <div className="flex gap-3 mb-8">
                   {[{
                   icon: Instagram,
+                  label: "Instagram",
                   link: "https://instagram.com"
                 }, {
                   icon: Facebook,
+                  label: "Facebook",
                   link: "https://facebook.com"
                 }, {
                   icon: Linkedin,
+                  label: "LinkedIn",
                   link: "https://linkedin.com"
-                }].map((social, i) => <a key={i} href={social.link} target="_blank" rel="noreferrer" className="w-[40px] h-[40px] rounded-full bg-[#F5F1E8] flex items-center justify-center text-[#6B675F] hover:bg-[#F2B21B] hover:text-[#0B103B] transition-colors duration-300">
+                }].map((social, i) => <a key={i} href={social.link} target="_blank" rel="noreferrer" aria-label={social.label} className="w-[40px] h-[40px] rounded-full bg-[#F5F1E8] flex items-center justify-center text-[#57534C] hover:bg-[#F2B21B] hover:text-[#0B103B] transition-colors duration-300">
                       <social.icon className="w-[18px] h-[18px]" />
                     </a>)}
                 </div>
@@ -188,7 +191,7 @@ function ContactUsPage() {
                   <a href="tel:+918460150027" className="btn-primary w-full">
                     <Phone className="w-[18px] h-[18px]" /> Call Now
                   </a>
-                  <a href="https://wa.me/918460150027" target="_blank" rel="noreferrer" className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] py-3 rounded-lg flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
+                  <a href="https://wa.me/918460150027" target="_blank" rel="noreferrer" className="kv-btn w-full bg-[#25D366] hover:bg-[#1FB457] text-white">
                     <MessageCircle className="w-[18px] h-[18px]" /> WhatsApp Now
                   </a>
                 </div>
@@ -221,15 +224,15 @@ function ContactUsPage() {
                   opacity: 0
                 }}>
                       <h3 className="font-playfair font-medium text-[26px] text-[#0B103B] mb-2">Send Us an Enquiry</h3>
-                      <p className="font-nunito text-[14.5px] text-[#6B675F] mb-8">Fill in the details and our team will get back to you within a few hours.</p>
+                      <p className="font-nunito text-[14.5px] text-[#57534C] mb-8">Fill in the details and our team will get back to you within a few hours.</p>
 
                       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 relative">
                         {/* Spam trap: hidden from people, bots fill it in */}
                         <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[10000px] h-px w-px opacity-0" {...register("website")} />
                         {/* Name */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Your Full Name *</label>
-                          <input type="text" placeholder="e.g. Rahul Patel" {...register("name", {
+                          <label className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[7px]" htmlFor="ct-name">Your Full Name *</label>
+                          <input type="text" placeholder="e.g. Rahul Patel" id="ct-name" {...register("name", {
                         required: "Name is required",
                         minLength: {
                           value: 2,
@@ -241,12 +244,12 @@ function ContactUsPage() {
 
                         {/* Phone */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Phone Number *</label>
+                          <label className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[7px]" htmlFor="ct-phone">Phone Number *</label>
                           <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 font-nunito text-[15px] text-[#6B675F] flex items-center gap-1.5">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 font-nunito text-[15px] text-[#57534C] flex items-center gap-1.5">
                               +91 |
                             </span>
-                            <input type="tel" placeholder="e.g. 8460150027" {...register("phone", {
+                            <input type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="e.g. 8460150027" id="ct-phone" {...register("phone", {
                           required: "Phone number is required",
                           pattern: {
                             value: /^[6-9]\d{9}$/,
@@ -259,8 +262,8 @@ function ContactUsPage() {
 
                         {/* Email */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Email Address</label>
-                          <input type="email" placeholder="e.g. kailvarn0@gmail.com" {...register("email", {
+                          <label className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[7px]" htmlFor="ct-email">Email Address</label>
+                          <input type="email" placeholder="e.g. kailvarn0@gmail.com" id="ct-email" {...register("email", {
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                           message: "Please enter a valid email address"
@@ -271,8 +274,8 @@ function ContactUsPage() {
 
                         {/* City */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Your City / Locality *</label>
-                          <input type="text" placeholder="e.g. Silvassa, Vapi, Bhilad..." {...register("city", {
+                          <label className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[7px]" htmlFor="ct-city">Your City / Locality *</label>
+                          <input type="text" placeholder="e.g. Silvassa, Vapi, Bhilad..." id="ct-city" {...register("city", {
                         required: "City / Locality is required"
                       })} className={`w-full bg-white border-[1.5px] ${errors.city ? 'border-[#E53935] focus:ring-[#E53935]/15' : 'border-[#0B103B]/10 focus:border-[#D9A441] focus:ring-[#F2B21B]/15'} rounded-[8px] px-4 py-3 font-nunito text-[15px] text-[#111111] placeholder:text-[#999] outline-none focus:ring-[3px] transition-all`} />
                           {errors.city && <p className="text-[#E53935] font-nunito text-[12px] mt-1.5">{errors.city.message}</p>}
@@ -280,8 +283,8 @@ function ContactUsPage() {
 
                         {/* Service */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Service You're Interested In *</label>
-                          <select {...register("service", {
+                          <label className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[7px]" htmlFor="ct-service">Service You're Interested In *</label>
+                          <select id="ct-service" {...register("service", {
                         required: "Please select a service"
                       })} className={`w-full bg-white border-[1.5px] ${errors.service ? 'border-[#E53935] focus:ring-[#E53935]/15' : 'border-[#0B103B]/10 focus:border-[#D9A441] focus:ring-[#F2B21B]/15'} rounded-[8px] px-4 py-3 font-nunito text-[15px] text-[#111111] outline-none focus:ring-[3px] transition-all appearance-none`} style={{
                         backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
@@ -302,8 +305,8 @@ function ContactUsPage() {
 
                         {/* Message */}
                         <div>
-                          <label className="block font-nunito font-semibold text-[13px] text-[#333] mb-[6px]">Your Message or Question</label>
-                          <textarea rows={4} placeholder="Tell us about your space, any specific requirements, or questions you have..." {...register("message", {
+                          <label className="block font-nunito font-semibold text-[13.5px] text-[#2A2A2A] mb-[7px]" htmlFor="ct-message">Your Message or Question</label>
+                          <textarea rows={4} placeholder="Tell us about your space, any specific requirements, or questions you have..." id="ct-message" {...register("message", {
                         maxLength: {
                           value: 500,
                           message: "Maximum 500 characters allowed"
@@ -318,7 +321,7 @@ function ContactUsPage() {
                             {isSubmitting ? 'Sending...' : 'Send My Enquiry 📩'}
                           </button>
                           {submitError && <p role="alert" className="mt-4 rounded-lg border border-[#C62828]/30 bg-[#C62828]/[0.06] px-4 py-3 font-nunito text-[14px] text-[#8C1D18]">{submitError}</p>}
-                          <p className="flex items-center justify-center gap-1.5 mt-4 font-nunito text-[12px] text-[#6B675F]">
+                          <p className="flex items-center justify-center gap-1.5 mt-4 font-nunito text-[12px] text-[#57534C]">
                             <Lock className="w-[12px] h-[12px]" /> Your information is safe with us. We never share your details.
                           </p>
                         </div>
@@ -343,10 +346,10 @@ function ContactUsPage() {
                         <CheckCircle className="w-[80px] h-[80px] text-green-500 mb-6" />
                       </motion.div>
                       <h4 className="font-playfair font-bold text-[24px] text-[#111111] mb-3">Enquiry Sent Successfully!</h4>
-                      <p className="font-nunito text-[16px] text-[#6B675F] mb-8 max-w-[300px] leading-relaxed">
+                      <p className="font-nunito text-[16px] text-[#57534C] mb-8 max-w-[300px] leading-relaxed">
                         Thank you for reaching out! Our team will call or WhatsApp you within a few hours to discuss your project.
                       </p>
-                      <a href="https://wa.me/918460150027" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] px-8 py-3.5 rounded-lg transition-transform active:scale-[0.98] shadow-md">
+                      <a href="https://wa.me/918460150027" target="_blank" rel="noreferrer" className="kv-btn bg-[#25D366] hover:bg-[#1FB457] text-white">
                         <MessageCircleIcon className="w-5 h-5" /> WhatsApp Us for Faster Reply
                       </a>
                     </motion.div>}
@@ -360,13 +363,13 @@ function ContactUsPage() {
       {/* 3. GOOGLE MAP SECTION */}
       <section className="pb-[88px] lg:pb-[128px] bg-[#FAFAF7]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h4 className="font-nunito font-bold text-[20px] text-[#111111] text-center mb-6">We Are Here — Silvassa & Vapi</h4>
+          <h4 className="font-playfair font-medium text-[26px] md:text-[32px] text-[#0B103B] text-center mb-8">We Are Here — Silvassa & Vapi</h4>
           <div className="h-[280px] md:h-[380px] rounded-lg overflow-hidden shadow-card border border-[#0B103B]/10 mb-4">
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d119066.41709392634!2d72.90472!3d20.273!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be0dd4a9c5a1b8f%3A0x3b3b3b3b3b3b3b3b!2sSilvassa%2C%20Dadra%20and%20Nagar%20Haveli!5e0!3m2!1sen!2sin!4v1234567890" width="100%" height="100%" style={{
             border: 0
           }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="KailVarn Location Map"></iframe>
           </div>
-          <p className="font-nunito text-[14px] text-[#6B675F] text-center">
+          <p className="font-nunito text-[14px] text-[#57534C] text-center">
             Also serving: Daman | Bhilad | Kachigam | Surangi | Dunetha | Nani Daman | surrounding 50km
           </p>
         </div>
@@ -380,7 +383,7 @@ function ContactUsPage() {
         }} variants={scrollVariants} className="text-center mb-12">
             <span className="kv-eyebrow kv-eyebrow--center">Frequently Asked Questions</span>
             <h2 className="font-playfair font-medium text-[34px] md:text-[44px] lg:text-[54px] text-[#0B103B] mb-4 tracking-[-0.015em] leading-[1.12]">Answers to Common Questions</h2>
-            <p className="font-nunito text-[16px] md:text-[17px] text-[#6B675F]">
+            <p className="font-nunito text-[16px] md:text-[17px] text-[#57534C]">
               Have a question? Most answers are right here. If not — just call or WhatsApp us.
             </p>
           </motion.div>
@@ -399,7 +402,7 @@ function ContactUsPage() {
             delay: idx * 0.05
           }} className="bg-white rounded-lg shadow-sm border border-[#0B103B]/10 overflow-hidden">
                 <button onClick={() => setOpenFaqIndex(openFaqIndex === idx ? -1 : idx)} className="w-full px-[24px] py-[20px] flex items-center justify-between bg-white hover:bg-gray-50/50 transition-colors text-left outline-none focus-visible:ring-2 focus-visible:ring-[#F2B21B]">
-                  <span className="font-nunito font-semibold text-[15.5px] text-[#111111] pr-4 leading-snug">{faq.q}</span>
+                  <span className="font-nunito font-bold text-[16px] text-[#0B103B] pr-4 leading-snug">{faq.q}</span>
                   <div className="shrink-0 text-[#D9A441]">
                     {openFaqIndex === idx ? <ChevronUp className="w-[20px] h-[20px]" /> : <ChevronDown className="w-[20px] h-[20px]" />}
                   </div>
@@ -420,7 +423,7 @@ function ContactUsPage() {
               }}>
                       <div className="px-[24px] pb-[20px] pt-1">
                         <div className="w-full h-[1px] bg-gray-100 mb-4"></div>
-                        <p className="font-nunito text-[15px] text-[#6B675F] leading-[1.7]">
+                        <p className="font-nunito text-[15.5px] text-[#57534C] leading-[1.8]">
                           {faq.a}
                         </p>
                       </div>
@@ -447,7 +450,7 @@ function ContactUsPage() {
               <a href="tel:+918460150027" className="btn-outline w-full sm:w-auto">
                 <Phone className="w-[18px] h-[18px]" /> Call 8460150027
               </a>
-              <a href="https://wa.me/918460150027?text=Hi KailVarn, I want to enquire about interior services" target="_blank" rel="noreferrer" className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20bd5a] text-white font-nunito font-bold text-[15px] px-8 py-3.5 rounded-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+              <a href="https://wa.me/918460150027?text=Hi KailVarn, I want to enquire about interior services" target="_blank" rel="noreferrer" className="kv-btn w-full sm:w-auto bg-[#25D366] hover:bg-[#1FB457] text-white">
                 <MessageCircleIcon className="w-[18px] h-[18px]" /> WhatsApp Now
               </a>
               <Link href="/book-consultation" className="btn-primary w-full sm:w-auto">

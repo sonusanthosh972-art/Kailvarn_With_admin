@@ -143,7 +143,7 @@ export default function Uploader({ projectId, defaultAlt = '', onUploaded, disab
       >
         <UploadCloud className={`h-10 w-10 ${dragging ? 'text-[#D9A441]' : 'text-[#0B103B]/40'}`} strokeWidth={1.4} aria-hidden="true" />
         <p className="mt-3 font-serif text-[19px] text-[#0B103B]">Drag & drop images here</p>
-        <p className="mt-1 text-[13px] text-[#6B675F]">JPG, PNG or WEBP · optimised to WebP in your browser before upload</p>
+        <p className="mt-1 text-[13px] text-[#57534C]">JPG, PNG or WEBP · optimised to WebP in your browser before upload</p>
         <button
           type="button"
           disabled={disabled}
@@ -163,7 +163,7 @@ export default function Uploader({ projectId, defaultAlt = '', onUploaded, disab
 
       {items.length > 0 && (
         <div className="mt-5">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-[13px] text-[#6B675F]">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-[13px] text-[#57534C]">
             <span>
               {counts.done || 0} of {items.length} uploaded
               {counts.error ? ` · ${counts.error} failed` : ''}
@@ -187,12 +187,12 @@ export default function Uploader({ projectId, defaultAlt = '', onUploaded, disab
                     <div className="flex items-start justify-between gap-2">
                       <p className="truncate text-[13.5px] font-semibold text-[#0B103B]" title={it.file.name}>{it.file.name}</p>
                       {it.status !== 'uploading' && it.status !== 'processing' && it.status !== 'optimising' && (
-                        <button type="button" onClick={() => remove(it.id)} aria-label={`Remove ${it.file.name}`} className="-mr-1 -mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#6B675F] hover:bg-[#0B103B]/[0.06]">
+                        <button type="button" onClick={() => remove(it.id)} aria-label={`Remove ${it.file.name}`} className="-mr-1 -mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#57534C] hover:bg-[#0B103B]/[0.06]">
                           <X className="h-4 w-4" />
                         </button>
                       )}
                     </div>
-                    <p className="text-[12px] text-[#6B675F]">
+                    <p className="text-[12px] text-[#57534C]">
                       {formatBytes(it.file.size)}
                       {it.optimisedSize && it.optimisedSize < it.file.size ? ` → ${formatBytes(it.optimisedSize)}` : ''}
                     </p>

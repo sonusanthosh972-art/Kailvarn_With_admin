@@ -41,6 +41,7 @@ async function ensureIndexes(db) {
     db.collection('projects').createIndex({ status: 1, category: 1, publishedAt: -1 }),
     db.collection('images').createIndex({ projectId: 1, order: 1 }),
     db.collection('images').createIndex({ b2Key: 1 }, { unique: true }),
+    db.collection('ai_usage').createIndex({ at: -1 }),
     ...['quotes', 'consultations', 'contacts'].map((c) =>
       db.collection(c).createIndex({ status: 1, createdAt: -1 })
     ),

@@ -25,7 +25,7 @@ export default async function SettingsPage() {
           <dl className="divide-y divide-[#0B103B]/[0.07]">
             {rows.map(([k, v]) => (
               <div key={k} className="grid grid-cols-1 gap-1 px-5 py-3.5 sm:grid-cols-[210px_1fr]">
-                <dt className="text-[12px] font-extrabold uppercase tracking-[0.1em] text-[#6B675F]">{k}</dt>
+                <dt className="text-[12px] font-extrabold uppercase tracking-[0.1em] text-[#57534C]">{k}</dt>
                 <dd className="text-[14px] text-[#111] break-words">{v || '—'}</dd>
               </div>
             ))}

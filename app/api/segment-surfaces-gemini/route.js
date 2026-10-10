@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { recordGeminiUsage } from '@/server/aiUsage.js';
 import {
   WALL_SEGMENTATION_MODEL,
   PAINTABLE_LABELS,
@@ -107,6 +108,7 @@ export async function POST(request) {
   }
 
   const json = await geminiRes.json();
+  await recordGeminiUsage('wall-painter', WALL_SEGMENTATION_MODEL, json);
   const text = json?.candidates?.[0]?.content?.parts?.map((p) => p.text || '').join('') || '';
 
   let items;

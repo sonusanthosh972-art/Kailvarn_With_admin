@@ -48,7 +48,7 @@ export default function LoginForm() {
       </div>
       <form onSubmit={submit} className="rounded-xl bg-[#FAFAF7] p-7 sm:p-8 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)]" noValidate>
         <h1 className="font-serif text-[26px] text-[#0B103B]">Sign in</h1>
-        <p className="mt-1 mb-6 text-[14px] text-[#6B675F]">Authorised KailVarn staff only.</p>
+        <p className="mt-1 mb-6 text-[14px] text-[#57534C]">Authorised KailVarn staff only.</p>
         <label htmlFor="email" className="mb-1.5 block text-[11.5px] font-extrabold uppercase tracking-[0.14em] text-[#0B103B]">Email</label>
         <input id="email" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} className={input} />
         <label htmlFor="password" className="mb-1.5 mt-5 block text-[11.5px] font-extrabold uppercase tracking-[0.14em] text-[#0B103B]">Password</label>

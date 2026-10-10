@@ -51,7 +51,7 @@ function UploadScreen() {
         {project && (
           <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-[#0B103B]/10 pt-4 text-[13.5px]">
             <StatusBadge status={project.status} />
-            <span className="text-[#6B675F]">{project.category}{project.location ? ` · ${project.location}` : ''}</span>
+            <span className="text-[#57534C]">{project.category}{project.location ? ` · ${project.location}` : ''}</span>
             <Link href={`/admin/designs/${project.id}`} className="ml-auto inline-flex items-center gap-1 font-bold text-[#0B103B] hover:underline">
               Manage project{uploaded ? ` (${uploaded} new)` : ''} <ArrowRight className="h-4 w-4" />
             </Link>
@@ -60,10 +60,10 @@ function UploadScreen() {
       </Card>
 
       <Card className="p-5">
-        {!project && <p className="mb-4 text-[14px] text-[#6B675F]">Select a project above to enable uploading.</p>}
+        {!project && <p className="mb-4 text-[14px] text-[#57534C]">Select a project above to enable uploading.</p>}
         <Uploader key={projectId || 'none'} projectId={projectId} defaultAlt={project?.title || ''} disabled={!project} onUploaded={() => setUploaded((n) => n + 1)} />
         {project?.status === 'draft' && uploaded > 0 && (
-          <p className="mt-4 text-[13.5px] text-[#6B675F]">This project is still a draft — <Link href={`/admin/designs/${project.id}`} className="font-bold text-[#0B103B] underline underline-offset-4">publish it</Link> to show it on the website.</p>
+          <p className="mt-4 text-[13.5px] text-[#57534C]">This project is still a draft — <Link href={`/admin/designs/${project.id}`} className="font-bold text-[#0B103B] underline underline-offset-4">publish it</Link> to show it on the website.</p>
         )}
       </Card>
 

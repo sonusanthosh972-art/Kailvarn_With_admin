@@ -51,11 +51,11 @@ export default function DashboardPage() {
               <Link key={label} href={href} className="group">
                 <Card className={`relative h-full overflow-hidden p-5 transition-[border-color,box-shadow] duration-200 group-hover:border-[#D9A441]/60 group-hover:shadow-[0_18px_40px_-28px_rgba(11,16,59,0.45)] ${accent ? 'border-[#F2B21B]/60' : ''}`}>
                   <div className="flex items-start justify-between">
-                    <span className="text-[11.5px] font-extrabold uppercase tracking-[0.14em] text-[#6B675F]">{label}</span>
+                    <span className="text-[11.5px] font-extrabold uppercase tracking-[0.14em] text-[#57534C]">{label}</span>
                     <Icon className="h-5 w-5 text-[#D9A441]" strokeWidth={1.6} aria-hidden="true" />
                   </div>
                   <p className="mt-3 font-serif text-[40px] leading-none text-[#0B103B] tabular-nums">{value}</p>
-                  <p className="mt-2 text-[13px] text-[#6B675F]">{note}</p>
+                  <p className="mt-2 text-[13px] text-[#57534C]">{note}</p>
                   {/* measurement tick — architectural detail */}
                   <span className="absolute bottom-0 left-5 right-5 h-px bg-gradient-to-r from-[#D9A441]/40 to-transparent" aria-hidden="true" />
                 </Card>
@@ -68,7 +68,7 @@ export default function DashboardPage() {
               <h2 className="font-serif text-[21px] text-[#0B103B]">Recent activity</h2>
             </div>
             {stats.activity.length === 0 ? (
-              <p className="px-5 py-10 text-center text-[14px] text-[#6B675F]">Nothing yet — new enquiries and designs will show up here.</p>
+              <p className="px-5 py-10 text-center text-[14px] text-[#57534C]">Nothing yet — new enquiries and designs will show up here.</p>
             ) : (
               <ul className="divide-y divide-[#0B103B]/[0.07]">
                 {stats.activity.map((a) => {
@@ -79,10 +79,10 @@ export default function DashboardPage() {
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#D9A441]/50"><t.icon className="h-4 w-4 text-[#8A6A1C]" strokeWidth={1.75} /></span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-[14px] font-semibold text-[#0B103B]">{a.label}</span>
-                          <span className="block truncate text-[12.5px] text-[#6B675F]">{t.label}{a.detail ? ` · ${a.detail}` : ''}</span>
+                          <span className="block truncate text-[12.5px] text-[#57534C]">{t.label}{a.detail ? ` · ${a.detail}` : ''}</span>
                         </span>
                         {a.status && <StatusBadge status={a.status} />}
-                        <span className="hidden sm:block whitespace-nowrap text-[12.5px] text-[#6B675F]">{formatDate(a.createdAt)}</span>
+                        <span className="hidden sm:block whitespace-nowrap text-[12.5px] text-[#57534C]">{formatDate(a.createdAt)}</span>
                         <ArrowRight className="h-4 w-4 text-[#0B103B]/30" aria-hidden="true" />
                       </Link>
                     </li>

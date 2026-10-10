@@ -141,7 +141,7 @@ export default function OurDesignContentPage() {
                         <input id={`c-${f.key}`} value={fields[f.key]} onChange={set(f.key)} maxLength={f.max} className={inputClass} />
                       )}
                       {changed && (
-                        <button type="button" onClick={() => setFields((x) => ({ ...x, [f.key]: content.defaults[f.key] }))} className="mt-1.5 inline-flex items-center gap-1 text-[12px] font-bold text-[#6B675F] hover:text-[#0B103B]" title={`Original: ${content.defaults[f.key]}`}>
+                        <button type="button" onClick={() => setFields((x) => ({ ...x, [f.key]: content.defaults[f.key] }))} className="mt-1.5 inline-flex items-center gap-1 text-[12px] font-bold text-[#57534C] hover:text-[#0B103B]" title={`Original: ${content.defaults[f.key]}`}>
                           <RotateCcw className="h-3 w-3" /> Reset to original
                         </button>
                       )}
@@ -159,7 +159,7 @@ export default function OurDesignContentPage() {
         <div className="space-y-6">
           <Card className="p-5">
             <h2 className="font-serif text-[21px] text-[#0B103B]">Hero images</h2>
-            <p className="mt-1 mb-4 text-[13px] text-[#6B675F]">Up to {content.maxHeroImages}. Leave empty to use the latest published designs automatically.</p>
+            <p className="mt-1 mb-4 text-[13px] text-[#57534C]">Up to {content.maxHeroImages}. Leave empty to use the latest published designs automatically.</p>
             {content.heroImages.length > 0 && (
               <ul className="mb-4 grid grid-cols-2 gap-2.5">
                 {content.heroImages.map((img) => (
@@ -195,11 +195,11 @@ export default function OurDesignContentPage() {
                 </Link>
                 <Link href="/admin/designs?status=draft" className="rounded-lg border border-[#0B103B]/10 p-3 hover:border-[#D9A441]/60">
                   <span className="block font-serif text-[26px] text-[#0B103B] tabular-nums">{counts.draft}</span>
-                  <span className="text-[11.5px] font-bold uppercase tracking-[0.1em] text-[#6B675F]">Drafts</span>
+                  <span className="text-[11.5px] font-bold uppercase tracking-[0.1em] text-[#57534C]">Drafts</span>
                 </Link>
               </div>
             )}
-            <p className="mt-3 text-[12.5px] text-[#6B675F]">Drafts are hidden. Add a photo to a draft and publish it to show it on the page.</p>
+            <p className="mt-3 text-[12.5px] text-[#57534C]">Drafts are hidden. Add a photo to a draft and publish it to show it on the page.</p>
             <Link href="/admin/designs" className="mt-4 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-[#0B103B] text-[13.5px] font-bold text-white hover:bg-[#11184D]">
               <Images className="h-4 w-4" /> Manage designs
             </Link>

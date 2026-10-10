@@ -66,13 +66,13 @@ export default function LeadsManager({ endpoint, title, subtitle, columns, detai
                 status === t.key ? 'border-[#0B103B] bg-[#0B103B] text-white' : 'border-[#0B103B]/15 bg-white text-[#0B103B]/75 hover:border-[#0B103B]/40'
               }`}
             >
-              {t.label} <span className={status === t.key ? 'text-[#F2B21B]' : 'text-[#6B675F]'}>{t.n}</span>
+              {t.label} <span className={status === t.key ? 'text-[#F2B21B]' : 'text-[#57534C]'}>{t.n}</span>
             </button>
           ))}
         </div>
         <label className="relative block lg:w-[320px]">
           <span className="sr-only">Search {noun}s</span>
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B675F]" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#57534C]" aria-hidden="true" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, phone, city…" className={`${inputClass} pl-10`} />
         </label>
       </div>
@@ -108,7 +108,7 @@ export default function LeadsManager({ endpoint, title, subtitle, columns, detai
                       </td>
                     ))}
                     <td className="px-4 py-3.5"><StatusBadge status={item.status} /></td>
-                    <td className="px-4 py-3.5 whitespace-nowrap text-[#6B675F]">{formatDate(item.createdAt)}</td>
+                    <td className="px-4 py-3.5 whitespace-nowrap text-[#57534C]">{formatDate(item.createdAt)}</td>
                     <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
                       <ContactActions item={item} compact />
                     </td>
@@ -121,7 +121,7 @@ export default function LeadsManager({ endpoint, title, subtitle, columns, detai
       </Card>
 
       {pages > 1 && (
-        <div className="mt-4 flex items-center justify-between text-[13px] text-[#6B675F]">
+        <div className="mt-4 flex items-center justify-between text-[13px] text-[#57534C]">
           <span>Page {page} of {pages} · {state.total} total</span>
           <div className="flex gap-2">
             <Button size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} aria-label="Previous page"><ChevronLeft className="h-4 w-4" /></Button>
@@ -197,13 +197,13 @@ function LeadDetail({ endpoint, item, detailFields, noun, onClose, onChanged, on
           <div className="space-y-6">
             <div className="flex items-center justify-between gap-3">
               <StatusBadge status={item.status} />
-              <span className="text-[12.5px] text-[#6B675F]">Received {formatDate(item.createdAt)}</span>
+              <span className="text-[12.5px] text-[#57534C]">Received {formatDate(item.createdAt)}</span>
             </div>
             <ContactActions item={item} />
             <dl className="divide-y divide-[#0B103B]/[0.08] rounded-lg border border-[#0B103B]/10 bg-white">
               {detailFields.map((f) => (
                 <div key={f.key} className="grid grid-cols-[130px_1fr] gap-3 px-4 py-3">
-                  <dt className="text-[11.5px] font-extrabold uppercase tracking-[0.1em] text-[#6B675F] pt-0.5">{f.label}</dt>
+                  <dt className="text-[11.5px] font-extrabold uppercase tracking-[0.1em] text-[#57534C] pt-0.5">{f.label}</dt>
                   <dd className="text-[14px] text-[#111] whitespace-pre-wrap break-words">{f.format ? f.format(item[f.key], item) : item[f.key] || '—'}</dd>
                 </div>
               ))}
@@ -217,7 +217,7 @@ function LeadDetail({ endpoint, item, detailFields, noun, onClose, onChanged, on
               <textarea id="lead-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} maxLength={4000} className={`${inputClass} resize-y`} />
             </Field>
             {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
-            {item.updatedAt && <p className="text-[12px] text-[#6B675F]">Last updated {formatDate(item.updatedAt)}</p>}
+            {item.updatedAt && <p className="text-[12px] text-[#57534C]">Last updated {formatDate(item.updatedAt)}</p>}
           </div>
         )}
       </Drawer>

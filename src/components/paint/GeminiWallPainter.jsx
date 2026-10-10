@@ -250,13 +250,15 @@ export default function GeminiWallPainter() {
   return (
     <div className="min-h-screen bg-[#070A25]">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
-        <div className="flex items-center justify-between mb-5">
-          <Link href="/" className="flex items-center gap-1.5 text-white/70 hover:text-white text-sm font-nunito">
-            <ArrowLeft className="w-4 h-4" />
+        {/* Phones: back link on its own line, title below. sm+: three columns
+            with the title truly centred (equal 1fr side columns). */}
+        <div className="mb-5 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4">
+          <Link href="/" className="inline-flex min-h-[40px] items-center gap-1.5 justify-self-start whitespace-nowrap text-white/70 hover:text-white text-sm font-nunito">
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
             Back to Home
           </Link>
-          <h1 className="font-playfair font-bold text-white text-[20px] text-center">AI Wall &amp; Ceiling Painter</h1>
-          <div className="w-[95px]" />
+          <h1 className="font-playfair font-bold text-white text-[22px] leading-tight sm:text-[20px] sm:text-center">AI Wall &amp; Ceiling Painter</h1>
+          <span className="hidden sm:block" aria-hidden="true" />
         </div>
 
         {!hasImage && (
@@ -265,7 +267,7 @@ export default function GeminiWallPainter() {
             <span className="text-white/80 font-nunito text-[15px] text-center">
               Upload a room photo -- Gemini will detect the walls &amp; ceiling
             </span>
-            <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
+            <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
           </label>
         )}
 

@@ -87,10 +87,10 @@ function AboutUsPage() {
                 Who Is KailVarn?
               </h2>
               <div className="space-y-6">
-                <p className="font-nunito font-normal text-[16px] text-[#6B675F] leading-[1.8]">
+                <p className="font-nunito font-normal text-[16.5px] lg:text-[17px] text-[#57534C] leading-[1.85]">
                   KailVarn was born out of a simple observation: designing and building a home in India is far too stressful. Homeowners are caught between expensive design studios that don't execute, and local contractors who lack professional design vision. We realized there had to be a better way.
                 </p>
-                <p className="font-nunito font-normal text-[16px] text-[#6B675F] leading-[1.8]">
+                <p className="font-nunito font-normal text-[16.5px] lg:text-[17px] text-[#57534C] leading-[1.85]">
                   Today, KailVarn operates on a fully integrated model. We combine the creative excellence of premium interior designers with the rigorous discipline of experienced project managers and master craftsmen. We provide the design for free, focus purely on high-quality execution, and guarantee that the final result perfectly matches your approved 3D renders.
                 </p>
               </div>
@@ -128,7 +128,7 @@ function AboutUsPage() {
         <div className="kv-wrap">
           <motion.div 
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scrollVariants}
-            className="text-center mb-16"
+            className="text-center mb-14 lg:mb-16"
           >
             <span className="kv-eyebrow">
               Why We Exist
@@ -136,7 +136,7 @@ function AboutUsPage() {
             <h2 className="font-playfair font-medium text-[34px] md:text-[44px] lg:text-[54px] text-[#0B103B] leading-tight mb-4 tracking-[-0.015em]">
               The Problems KailVarn Was Built to Solve
             </h2>
-            <p className="font-nunito text-[16px] text-[#6B675F] max-w-2xl mx-auto">
+            <p className="font-nunito text-[16.5px] lg:text-[17px] leading-[1.75] text-[#57534C] max-w-2xl mx-auto">
               We studied the biggest frustrations homeowners face during interior projects and structured our entire business to eliminate them.
             </p>
           </motion.div>
@@ -151,11 +151,11 @@ function AboutUsPage() {
                 <div className="w-[48px] h-[48px] bg-red-50 rounded-xl flex items-center justify-center mb-5">
                   <item.icon className="w-[24px] h-[24px] text-[#C0392B]" />
                 </div>
-                <h4 className="font-nunito font-bold text-[15px] text-[#C0392B] mb-4">
+                <h4 className="font-nunito font-bold text-[16px] leading-snug text-[#B23B2E] mb-4">
                   {item.problem}
                 </h4>
                 <div className="h-[1.5px] w-full bg-gradient-to-r from-[#F2B21B] to-transparent mb-4"></div>
-                <p className="font-nunito font-normal text-[14px] text-[#6B675F] leading-relaxed">
+                <p className="font-nunito font-normal text-[15px] text-[#57534C] leading-[1.7]">
                   <strong className="text-[#111111]">Our Solution:</strong> {item.solution}
                 </p>
               </motion.div>
@@ -206,7 +206,7 @@ function AboutUsPage() {
                   <Check className="w-4 h-4" />
                 </div>
                 <h4 className="font-nunito font-bold text-[16px] text-white mb-2">{value.title}</h4>
-                <p className="font-nunito text-[14px] text-white/60 leading-snug">{value.desc}</p>
+                <p className="font-nunito text-[14.5px] text-white/70 leading-[1.6]">{value.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -218,12 +218,12 @@ function AboutUsPage() {
         <div className="kv-wrap">
           <motion.div 
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scrollVariants}
-            className="text-center mb-16"
+            className="text-center mb-14 lg:mb-16"
           >
             <h2 className="font-playfair font-medium text-[34px] md:text-[44px] lg:text-[54px] text-[#0B103B] leading-tight mb-4 tracking-[-0.015em]">
               What Makes KailVarn Truly Different
             </h2>
-            <p className="font-nunito text-[16px] text-[#6B675F] max-w-2xl mx-auto">
+            <p className="font-nunito text-[16.5px] lg:text-[17px] leading-[1.75] text-[#57534C] max-w-2xl mx-auto">
               Compare our integrated model with traditional alternatives.
             </p>
           </motion.div>
@@ -235,11 +235,11 @@ function AboutUsPage() {
               className="bg-[#F5F1E8] rounded-lg p-8 flex flex-col mt-0 lg:mt-6 border border-[#0B103B]/10"
             >
               <h3 className="font-playfair font-medium text-[24px] text-[#0B103B] mb-2">Design Studio Only</h3>
-              <p className="font-nunito text-[14px] text-[#6B675F] mb-6">Provides beautiful 3D renders but leaves the heavy lifting to you.</p>
-              <ul className="space-y-4 mt-auto">
-                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[14.5px] text-[#333]">No execution team provided</span></li>
-                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[14.5px] text-[#333]">You manage contractors daily</span></li>
-                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[14.5px] text-[#333]">Expensive design fees upfront</span></li>
+              <p className="font-nunito text-[15px] leading-[1.7] text-[#57534C] mb-6">Provides beautiful 3D renders but leaves the heavy lifting to you.</p>
+              <ul className="space-y-4 pt-6 border-t border-[#0B103B]/10">
+                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[15px] text-[#2A2A2A]">No execution team provided</span></li>
+                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[15px] text-[#2A2A2A]">You manage contractors daily</span></li>
+                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[15px] text-[#2A2A2A]">Expensive design fees upfront</span></li>
               </ul>
             </motion.div>
 
@@ -252,7 +252,7 @@ function AboutUsPage() {
                 Highly Recommended
               </div>
               <h3 className="font-playfair font-medium text-[28px] text-[#0B103B] mb-2 mt-2">KailVarn</h3>
-              <p className="font-nunito text-[15px] text-[#6B675F] mb-6 border-b border-gray-100 pb-6">The Complete Solution. One team for design and flawless execution.</p>
+              <p className="font-nunito text-[15.5px] leading-[1.7] text-[#57534C] mb-6 border-b border-[#0B103B]/10 pb-6">The Complete Solution. One team for design and flawless execution.</p>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3"><Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> <span className="font-nunito font-semibold text-[15px] text-[#0B103B]">Free professional design</span></li>
                 <li className="flex items-start gap-3"><Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /> <span className="font-nunito font-semibold text-[15px] text-[#0B103B]">Full execution by in-house team</span></li>
@@ -276,11 +276,11 @@ function AboutUsPage() {
               className="bg-[#F5F1E8] rounded-lg p-8 flex flex-col mt-0 lg:mt-6 border border-[#0B103B]/10"
             >
               <h3 className="font-playfair font-medium text-[24px] text-[#0B103B] mb-2">Contractor Only</h3>
-              <p className="font-nunito text-[14px] text-[#6B675F] mb-6">Executes work but lacks design vision and proper project management.</p>
-              <ul className="space-y-4 mt-auto">
-                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[14.5px] text-[#333]">No 3D visualization or design</span></li>
-                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[14.5px] text-[#333]">Frequent design mismatches</span></li>
-                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[14.5px] text-[#333]">Hidden costs pop up mid-project</span></li>
+              <p className="font-nunito text-[15px] leading-[1.7] text-[#57534C] mb-6">Executes work but lacks design vision and proper project management.</p>
+              <ul className="space-y-4 pt-6 border-t border-[#0B103B]/10">
+                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[15px] text-[#2A2A2A]">No 3D visualization or design</span></li>
+                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[15px] text-[#2A2A2A]">Frequent design mismatches</span></li>
+                <li className="flex items-start gap-3"><X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" /> <span className="font-nunito text-[15px] text-[#2A2A2A]">Hidden costs pop up mid-project</span></li>
               </ul>
             </motion.div>
           </div>
@@ -292,17 +292,17 @@ function AboutUsPage() {
         <div className="kv-wrap">
           <motion.div 
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scrollVariants}
-            className="text-center mb-16"
+            className="text-center mb-14 lg:mb-16"
           >
             <h2 className="font-playfair font-medium text-[34px] md:text-[44px] lg:text-[54px] text-[#0B103B] leading-tight mb-4 tracking-[-0.015em]">
               The KailVarn Expert Team
             </h2>
-            <p className="font-nunito text-[16px] text-[#6B675F] max-w-2xl mx-auto">
+            <p className="font-nunito text-[16.5px] lg:text-[17px] leading-[1.75] text-[#57534C] max-w-2xl mx-auto">
               Behind every beautiful home is a coordinated team of specialists working in perfect harmony.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 gap-y-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 gap-y-12 max-w-[960px] mx-auto">
             {team.map((member, idx) => (
               <motion.div 
                 key={idx}
@@ -313,8 +313,8 @@ function AboutUsPage() {
                   <img loading="lazy" decoding="async" src={sized(member.img, 256)} alt={member.role} className="w-full h-full object-cover" />
                 </div>
                 <h4 className="font-playfair font-bold text-[18px] md:text-[20px] text-[#0B103B] leading-tight">{member.name}</h4>
-                <p className="font-nunito font-bold text-[13px] md:text-[14px] text-[#D9A441] mb-2 uppercase tracking-wide">{member.role}</p>
-                <p className="font-nunito text-[13px] md:text-[14px] text-[#6B675F] max-w-[200px] leading-snug">{member.bio}</p>
+                <p className="font-nunito font-extrabold text-[11.5px] md:text-[12px] text-[#8A6A1C] mt-1.5 mb-2.5 uppercase tracking-[0.18em]">{member.role}</p>
+                <p className="font-nunito text-[14px] md:text-[15px] text-[#57534C] max-w-[240px] leading-[1.6]">{member.bio}</p>
               </motion.div>
             ))}
           </div>
@@ -332,7 +332,7 @@ function AboutUsPage() {
               <h3 className="font-playfair font-medium text-[30px] md:text-[42px] lg:text-[50px] text-[#0B103B] mb-4">
                 We Serve Silvassa, Vapi & Surrounding Areas
               </h3>
-              <p className="font-nunito text-[16px] text-[#6B675F] mb-6 leading-relaxed">
+              <p className="font-nunito text-[16px] text-[#57534C] mb-6 leading-relaxed">
                 KailVarn provides complete interior design and execution services across Dadra and Nagar Haveli, Daman, and surrounding regions within an approximate 50km radius.
               </p>
               <div className="flex flex-wrap gap-2 mb-8">
@@ -342,7 +342,7 @@ function AboutUsPage() {
                   </span>
                 ))}
               </div>
-              <p className="font-nunito text-[14px] text-[#6B675F] mb-6 bg-[#F5F1E8] p-4 rounded-lg border border-[#D9A441]/40">
+              <p className="font-nunito text-[14px] text-[#57534C] mb-6 bg-[#F5F1E8] p-4 rounded-lg border border-[#D9A441]/40">
                 <strong>Not sure if we cover your area?</strong> Call or WhatsApp us — we'll confirm immediately.
               </p>
               <a href="tel:8460150027" className="btn-navy inline-flex">

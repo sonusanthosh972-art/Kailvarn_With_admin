@@ -31,7 +31,7 @@ export default function NotFound() {
             <h1 className="font-playfair font-medium text-[34px] md:text-[44px] lg:text-[54px] text-[#0B103B] leading-tight mb-5 tracking-[-0.015em]">
               We couldn&rsquo;t find that page
             </h1>
-            <p className="font-nunito text-[16px] text-[#6B675F] leading-[1.8] mb-10">
+            <p className="font-nunito text-[16px] text-[#57534C] leading-[1.8] mb-10">
               The link may be old, or the address may have a typo. Here are a few places to pick up from.
             </p>
             <div className="flex flex-wrap justify-center gap-3 mb-10">

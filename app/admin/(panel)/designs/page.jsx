@@ -42,7 +42,7 @@ function DesignsList() {
       <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_180px_200px]">
         <label className="relative">
           <span className="sr-only">Search designs</span>
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B675F]" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#57534C]" aria-hidden="true" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search title, location, tag…" className={`${inputClass} pl-10`} />
         </label>
         <select value={status} onChange={(e) => setStatus(e.target.value)} className={inputClass} aria-label="Filter by status">
@@ -66,7 +66,7 @@ function DesignsList() {
           action={!(q || status || category) && <Button variant="primary" onClick={() => setCreating(true)}><Plus className="h-4 w-4" /> New project</Button>}
         />
       )}
-      {items && items.length > 0 && <p className="mb-3 text-[13px] text-[#6B675F]">{items.length} design{items.length === 1 ? '' : 's'}</p>}
+      {items && items.length > 0 && <p className="mb-3 text-[13px] text-[#57534C]">{items.length} design{items.length === 1 ? '' : 's'}</p>}
       {items && items.length > 0 && (
         <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {items.map((p, i) => (
@@ -83,7 +83,7 @@ function DesignsList() {
                 <div className="p-4">
                   <p className="text-[10.5px] font-extrabold uppercase tracking-[0.22em] text-[#8A6A1C]">{p.category}{p.subtitle && p.subtitle !== p.category ? ` · ${p.subtitle}` : ''}</p>
                   <h3 className="mt-1 font-serif text-[20px] leading-snug text-[#0B103B]">{p.title}</h3>
-                  <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] text-[#6B675F]">
+                  <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] text-[#57534C]">
                     <span>{p.imageCount} image{p.imageCount === 1 ? '' : 's'}</span>
                     {p.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{p.location}</span>}
                     <span>Updated {formatDate(p.updatedAt, false)}</span>

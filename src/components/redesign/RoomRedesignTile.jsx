@@ -133,7 +133,7 @@ function RoomRedesignModal({ onClose }) {
               <span className="text-white/40 font-nunito text-[12.5px] text-center">
                 We'll generate a redesign of the same room in your chosen style -- takes about 10-20 seconds
               </span>
-              <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
+              <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
             </label>
           )}
 

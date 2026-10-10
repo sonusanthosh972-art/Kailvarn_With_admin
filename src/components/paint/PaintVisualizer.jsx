@@ -2,9 +2,10 @@
 
 import React, { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Undo2, RotateCcw, Upload, Sparkles, Eraser } from 'lucide-react';
+import { ArrowLeft, Undo2, RotateCcw, Upload, Sparkles, Eraser, Camera, ImageIcon } from 'lucide-react';
 import { PAINT_COLORS } from '@/constants/paintColors.js';
 import { resizeToJpegBlob, readJsonResponse } from '@/lib/imageUpload.js';
+import { closestAspectRatio } from '@/constants/segmentationConfig.js';
 
 const MAX_DIMENSION = 900;
 
@@ -134,7 +135,10 @@ function medianOfHistogram(hist, count) {
 // previous RGB-distance version also threw out shadowed corners and sunlit
 // patches, about 38% of a correctly detected wall in testing. This keeps
 // 99%+ of a clean wall. Per component, because two walls can differ.
-function refineMaskPerComponent(rawMask, width, height, imageData) {
+// The tone pass is only for the HF model's texture-based masks: the Gemini
+// map already excludes objects by understanding the scene, so for it this
+// just drops specks.
+function refineMaskPerComponent(rawMask, width, height, imageData, rejectOutliers = true) {
   const { data } = imageData;
   const visited = new Uint8Array(rawMask.length);
   const result = new Uint8Array(rawMask.length);
@@ -151,6 +155,10 @@ function refineMaskPerComponent(rawMask, width, height, imageData) {
       }
     }
     if (count < MIN_COMPONENT_PIXELS) continue;
+    if (!rejectOutliers) {
+      for (let i = 0; i < component.length; i++) if (component[i]) result[i] = 1;
+      continue;
+    }
     const histR = new Uint32Array(256);
     const histG = new Uint32Array(256);
     for (let i = 0; i < component.length; i++) {
@@ -184,24 +192,53 @@ const lumaAt = (data, i) => 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data
 const MIN_SHADE = 0.35;
 const MAX_SHADE = 1.6;
 
-// The typical (median) brightness of a surface, via a 256-bin histogram so
-// it stays linear-time on a full-size mask.
-function medianLuma(mask, data) {
+// Per-pixel brightness factor for painting a surface: the photo's brightness
+// at each pixel divided by its LOCAL typical brightness (box average over
+// the surface within ~1/10 of the photo). Dividing by a local baseline
+// removes the old paint colour -- a white panel and a brown wall in the same
+// mask both come out as the chosen colour -- while keeping shadows, corners
+// and light falloff. A quarter of the global median is mixed in so one side
+// of a room that is genuinely darker stays a little darker.
+// `cover` (the feathered alpha) marks every pixel that gets paint, including
+// the soft edge just outside the mask.
+function shadeMap(mask, data, width, height, cover) {
+  const n = width * height;
+  const W1 = width + 1;
+  const sum = new Float64Array(W1 * (height + 1));
+  const cnt = new Float64Array(W1 * (height + 1));
   const hist = new Uint32Array(256);
-  let count = 0;
-  for (let p = 0; p < mask.length; p++) {
-    if (!mask[p]) continue;
-    hist[lumaAt(data, p * 4) | 0]++;
-    count++;
+  let total = 0;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const p = y * width + x;
+      const on = mask[p] ? 1 : 0;
+      const l = on ? lumaAt(data, p * 4) : 0;
+      if (on) { hist[l | 0]++; total++; }
+      const q = (y + 1) * W1 + x + 1;
+      sum[q] = l + sum[q - W1] + sum[q - 1] - sum[q - W1 - 1];
+      cnt[q] = on + cnt[q - W1] + cnt[q - 1] - cnt[q - W1 - 1];
+    }
   }
-  if (count === 0) return 1;
-  const half = count / 2;
-  let seen = 0;
-  for (let v = 0; v < 256; v++) {
+  let globalMedian = 128;
+  for (let v = 0, seen = 0; v < 256; v++) {
     seen += hist[v];
-    if (seen >= half) return Math.max(v, 1);
+    if (seen >= total / 2) { globalMedian = Math.max(v, 1); break; }
   }
-  return 255;
+  const r = Math.max(24, Math.round(Math.max(width, height) / 10));
+  const shade = new Float32Array(n);
+  for (let y = 0; y < height; y++) {
+    const y0 = Math.max(0, y - r), y1 = Math.min(height - 1, y + r);
+    for (let x = 0; x < width; x++) {
+      const p = y * width + x;
+      if (!cover[p]) continue;
+      const x0 = Math.max(0, x - r), x1 = Math.min(width - 1, x + r);
+      const a = (y1 + 1) * W1 + x1 + 1, b = y0 * W1 + x1 + 1, c = (y1 + 1) * W1 + x0, d = y0 * W1 + x0;
+      const local = Math.max(1, (sum[a] - sum[b] - sum[c] + sum[d]) / Math.max(1, cnt[a] - cnt[b] - cnt[c] + cnt[d]));
+      const base = local ** 0.75 * globalMedian ** 0.25;
+      shade[p] = Math.min(MAX_SHADE, Math.max(MIN_SHADE, lumaAt(data, p * 4) / base));
+    }
+  }
+  return shade;
 }
 
 // Per-pixel paint coverage (0-1): the mask softened by a 3x3 box blur, so
@@ -252,6 +289,375 @@ function loadMaskAsArray(base64Png, width, height) {
   });
 }
 
+// Decodes the AI color-coded surface map (walls red, ceiling blue,
+// everything else black -- see AI_SURFACE_PROMPT) into separate wall and
+// ceiling masks at our working canvas resolution. Classification is by
+// channel dominance rather than exact color so the model's slightly-off
+// reds/blues and soft edges still land in the right class, while
+// blended red/blue edge pixels (neither clearly dominant) are left
+// unpainted instead of leaking one surface into the other.
+// `pad` is how the photo sat inside the padded image that was sent
+// ({ padW, padH, ox, oy }): the map is scaled to that padded size and the
+// photo's own rectangle cut back out, so nothing is stretched.
+function decodeSurfaceMap(dataUrl, width, height, pad = { padW: width, padH: height, ox: 0, oy: 0 }) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const off = document.createElement('canvas');
+      off.width = width;
+      off.height = height;
+      const ctx = off.getContext('2d');
+      ctx.drawImage(img, -pad.ox, -pad.oy, pad.padW, pad.padH);
+      const data = ctx.getImageData(0, 0, width, height).data;
+      const wall = new Uint8Array(width * height);
+      const ceiling = new Uint8Array(width * height);
+      let wallCount = 0;
+      let ceilingCount = 0;
+      for (let p = 0; p < width * height; p++) {
+        const i = p * 4;
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        if (r > 140 && r > g * 2 && r > b * 2) {
+          wall[p] = 1;
+          wallCount++;
+        } else if (b > 140 && b > r * 2 && b > g * 2) {
+          ceiling[p] = 1;
+          ceilingCount++;
+        }
+      }
+      resolve({ wall: wallCount ? wall : null, ceiling: ceilingCount ? ceiling : null });
+    };
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+// The AI map reliably excludes big objects but tends to paint straight
+// over small ceiling fixtures (round lights, downlights, detectors) that
+// are nearly the ceiling's own color. Those fixtures have crisp, strong
+// outlines, while sunlight and shadow on plaster fade gradually -- so
+// find compact sharp-edged blobs inside the ceiling mask and cut them
+// (filled, not just their rim) out of it.
+function removeCeilingFixtures(mask, imageData, edgeThreshold = 28) {
+  const { width, height, data } = imageData;
+  const n = width * height;
+  const lum = new Float32Array(n);
+  for (let p = 0; p < n; p++) {
+    const i = p * 4;
+    lum[p] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  }
+  // Interior: ceiling pixels at least 4px from the mask edge, so the
+  // wall/ceiling boundary itself never counts as a fixture outline.
+  let interior = mask;
+  for (let k = 0; k < 4; k++) interior = erode(interior, width, height);
+  const edges = new Uint8Array(n);
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const p = y * width + x;
+      if (!interior[p]) continue;
+      const gx = lum[p - width + 1] + 2 * lum[p + 1] + lum[p + width + 1]
+        - lum[p - width - 1] - 2 * lum[p - 1] - lum[p + width - 1];
+      const gy = lum[p + width - 1] + 2 * lum[p + width] + lum[p + width + 1]
+        - lum[p - width - 1] - 2 * lum[p - width] - lum[p - width + 1];
+      if (Math.hypot(gx, gy) / 4 > edgeThreshold) edges[p] = 1;
+    }
+  }
+  // Grow edges by 4px so the broken arcs of one fixture's rim (a light's
+  // top and bottom edges are often detected separately) join into one
+  // closed blob.
+  let grownEdges = edges;
+  for (let k = 0; k < 4; k++) grownEdges = dilate(grownEdges, width, height);
+  const outline = maskAnd(grownEdges, mask);
+  const fixtures = new Uint8Array(n);
+  // Compact outline blobs = fixture rims (long thin lines like a
+  // shadow edge spanning the ceiling are left alone).
+  const blobs = [];
+  forEachComponent(outline, width, height, (pixels, minX, maxX, minY, maxY) => {
+    if (pixels.length < 6) return;
+    if (maxX - minX > width * 0.2 || maxY - minY > height * 0.15) return;
+    blobs.push({ pixels, minX, maxX, minY, maxY });
+  });
+  // One fixture's rim can still come back as separate arcs (e.g. its
+  // top and bottom edge) -- merge blobs whose boxes nearly touch.
+  const GAP = 6;
+  for (let merged = true; merged;) {
+    merged = false;
+    for (let i = 0; i < blobs.length && !merged; i++) {
+      for (let j = i + 1; j < blobs.length; j++) {
+        const a = blobs[i], b = blobs[j];
+        if (a.minX - GAP > b.maxX || b.minX - GAP > a.maxX || a.minY - GAP > b.maxY || b.minY - GAP > a.maxY) continue;
+        const m = {
+          pixels: a.pixels.concat(b.pixels),
+          minX: Math.min(a.minX, b.minX), maxX: Math.max(a.maxX, b.maxX),
+          minY: Math.min(a.minY, b.minY), maxY: Math.max(a.maxY, b.maxY),
+        };
+        if (m.maxX - m.minX > width * 0.2 || m.maxY - m.minY > height * 0.15) continue;
+        blobs.splice(j, 1);
+        blobs[i] = m;
+        merged = true;
+        break;
+      }
+    }
+  }
+  // Fill each blob's convex hull, not just its detected rim -- light
+  // fixtures are convex, and the rim often comes back as an open arc.
+  for (const { pixels, minX, maxX, minY, maxY } of blobs) {
+    const hull = convexHull(pixels, width);
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        if (insideConvex(hull, x, y)) fixtures[y * width + x] = 1;
+      }
+    }
+  }
+  // Ceiling pockets fully enclosed by an outline = fixture interiors.
+  const rest = new Uint8Array(n);
+  for (let p = 0; p < n; p++) rest[p] = mask[p] && !outline[p] ? 1 : 0;
+  const pockets = [];
+  let biggest = 0;
+  forEachComponent(rest, width, height, (pixels) => {
+    pockets.push(pixels);
+    if (pixels.length > biggest) biggest = pixels.length;
+  });
+  for (const pixels of pockets) {
+    if (pixels.length < biggest * 0.02) for (const p of pixels) fixtures[p] = 1;
+  }
+  const grown = dilate(fixtures, width, height);
+  const result = new Uint8Array(n);
+  for (let p = 0; p < n; p++) result[p] = mask[p] && !grown[p] ? 1 : 0;
+  return result;
+}
+
+// The AI map sometimes marks wall coverings as wall: wooden slat panels,
+// cladding, tiles, wallpaper. Painted plaster is smooth -- light and shadow
+// change across it gradually -- while those coverings are packed with sharp
+// edges. So cut out every area where a large share of nearby mask pixels
+// sit on a sharp edge. Edges are only counted well inside the mask, so the
+// outlines of the TV, sofa or a wall corner never count against the wall.
+// On a test photo, slat panels measured 0.3-0.9 edge density and plain
+// wall 0.00. The window is wide so a single strong line (a wall corner, the
+// wall/ceiling join) stays well under the threshold.
+function removeTexturedAreas(mask, imageData, { edgeThreshold = 20, radius = 10, maxDensity = 0.32 } = {}) {
+  const { width, height, data } = imageData;
+  const n = width * height;
+  const lum = new Float32Array(n);
+  for (let p = 0; p < n; p++) {
+    const i = p * 4;
+    lum[p] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  }
+  // Close small gaps first (dilate then erode), so a mask that covers only
+  // the strips between slats -- a comb rather than a solid block -- still
+  // has an inside to measure.
+  let interior = mask;
+  for (let k = 0; k < 3; k++) interior = dilate(interior, width, height);
+  for (let k = 0; k < 5; k++) interior = erode(interior, width, height);
+  // Integral images of edge pixels and interior pixels, so each window's
+  // density is O(1) to read.
+  const W1 = width + 1;
+  const edgeSum = new Uint32Array(W1 * (height + 1));
+  const areaSum = new Uint32Array(W1 * (height + 1));
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const p = y * width + x;
+      let edge = 0;
+      if (interior[p] && x > 0 && y > 0 && x < width - 1 && y < height - 1) {
+        const gx = lum[p - width + 1] + 2 * lum[p + 1] + lum[p + width + 1]
+          - lum[p - width - 1] - 2 * lum[p - 1] - lum[p + width - 1];
+        const gy = lum[p + width - 1] + 2 * lum[p + width] + lum[p + width + 1]
+          - lum[p - width - 1] - 2 * lum[p - width] - lum[p - width + 1];
+        if (Math.hypot(gx, gy) / 4 > edgeThreshold) edge = 1;
+      }
+      const q = (y + 1) * W1 + x + 1;
+      edgeSum[q] = edge + edgeSum[q - W1] + edgeSum[q - 1] - edgeSum[q - W1 - 1];
+      areaSum[q] = interior[p] + areaSum[q - W1] + areaSum[q - 1] - areaSum[q - W1 - 1];
+    }
+  }
+  const boxSum = (sum, x0, y0, x1, y1) =>
+    sum[(y1 + 1) * W1 + x1 + 1] - sum[y0 * W1 + x1 + 1] - sum[(y1 + 1) * W1 + x0] + sum[y0 * W1 + x0];
+  const minArea = (2 * radius + 1) ** 2 * 0.3;
+  let textured = new Uint8Array(n);
+  let found = false;
+  for (let y = 0; y < height; y++) {
+    const y0 = Math.max(0, y - radius), y1 = Math.min(height - 1, y + radius);
+    for (let x = 0; x < width; x++) {
+      const p = y * width + x;
+      if (!mask[p]) continue;
+      const x0 = Math.max(0, x - radius), x1 = Math.min(width - 1, x + radius);
+      const area = boxSum(areaSum, x0, y0, x1, y1);
+      if (area < minArea) continue;
+      if (boxSum(edgeSum, x0, y0, x1, y1) / area > maxDensity) {
+        textured[p] = 1;
+        found = true;
+      }
+    }
+  }
+  if (!found) return mask;
+  // Grow by the window radius so the panel's own border (and the gaps
+  // between slats right at its edge) go too.
+  for (let k = 0; k < radius; k++) textured = dilate(textured, width, height);
+  // Next to a panel, also drop thin slivers of mask (a few px wide): the
+  // strips between slats at the panel's edge that the window missed.
+  let zone = textured;
+  for (let k = 0; k < radius * 2; k++) zone = dilate(zone, width, height);
+  let solid = mask;
+  for (let k = 0; k < 3; k++) solid = erode(solid, width, height);
+  for (let k = 0; k < 3; k++) solid = dilate(solid, width, height);
+  const result = new Uint8Array(n);
+  for (let p = 0; p < n; p++) result[p] = mask[p] && !textured[p] && (solid[p] || !zone[p]) ? 1 : 0;
+  return result;
+}
+
+function maskAnd(a, b) {
+  const out = new Uint8Array(a.length);
+  for (let p = 0; p < a.length; p++) out[p] = a[p] && b[p] ? 1 : 0;
+  return out;
+}
+
+function erode(mask, width, height) {
+  const out = new Uint8Array(mask.length);
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const p = y * width + x;
+      out[p] = mask[p] && mask[p - 1] && mask[p + 1] && mask[p - width] && mask[p + width] ? 1 : 0;
+    }
+  }
+  return out;
+}
+
+function dilate(mask, width, height) {
+  const out = new Uint8Array(mask.length);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const p = y * width + x;
+      out[p] = mask[p]
+        || (x > 0 && mask[p - 1]) || (x < width - 1 && mask[p + 1])
+        || (y > 0 && mask[p - width]) || (y < height - 1 && mask[p + width]) ? 1 : 0;
+    }
+  }
+  return out;
+}
+
+function forEachComponent(mask, width, height, visit) {
+  const seen = new Uint8Array(mask.length);
+  const stack = [];
+  for (let s = 0; s < mask.length; s++) {
+    if (!mask[s] || seen[s]) continue;
+    const pixels = [];
+    let minX = width, maxX = 0, minY = height, maxY = 0;
+    seen[s] = 1;
+    stack.push(s);
+    while (stack.length) {
+      const p = stack.pop();
+      pixels.push(p);
+      const x = p % width, y = (p - x) / width;
+      if (x < minX) minX = x; if (x > maxX) maxX = x;
+      if (y < minY) minY = y; if (y > maxY) maxY = y;
+      if (x > 0 && mask[p - 1] && !seen[p - 1]) { seen[p - 1] = 1; stack.push(p - 1); }
+      if (x < width - 1 && mask[p + 1] && !seen[p + 1]) { seen[p + 1] = 1; stack.push(p + 1); }
+      if (y > 0 && mask[p - width] && !seen[p - width]) { seen[p - width] = 1; stack.push(p - width); }
+      if (y < height - 1 && mask[p + width] && !seen[p + width]) { seen[p + width] = 1; stack.push(p + width); }
+    }
+    visit(pixels, minX, maxX, minY, maxY);
+  }
+}
+
+// Andrew's monotone chain over each row's leftmost/rightmost pixel (the
+// only points that can be on the hull), counter-clockwise.
+function convexHull(pixels, width) {
+  const rows = new Map();
+  for (const p of pixels) {
+    const x = p % width, y = (p - x) / width;
+    const r = rows.get(y);
+    if (!r) rows.set(y, [x, x]);
+    else { if (x < r[0]) r[0] = x; if (x > r[1]) r[1] = x; }
+  }
+  const pts = [];
+  for (const [y, [a, b]] of rows) { pts.push([a, y]); if (b !== a) pts.push([b, y]); }
+  pts.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+  if (pts.length < 3) return pts;
+  const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lower = [], upper = [];
+  for (const pt of pts) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], pt) <= 0) lower.pop();
+    lower.push(pt);
+  }
+  for (let i = pts.length - 1; i >= 0; i--) {
+    const pt = pts[i];
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], pt) <= 0) upper.pop();
+    upper.push(pt);
+  }
+  return lower.slice(0, -1).concat(upper.slice(0, -1));
+}
+
+function insideConvex(hull, x, y) {
+  if (hull.length < 3) return hull.some(([hx, hy]) => hx === x && hy === y);
+  for (let i = 0; i < hull.length; i++) {
+    const [ax, ay] = hull[i];
+    const [bx, by] = hull[(i + 1) % hull.length];
+    if ((bx - ax) * (y - ay) - (by - ay) * (x - ax) < 0) return false;
+  }
+  return true;
+}
+
+// The AI map occasionally marks a window / the sky outside it as ceiling
+// (it's a bright, flat, blue-ish region). The real ceiling is always the
+// topmost overhead plane, so keep only ceiling components that start
+// above the bottom edge of the largest ceiling component -- that drops a
+// stray patch sitting down at window height while still allowing a
+// ceiling split in two by a beam or light fixture.
+function keepOverheadCeiling(mask, width, height) {
+  const visited = new Uint8Array(mask.length);
+  const components = [];
+  for (let p = 0; p < mask.length; p++) {
+    if (!mask[p] || visited[p]) continue;
+    const x0 = p % width;
+    const comp = floodFillWithinMask(mask, width, height, x0, (p - x0) / width);
+    let count = 0, minY = height, maxY = 0;
+    for (let i = 0; i < comp.length; i++) {
+      if (!comp[i]) continue;
+      visited[i] = 1;
+      count++;
+      const y = (i - (i % width)) / width;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+    components.push({ comp, count, minY, maxY });
+  }
+  if (components.length <= 1) return mask;
+  const main = components.reduce((a, b) => (b.count > a.count ? b : a));
+  const result = new Uint8Array(mask.length);
+  for (const c of components) {
+    if (c !== main && c.minY > main.maxY) continue;
+    for (let i = 0; i < c.comp.length; i++) if (c.comp[i]) result[i] = 1;
+  }
+  return result;
+}
+
+// Gemini only returns maps in a few fixed aspect ratios. Letterbox the photo
+// with black onto exactly the nearest one, so the map comes back the same
+// shape as what was sent and needs no stretching to line up.
+function padToAspect(canvas) {
+  const { width, height } = canvas;
+  const [rw, rh] = closestAspectRatio(width, height).split(':').map(Number);
+  const ratio = rw / rh;
+  const padW = width / height > ratio ? width : Math.round(height * ratio);
+  const padH = width / height > ratio ? Math.round(width / ratio) : height;
+  const ox = Math.round((padW - width) / 2);
+  const oy = Math.round((padH - height) / 2);
+  const off = document.createElement('canvas');
+  off.width = padW;
+  off.height = padH;
+  const ctx = off.getContext('2d');
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, padW, padH);
+  ctx.drawImage(canvas, ox, oy);
+  return { canvas: off, padW, padH, ox, oy };
+}
+
+function canvasToJpegBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('encode failed'))), 'image/jpeg', 0.9);
+  });
+}
+
 export default function PaintVisualizer() {
   const canvasRef = useRef(null);
   const originalImageDataRef = useRef(null);
@@ -272,6 +678,7 @@ export default function PaintVisualizer() {
   const [tolerance, setTolerance] = useState(28);
   const [regionCount, setRegionCount] = useState(0);
   const [segmentationStatus, setSegmentationStatus] = useState('idle'); // idle | loading | ready | failed
+  const [uploadError, setUploadError] = useState('');
   const [eraseMode, setEraseMode] = useState(false);
   const [brushSize, setBrushSize] = useState(32);
   const isErasingRef = useRef(false);
@@ -286,22 +693,24 @@ export default function PaintVisualizer() {
     const { width, height } = orig;
 
     // Paints the chosen colour itself, scaled by how much lighter or darker
-    // each pixel is than the surface's typical brightness. That keeps the
+    // each pixel is than the surface's local typical brightness (shadeMap). That keeps the
     // room's light and shadow while the wall reads as the colour picked. (The
     // old approach kept each pixel's absolute lightness and swapped only hue
     // and saturation, so on a white wall every colour came out pastel: navy
     // rendered as light blue.)
     for (const region of regionsRef.current) {
       if (!region.color) continue;
-      region.baseLuma ??= medianLuma(region.mask, orig.data);
-      region.alpha ??= featherMask(region.mask, width, height);
+      if (!region.alpha) {
+        region.alpha = featherMask(region.mask, width, height);
+        region.shade = shadeMap(region.mask, orig.data, width, height, region.alpha);
+      }
       const { r, g, b } = region.color;
-      const { alpha, baseLuma } = region;
+      const { alpha, shade: shadeOf } = region;
       for (let p = 0; p < alpha.length; p++) {
         const a = alpha[p];
         if (!a) continue;
         const i = p * 4;
-        const shade = Math.min(MAX_SHADE, Math.max(MIN_SHADE, lumaAt(orig.data, i) / baseLuma));
+        const shade = shadeOf[p];
         out[i] = out[i] * (1 - a) + r * shade * a;
         out[i + 1] = out[i + 1] * (1 - a) + g * shade * a;
         out[i + 2] = out[i + 2] * (1 - a) + b * shade * a;
@@ -313,7 +722,10 @@ export default function PaintVisualizer() {
 
   const handleFileChange = useCallback((e) => {
     const file = e.target.files?.[0];
+    // Clear the input so picking the same photo again still fires onChange.
+    e.target.value = '';
     if (!file) return;
+    setUploadError('');
     setLoadingImage(true);
     setSegmentationStatus('loading');
     setWallColorHex(null);
@@ -341,27 +753,66 @@ export default function PaintVisualizer() {
       setLoadingImage(false);
       URL.revokeObjectURL(url);
 
+      // Snapshot the unpainted, downscaled photo now (toBlob reads the
+      // canvas at call time) -- sending this instead of the raw upload
+      // keeps the request small and guarantees the AI map is computed on
+      // exactly the pixels we paint over.
+      const padded = padToAspect(canvas);
+      const photoBlobPromise = canvasToJpegBlob(padded.canvas);
+
       // Kick off AI wall/ceiling detection in the background. On success,
       // both surfaces are pre-selected immediately (whole-mask regions,
       // color still null) -- the user's only remaining action is picking
-      // a color, no tapping required. On failure, fall back to the old
-      // tap-and-flood-fill flow.
+      // a color, no tapping required. Tries the Gemini scene-understanding
+      // detector first, then the HF ADE20K model; if both fail, falls
+      // back to the old tap-and-flood-fill flow.
+      const detectWithGemini = async () => {
+        const body = new FormData();
+        body.append('photo', await photoBlobPromise, 'room.jpg');
+        body.append('width', String(padded.padW));
+        body.append('height', String(padded.padH));
+        const res = await fetch('/api/segment-surfaces-ai', { method: 'POST', body });
+        if (!res.ok) throw new Error('ai segmentation failed');
+        const json = await readJsonResponse(res);
+        const photo = originalImageDataRef.current;
+        const masks = await decodeSurfaceMap(json.surfaceMap, width, height, padded);
+        if (masks.wall) masks.wall = removeTexturedAreas(masks.wall, photo);
+        if (masks.ceiling) {
+          masks.ceiling = removeCeilingFixtures(
+            removeTexturedAreas(keepOverheadCeiling(masks.ceiling, width, height), photo),
+            photo,
+          );
+        }
+        return { ...masks, fromAi: true };
+      };
+      const detectWithSegformer = async () => {
+        const body = new FormData();
+        body.append('photo', await resizeToJpegBlob(file, MAX_DIMENSION), 'room.jpg');
+        const res = await fetch('/api/segment-surfaces', { method: 'POST', body });
+        if (!res.ok) throw new Error('segmentation failed');
+        const json = await readJsonResponse(res);
+        return {
+          wall: json.masks.wall ? await loadMaskAsArray(json.masks.wall, width, height) : null,
+          ceiling: json.masks.ceiling ? await loadMaskAsArray(json.masks.ceiling, width, height) : null,
+        };
+      };
+
       (async () => {
         try {
-          const body = new FormData();
-          body.append('photo', await resizeToJpegBlob(file, MAX_DIMENSION), 'room.jpg');
-          const res = await fetch('/api/segment-surfaces', { method: 'POST', body });
-          if (!res.ok) throw new Error('segmentation failed');
-          const json = await readJsonResponse(res);
+          let masks;
+          try {
+            masks = await detectWithGemini();
+            if (!masks.wall && !masks.ceiling) throw new Error('no surfaces in ai map');
+          } catch {
+            masks = await detectWithSegformer();
+          }
           const imageData = originalImageDataRef.current;
           const newRegions = [];
-          if (json.masks.wall) {
-            const raw = await loadMaskAsArray(json.masks.wall, width, height);
-            newRegions.push({ key: 'wall', mask: refineMaskPerComponent(raw, width, height, imageData), color: null });
+          if (masks.wall) {
+            newRegions.push({ key: 'wall', mask: refineMaskPerComponent(masks.wall, width, height, imageData, !masks.fromAi), color: null });
           }
-          if (json.masks.ceiling) {
-            const raw = await loadMaskAsArray(json.masks.ceiling, width, height);
-            newRegions.push({ key: 'ceiling', mask: refineMaskPerComponent(raw, width, height, imageData), color: null });
+          if (masks.ceiling) {
+            newRegions.push({ key: 'ceiling', mask: refineMaskPerComponent(masks.ceiling, width, height, imageData, !masks.fromAi), color: null });
           }
           if (newRegions.length === 0) throw new Error('no surfaces detected');
           regionsRef.current = newRegions;
@@ -378,8 +829,11 @@ export default function PaintVisualizer() {
       })();
     };
     img.onerror = () => {
+      URL.revokeObjectURL(url);
       setLoadingImage(false);
       setSegmentationStatus('idle');
+      // Usually an HEIC photo on a browser that can't decode it.
+      setUploadError("This photo couldn't be opened. Please choose a JPG or PNG photo, or take a new one with the camera.");
     };
     img.src = url;
   }, []);
@@ -549,23 +1003,38 @@ export default function PaintVisualizer() {
   return (
     <div className="min-h-screen bg-[#070A25]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
-        <div className="flex items-center justify-between mb-5">
-          <Link href="/our-design" className="flex items-center gap-1.5 text-white/70 hover:text-white text-sm font-nunito">
-            <ArrowLeft className="w-4 h-4" />
+        {/* Phones: back link on its own line, title below. sm+: three columns
+            with the title truly centred (equal 1fr side columns). */}
+        <div className="mb-5 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4">
+          <Link href="/our-design" className="inline-flex min-h-[40px] items-center gap-1.5 justify-self-start whitespace-nowrap text-white/70 hover:text-white text-sm font-nunito">
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
             Back to Designs
           </Link>
-          <h1 className="font-playfair font-bold text-white text-[20px]">Wall &amp; Ceiling Paint Visualizer</h1>
-          <div className="w-[100px]" />
+          <h1 className="font-playfair font-bold text-white text-[22px] leading-tight sm:text-[20px] sm:text-center">Wall &amp; Ceiling Paint Visualizer</h1>
+          <span className="hidden sm:block" aria-hidden="true" />
         </div>
 
         {!hasImage && (
-          <label className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-white/20 rounded-2xl py-16 px-6 cursor-pointer hover:border-[#D9A441]/60 transition-colors">
-            <Upload className="w-8 h-8 text-white/50" />
-            <span className="text-white/80 font-nunito text-[15px] text-center">
-              {loadingImage ? 'Loading photo...' : 'Upload a photo of your room to try wall & ceiling colors'}
-            </span>
-            <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
-          </label>
+          <div className="flex flex-col items-center justify-center gap-4 border-2 border-dashed border-white/20 rounded-2xl py-12 sm:py-16 px-5 text-center">
+            <Upload className="w-8 h-8 text-white/50" aria-hidden="true" />
+            <p className="text-white/80 font-nunito text-[15px] max-w-[340px]">
+              {loadingImage ? 'Loading photo...' : 'Add a photo of your room to try wall & ceiling colours'}
+            </p>
+            {/* Two inputs: `capture` opens the camera directly on phones but
+                hides the gallery, so picking an existing photo needs its own
+                button. The camera button only shows on touch devices. */}
+            <div className="flex w-full max-w-[420px] flex-col gap-3 sm:flex-row sm:justify-center">
+              <label className="btn-primary hidden w-full cursor-pointer sm:w-auto [@media(pointer:coarse)]:inline-flex">
+                <Camera className="h-4 w-4" aria-hidden="true" /> Take photo
+                <input type="file" accept="image/*" capture="environment" className="sr-only" onChange={handleFileChange} disabled={loadingImage} />
+              </label>
+              <label className="btn-outline w-full cursor-pointer sm:w-auto">
+                <ImageIcon className="h-4 w-4" aria-hidden="true" /> Choose from gallery
+                <input type="file" accept="image/*" className="sr-only" onChange={handleFileChange} disabled={loadingImage} />
+              </label>
+            </div>
+            {uploadError && <p role="alert" className="max-w-[420px] rounded-lg border border-[#E57373]/40 bg-[#E57373]/10 px-4 py-3 font-nunito text-[13.5px] text-[#FFCDD2]">{uploadError}</p>}
+          </div>
         )}
 
         {/* Canvas stays mounted even before an image is chosen, so canvasRef
@@ -597,7 +1066,7 @@ export default function PaintVisualizer() {
           {segmentationStatus === 'loading' && (
             <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/60 text-white text-[12px] font-nunito px-3 py-1.5 rounded-full">
               <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-              Detecting walls &amp; ceiling...
+              AI is detecting walls &amp; ceiling (up to ~30s)...
             </div>
           )}
           {segmentationStatus === 'failed' && (

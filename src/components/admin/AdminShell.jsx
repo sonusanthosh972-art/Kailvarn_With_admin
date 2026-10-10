@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, Images, LayoutTemplate, UploadCloud, FileText, CalendarCheck, Mail, Settings, LogOut, Menu, X, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, Images, LayoutTemplate, UploadCloud, FileText, CalendarCheck, Mail, Sparkles, Settings, LogOut, Menu, X, ExternalLink } from 'lucide-react';
 import { adminApi } from '@/lib/adminApi.js';
 
 const NAV = [
@@ -15,6 +15,7 @@ const NAV = [
   { href: '/admin/quotes', label: 'Quote Requests', icon: FileText },
   { href: '/admin/consultations', label: 'Consultations', icon: CalendarCheck },
   { href: '/admin/contact', label: 'Contact Enquiries', icon: Mail },
+  { href: '/admin/ai-usage', label: 'AI Usage', icon: Sparkles },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 

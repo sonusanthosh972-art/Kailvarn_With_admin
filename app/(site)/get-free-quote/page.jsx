@@ -2,9 +2,9 @@ import { pageMetadata } from '@/lib/seo.js';
 import GetFreeQuotePage from '@/views/GetFreeQuotePage.jsx';
 
 export const metadata = pageMetadata({
-  title: 'Free Interior Design Quote in Silvassa & Vapi',
+  title: 'Interior Cost Calculator: Free Estimate in Silvassa & Vapi',
   description:
-    'Get a free, no-obligation quote for your home or office interior in Silvassa or Vapi. Tell us about your space in 2 minutes and get a clear, itemised estimate.',
+    'Free interior cost calculator for Silvassa, Vapi and Daman. Choose your home type, rooms and package and get an instant, itemised estimate for 1, 2, 3 BHK and villa interiors.',
   path: '/get-free-quote',
 });
 

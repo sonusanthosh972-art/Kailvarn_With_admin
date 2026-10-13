@@ -12,6 +12,12 @@ export const SURFACE_SEGMENTATION_MODEL = 'nvidia/segformer-b5-finetuned-ade-640
 // fallback if this call fails.
 export const AI_SURFACE_MODEL = 'gemini-3.1-flash-image';
 
+// "AI realistic preview" (app/api/paint-preview): Gemini's image model takes
+// the original photo + the browser-painted guide and returns a photorealistic
+// render. Separate from AI_SURFACE_MODEL so each can be changed on its own.
+// ~Rs 6.5 per call (image output); see src/constants/aiPricing.js.
+export const PAINT_PREVIEW_MODEL = 'gemini-3.1-flash-image';
+
 export const AI_SURFACE_PROMPT = `You are a precise semantic segmentation tool for an interior paint visualizer.
 Convert the input room photo into a flat color-coded segmentation map with EXACTLY the same framing, perspective, camera angle and dimensions as the input. Every pixel must line up with the same location in the original photo.
 

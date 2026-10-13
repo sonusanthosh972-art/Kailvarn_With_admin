@@ -560,6 +560,70 @@
   }
 }
 
+/* Diwali offer hero: festive lighting. Opacity/transform only, so it stays
+   smooth on phones; all of it stops for reduced motion. */
+@layer utilities {
+  /* Warm lamp-light that slowly breathes over the photo */
+  @keyframes kvGlow { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.95; } }
+  .kv-diwali-glow { animation: kvGlow 6s ease-in-out infinite; }
+
+  /* Embers drifting up from the diyas */
+  @keyframes kvEmber {
+    0% { transform: translate3d(0, 0, 0) scale(0.6); opacity: 0; }
+    15% { opacity: 1; }
+    80% { opacity: 0.8; }
+    100% { transform: translate3d(var(--kv-drift, 12px), -140px, 0) scale(1); opacity: 0; }
+  }
+  .kv-ember {
+    position: absolute;
+    border-radius: 9999px;
+    background: radial-gradient(circle, #FFF3C4 0%, #F7C64A 45%, rgba(242, 178, 27, 0) 70%);
+    opacity: 0;
+    animation: kvEmber var(--kv-dur, 7s) ease-in infinite;
+    animation-delay: var(--kv-delay, 0s);
+  }
+
+  /* Diya flame flicker */
+  @keyframes kvFlame {
+    0%, 100% { transform: scale(1, 1) skewX(0deg); }
+    25% { transform: scale(0.94, 1.06) skewX(-3deg); }
+    50% { transform: scale(1.04, 0.95) skewX(2deg); }
+    75% { transform: scale(0.97, 1.04) skewX(-1deg); }
+  }
+  .kv-flame { transform-box: fill-box; transform-origin: 50% 100%; animation: kvFlame 1.6s ease-in-out infinite; }
+  @keyframes kvHalo { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.9; } }
+  .kv-halo { animation: kvHalo 1.6s ease-in-out infinite; }
+
+  /* Gold foil text with a light sweep */
+  @keyframes kvFoil { from { background-position: 200% 50%; } to { background-position: -200% 50%; } }
+  .kv-gold-text {
+    background-image: linear-gradient(100deg, #E8A317 0%, #FFE39A 18%, #FFFBEA 27%, #FFD24A 38%, #F0A81C 55%, #FFE7A0 76%, #E8A317 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: kvFoil 7s linear infinite;
+  }
+
+  /* Offer plaque: soft pulsing gold aura (on a pseudo-element, so only opacity animates) */
+  @keyframes kvAura { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.85; } }
+  .kv-offer-aura { position: relative; isolation: isolate; }
+  .kv-offer-aura::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: 0 0 34px 4px rgba(242, 178, 27, 0.55);
+    animation: kvAura 3.2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kv-diwali-glow, .kv-flame, .kv-halo, .kv-gold-text, .kv-offer-aura::before { animation: none; }
+    .kv-ember { display: none; }
+  }
+}
+
 /* "Save as PDF" on the estimate result: print only the estimate card. */
 @media print {
   body:has(#estimate-print) * { visibility: hidden; }

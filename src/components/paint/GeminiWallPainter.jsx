@@ -3,7 +3,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Upload, Sparkles, RotateCcw } from 'lucide-react';
-import { PAINT_COLORS } from '@/constants/paintColors.js';
+import PaintColorPicker from '@/components/paint/PaintColorPicker.jsx';
 import { resizeToJpegBlob, readJsonResponse } from '@/lib/imageUpload.js';
 
 // Isolated proof-of-concept component: does not import from or modify
@@ -317,26 +317,7 @@ export default function GeminiWallPainter() {
             <p className="mt-5 text-white/70 text-[13px] font-nunito mb-2">
               {activeSurface === 'wall' ? 'Wall Color' : 'Ceiling Color'}
             </p>
-            <div className="flex flex-wrap gap-2.5">
-              {PAINT_COLORS.map((c) => (
-                <button
-                  key={c.hex}
-                  onClick={() => handleSelectColor(c.hex)}
-                  aria-label={c.name}
-                  className={`w-9 h-9 rounded-full border-2 transition-transform ${
-                    activeColorHex === c.hex ? 'border-white scale-110' : 'border-white/20'
-                  }`}
-                  style={{ backgroundColor: c.hex }}
-                />
-              ))}
-              <input
-                type="color"
-                value={activeColorHex || '#ffffff'}
-                onChange={(e) => handleSelectColor(e.target.value)}
-                className="w-9 h-9 rounded-full border-2 border-white/20 bg-transparent cursor-pointer"
-                aria-label="Custom color"
-              />
-            </div>
+            <PaintColorPicker value={activeColorHex} onChange={handleSelectColor} label="Colour" />
 
             <div className="mt-6 flex flex-wrap gap-3">
               <button

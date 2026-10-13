@@ -2,10 +2,13 @@
 
 import React, { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Undo2, RotateCcw, Upload, Sparkles, Eraser, Camera, ImageIcon } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Undo2, RotateCcw, Upload, Sparkles, Eraser, Camera, ImageIcon } from 'lucide-react';
 import { PAINT_COLORS } from '@/constants/paintColors.js';
+import PaintColorPicker from '@/components/paint/PaintColorPicker.jsx';
+import { useSamSelect } from '@/components/paint/useSamSelect.js';
 import { resizeToJpegBlob, readJsonResponse } from '@/lib/imageUpload.js';
 import { closestAspectRatio } from '@/constants/segmentationConfig.js';
+import { DIWALI_OFFER } from '@/constants/offers.js';
 
 const MAX_DIMENSION = 900;
 
@@ -683,6 +686,13 @@ export default function PaintVisualizer() {
   const [brushSize, setBrushSize] = useState(32);
   const isErasingRef = useRef(false);
   const brushCursorRef = useRef(null);
+  // Segment Anything in the browser: precise tap-to-select (falls back to
+  // the colour flood fill while it loads, or if the device can't run it).
+  const { status: samStatus, encode: samEncode, select: samSelect, reset: samReset } = useSamSelect();
+  const smartSelect = samStatus === 'ready';
+  const [selecting, setSelecting] = useState(false);
+  // Optional AI realistic preview (one paid call, only when the visitor asks).
+  const [preview, setPreview] = useState({ status: 'idle', image: null, error: '' });
 
   const redrawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -746,6 +756,7 @@ export default function PaintVisualizer() {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, width, height);
       originalImageDataRef.current = ctx.getImageData(0, 0, width, height);
+      samEncode(originalImageDataRef.current);
       regionsRef.current = [];
       activeRegionIndexRef.current = -1;
       setRegionCount(0);
@@ -836,7 +847,7 @@ export default function PaintVisualizer() {
       setUploadError("This photo couldn't be opened. Please choose a JPG or PNG photo, or take a new one with the camera.");
     };
     img.src = url;
-  }, []);
+  }, [samEncode]);
 
   const getCanvasCoords = useCallback((e) => {
     const canvas = canvasRef.current;
@@ -851,16 +862,28 @@ export default function PaintVisualizer() {
   // Tap-to-select only exists as the fallback when AI detection fails --
   // when it succeeds, both surfaces are already pre-selected and tapping
   // the canvas does nothing (color pickers are the only interaction).
-  const handleCanvasClick = useCallback((e) => {
-    if (!hasImage || eraseMode || segmentationStatus !== 'failed') return;
+  // Uses SAM's outline of the tapped surface when it's ready, otherwise
+  // the colour flood fill.
+  const handleCanvasClick = useCallback(async (e) => {
+    if (!hasImage || eraseMode || segmentationStatus !== 'failed' || selecting) return;
     const [x, y] = getCanvasCoords(e);
-    const mask = floodFillMask(originalImageDataRef.current, x, y, tolerance);
+    const orig = originalImageDataRef.current;
+    let mask = null;
+    if (smartSelect) {
+      setSelecting(true);
+      const result = await samSelect((x + 0.5) / orig.width, (y + 0.5) / orig.height);
+      setSelecting(false);
+      // Ignore a result for a photo that has since been replaced
+      if (originalImageDataRef.current !== orig) return;
+      if (result && result.width === orig.width && result.height === orig.height) mask = result.mask;
+    }
+    if (!mask) mask = floodFillMask(orig, x, y, tolerance);
     const region = { key: null, mask, color: hexToRgb(selectedColor) };
     regionsRef.current = [...regionsRef.current, region];
     activeRegionIndexRef.current = regionsRef.current.length - 1;
     setRegionCount(regionsRef.current.length);
     redrawCanvas();
-  }, [hasImage, eraseMode, segmentationStatus, tolerance, selectedColor, redrawCanvas, getCanvasCoords]);
+  }, [hasImage, eraseMode, segmentationStatus, selecting, smartSelect, samSelect, tolerance, selectedColor, redrawCanvas, getCanvasCoords]);
 
   // Manual touch-up brush: works like a real eraser tool -- removes
   // paint from whatever is actually under the brush, across ALL painted
@@ -985,10 +1008,13 @@ export default function PaintVisualizer() {
     setCeilingColorHex(null);
     setRegionCount(regionsRef.current.length);
     setEraseMode(false);
+    setPreview({ status: 'idle', image: null, error: '' });
     redrawCanvas();
   }, [redrawCanvas]);
 
   const handleNewPhoto = useCallback(() => {
+    samReset();
+    setPreview({ status: 'idle', image: null, error: '' });
     setHasImage(false);
     regionsRef.current = [];
     originalImageDataRef.current = null;
@@ -998,7 +1024,39 @@ export default function PaintVisualizer() {
     setWallColorHex(null);
     setCeilingColorHex(null);
     setAvailableSurfaces({ wall: false, ceiling: false });
-  }, []);
+  }, [samReset]);
+
+  // Sends the original photo + the browser-painted version; Gemini returns a
+  // photorealistic render. Colours go as hex codes only.
+  const canPreview = segmentationStatus === 'ready' ? Boolean(wallColorHex || ceilingColorHex) : segmentationStatus === 'failed' && regionCount > 0;
+  const handleAiPreview = useCallback(async () => {
+    const canvas = canvasRef.current;
+    const orig = originalImageDataRef.current;
+    if (!canvas || !orig) return;
+    setEraseMode(false);
+    setPreview({ status: 'loading', image: null, error: '' });
+    try {
+      const origCanvas = document.createElement('canvas');
+      origCanvas.width = orig.width;
+      origCanvas.height = orig.height;
+      origCanvas.getContext('2d').putImageData(orig, 0, 0);
+      const body = new FormData();
+      body.append('photo', await canvasToJpegBlob(origCanvas), 'room.jpg');
+      body.append('guide', await canvasToJpegBlob(canvas), 'painted.jpg');
+      body.append('width', String(orig.width));
+      body.append('height', String(orig.height));
+      if (segmentationStatus === 'ready') {
+        if (wallColorHex) body.append('wall', wallColorHex);
+        if (ceilingColorHex) body.append('ceiling', ceilingColorHex);
+      }
+      const res = await fetch('/api/paint-preview', { method: 'POST', body });
+      const json = await readJsonResponse(res).catch(() => null);
+      if (!res.ok || !json?.image) throw new Error(json?.error || 'AI preview failed. Please try again.');
+      setPreview({ status: 'done', image: json.image, error: '' });
+    } catch (err) {
+      setPreview({ status: 'error', image: null, error: err?.message || 'AI preview failed. Please try again.' });
+    }
+  }, [segmentationStatus, wallColorHex, ceilingColorHex]);
 
   return (
     <div className="min-h-screen bg-[#070A25]">
@@ -1013,6 +1071,22 @@ export default function PaintVisualizer() {
           <h1 className="font-playfair font-bold text-white text-[22px] leading-tight sm:text-[20px] sm:text-center">Wall &amp; Ceiling Paint Visualizer</h1>
           <span className="hidden sm:block" aria-hidden="true" />
         </div>
+
+        {/* Festival offer: from trying colours straight to booking the painters */}
+        {DIWALI_OFFER.active && (
+          <Link
+            href={DIWALI_OFFER.quotePath}
+            className="group mb-5 flex items-center justify-between gap-3 rounded-xl border border-[#F2B21B]/50 bg-[linear-gradient(135deg,#3E080B_0%,#7A1418_100%)] px-4 py-3 font-nunito text-white"
+          >
+            <span className="text-[13.5px] sm:text-[14.5px] leading-snug">
+              <strong className="text-[#FFD66B]">Diwali offer: {DIWALI_OFFER.discount}% off painting</strong>
+              <span className="text-white/80"> with any paint brand. Like a colour? Get it painted.</span>
+            </span>
+            <span className="inline-flex shrink-0 items-center gap-1 text-[12px] font-bold uppercase tracking-[0.12em] text-[#F6D47C]">
+              Claim <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+            </span>
+          </Link>
+        )}
 
         {!hasImage && (
           <div className="flex flex-col items-center justify-center gap-4 border-2 border-dashed border-white/20 rounded-2xl py-12 sm:py-16 px-5 text-center">
@@ -1071,13 +1145,17 @@ export default function PaintVisualizer() {
           )}
           {segmentationStatus === 'failed' && (
             <div className="absolute top-3 left-3 bg-black/60 text-white/80 text-[12px] font-nunito px-3 py-1.5 rounded-full max-w-[85%]">
-              Wall/ceiling detection unavailable -- using approximate selection.
+              {smartSelect
+                ? <span className="inline-flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 text-[#F2B21B]" aria-hidden="true" />Smart select on -- tap each wall or ceiling to paint it.</span>
+                : samStatus === 'loading' || samStatus === 'encoding'
+                  ? <span className="inline-flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 animate-pulse" aria-hidden="true" />Getting smart select ready... you can tap now.</span>
+                  : 'Wall/ceiling detection unavailable -- using approximate selection.'}
             </div>
           )}
-          {segmentationStatus === 'failed' && regionCount === 0 && !eraseMode && (
+          {segmentationStatus === 'failed' && (regionCount === 0 || selecting) && !eraseMode && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-6">
               <p className="bg-black/60 text-white text-[13px] font-nunito px-4 py-2 rounded-full text-center">
-                Tap a wall or ceiling to select it
+                {selecting ? 'Selecting...' : 'Tap a wall or ceiling to select it'}
               </p>
             </div>
           )}
@@ -1101,79 +1179,25 @@ export default function PaintVisualizer() {
             {segmentationStatus === 'ready' && availableSurfaces.wall && (
               <div className="mt-4">
                 <p className="text-white/70 text-[13px] font-nunito mb-2">Wall Color</p>
-                <div className="flex flex-wrap gap-2.5">
-                  {PAINT_COLORS.map((c) => (
-                    <button
-                      key={c.hex}
-                      onClick={() => handleSelectWallColor(c.hex)}
-                      aria-label={c.name}
-                      className={`w-9 h-9 rounded-full border-2 transition-transform ${
-                        wallColorHex === c.hex ? 'border-white scale-110' : 'border-white/20'
-                      }`}
-                      style={{ backgroundColor: c.hex }}
-                    />
-                  ))}
-                  <input
-                    type="color"
-                    value={wallColorHex || '#ffffff'}
-                    onChange={(e) => handleSelectWallColor(e.target.value)}
-                    className="w-9 h-9 rounded-full border-2 border-white/20 bg-transparent cursor-pointer"
-                    aria-label="Custom wall color"
-                  />
-                </div>
+                <PaintColorPicker value={wallColorHex} onChange={handleSelectWallColor} label="Wall colour" />
               </div>
             )}
 
             {segmentationStatus === 'ready' && availableSurfaces.ceiling && (
               <div className="mt-4">
                 <p className="text-white/70 text-[13px] font-nunito mb-2">Ceiling Color</p>
-                <div className="flex flex-wrap gap-2.5">
-                  {PAINT_COLORS.map((c) => (
-                    <button
-                      key={c.hex}
-                      onClick={() => handleSelectCeilingColor(c.hex)}
-                      aria-label={`Ceiling ${c.name}`}
-                      className={`w-9 h-9 rounded-full border-2 transition-transform ${
-                        ceilingColorHex === c.hex ? 'border-white scale-110' : 'border-white/20'
-                      }`}
-                      style={{ backgroundColor: c.hex }}
-                    />
-                  ))}
-                  <input
-                    type="color"
-                    value={ceilingColorHex || '#ffffff'}
-                    onChange={(e) => handleSelectCeilingColor(e.target.value)}
-                    className="w-9 h-9 rounded-full border-2 border-white/20 bg-transparent cursor-pointer"
-                    aria-label="Custom ceiling color"
-                  />
-                </div>
+                <PaintColorPicker value={ceilingColorHex} onChange={handleSelectCeilingColor} label="Ceiling colour" defaultCollection="shvet" />
+                <p className="mt-1 text-white/40 text-[12px] font-nunito">Tip: whites and soft off-whites make a ceiling feel higher and brighter.</p>
               </div>
             )}
 
             {segmentationStatus === 'failed' && (
-              <div className="mt-5 flex flex-wrap gap-2.5">
-                {PAINT_COLORS.map((c) => (
-                  <button
-                    key={c.hex}
-                    onClick={() => handleSelectColor(c.hex)}
-                    aria-label={c.name}
-                    className={`w-9 h-9 rounded-full border-2 transition-transform ${
-                      selectedColor === c.hex ? 'border-white scale-110' : 'border-white/20'
-                    }`}
-                    style={{ backgroundColor: c.hex }}
-                  />
-                ))}
-                <input
-                  type="color"
-                  value={selectedColor}
-                  onChange={(e) => handleSelectColor(e.target.value)}
-                  className="w-9 h-9 rounded-full border-2 border-white/20 bg-transparent cursor-pointer"
-                  aria-label="Custom color"
-                />
+              <div className="mt-5">
+                <PaintColorPicker value={selectedColor} onChange={handleSelectColor} label="Colour" />
               </div>
             )}
 
-            {segmentationStatus === 'failed' && (
+            {segmentationStatus === 'failed' && !smartSelect && (
               <div className="mt-5">
                 <label className="flex items-center justify-between text-white/70 text-[13px] font-nunito mb-1.5">
                   <span>Selection sensitivity</span>
@@ -1219,7 +1243,7 @@ export default function PaintVisualizer() {
                 className={`flex items-center gap-1.5 border font-nunito text-[13px] px-4 py-2 rounded-lg transition-colors disabled:opacity-30 ${
                   eraseMode
                     ? 'bg-[#F2B21B] text-[#0B103B] border-[#D9A441]'
-                    : 'border-white/20 text-[#0B103B]/80 hover:bg-white/10'
+                    : 'border-white/20 text-white/80 hover:bg-white/10'
                 }`}
               >
                 <Eraser className="w-4 h-4" />
@@ -1251,6 +1275,47 @@ export default function PaintVisualizer() {
                 New Photo
               </button>
             </div>
+
+            {canPreview && (
+              <div className="mt-6 rounded-xl border border-[#F2B21B]/40 bg-white/[0.04] p-4 sm:p-5">
+                {preview.status === 'done' ? (
+                  <>
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="flex items-center gap-1.5 font-nunito text-[13px] font-bold text-[#F6D47C]">
+                        <Sparkles className="h-4 w-4" aria-hidden="true" /> AI realistic preview
+                      </p>
+                      <button type="button" onClick={() => setPreview({ status: 'idle', image: null, error: '' })} className="min-h-[36px] px-2 font-nunito text-[13px] text-white/70 hover:text-white">
+                        Close
+                      </button>
+                    </div>
+                    <img src={preview.image} alt="AI preview of your room with the chosen paint colours" className="mt-3 w-full rounded-lg" />
+                    <p className="mt-2 font-nunito text-[12px] text-white/50">
+                      AI renders can change small details. Confirm the final shade on a physical shade card.
+                    </p>
+                    <Link href={DIWALI_OFFER.active ? DIWALI_OFFER.quotePath : '/painting-quote'} className="btn-primary mt-4 w-full sm:w-auto">
+                      {DIWALI_OFFER.active ? `Love it? Get it painted with ${DIWALI_OFFER.discount}% off` : 'Love it? Get a painting quote'} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                  </>
+                ) : (
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-nunito text-[14px] font-bold text-white">Happy with your colours?</p>
+                      <p className="mt-0.5 font-nunito text-[12.5px] text-white/60">
+                        {preview.status === 'loading'
+                          ? 'Creating a realistic preview... this takes about 20-30 seconds.'
+                          : 'See a realistic AI render of your room in these colours.'}
+                      </p>
+                      {preview.status === 'error' && <p role="alert" className="mt-1.5 font-nunito text-[12.5px] text-[#FF9C8F]">{preview.error}</p>}
+                    </div>
+                    <button type="button" onClick={handleAiPreview} disabled={preview.status === 'loading'} className="btn-primary w-full shrink-0 !min-h-[46px] sm:w-auto">
+                      {preview.status === 'loading'
+                        ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Creating...</>
+                        : <><Sparkles className="h-4 w-4" aria-hidden="true" /> AI realistic preview</>}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
       </div>

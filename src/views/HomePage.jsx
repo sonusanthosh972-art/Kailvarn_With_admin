@@ -9,6 +9,8 @@ import { useWhatsAppLink } from '@/hooks/useWhatsAppLink.js';
 import Reveal, { ImageReveal } from '@/components/kv/Reveal.jsx';
 import SectionHeading from '@/components/kv/SectionHeading.jsx';
 import SnapSlider from '@/components/kv/SnapSlider.jsx';
+import DiwaliHero from '@/components/offers/DiwaliHero.jsx';
+import { DIWALI_OFFER } from '@/constants/offers.js';
 
 // --- DATA CONSTANTS ---
 
@@ -173,6 +175,8 @@ export default function HomePage() {
   return (
     <div className="bg-[#FAFAF7] text-[#111111]">
       {/* ============ HERO ============ */}
+      {/* Festival offer replaces the regular hero while it runs (src/constants/offers.js) */}
+      {DIWALI_OFFER.active ? <DiwaliHero /> : (
       <section className="relative isolate flex items-end min-h-[calc(100svh-68px)] lg:min-h-[calc(100svh-80px)] overflow-hidden bg-[#070A25] text-white">
         <div className="absolute inset-0 -z-10">
           <img
@@ -251,6 +255,7 @@ export default function HomePage() {
           <span className="w-px h-16 bg-gradient-to-b from-[#F2B21B] to-transparent" />
         </div>
       </section>
+      )}
 
       {/* ============ TRUST STRIP ============ */}
       <section className="bg-[#0B103B] border-t border-[#F2B21B]/30" aria-label="Why homeowners choose KailVarn">

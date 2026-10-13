@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 
 const FEATURE_LABELS = {
   'paint-visualizer': 'Paint Visualizer (wall/ceiling detection)',
+  'paint-preview': 'Paint Visualizer (AI realistic preview)',
   'room-redesign': 'Try AI Design (room redesign)',
   'room-advisor': 'Design Advisor (room analysis)',
   'wall-painter': 'Wall Painter (Gemini test page)',

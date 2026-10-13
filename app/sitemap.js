@@ -9,6 +9,7 @@ const PAGES = [
   { path: '/book-consultation', changeFrequency: 'yearly', priority: 0.8 },
   { path: '/about', changeFrequency: 'yearly', priority: 0.6 },
   { path: '/contact', changeFrequency: 'yearly', priority: 0.6 },
+  { path: '/painting-quote', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/paint-visualizer', changeFrequency: 'yearly', priority: 0.5 },
   { path: '/ar/modern-living-room-design-1', changeFrequency: 'yearly', priority: 0.4 },
 ];

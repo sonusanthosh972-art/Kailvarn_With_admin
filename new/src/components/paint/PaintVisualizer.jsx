@@ -4,6 +4,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Undo2, RotateCcw, Upload, Sparkles, Eraser } from 'lucide-react';
 import { PAINT_COLORS } from '@/constants/paintColors.js';
+import PaintColorPicker from '@/components/paint/PaintColorPicker.jsx';
 
 const MAX_DIMENSION = 900;
 
@@ -601,75 +602,21 @@ export default function PaintVisualizer() {
             {segmentationStatus === 'ready' && availableSurfaces.wall && (
               <div className="mt-4">
                 <p className="text-white/70 text-[13px] font-nunito mb-2">Wall Color</p>
-                <div className="flex flex-wrap gap-2.5">
-                  {PAINT_COLORS.map((c) => (
-                    <button
-                      key={c.hex}
-                      onClick={() => handleSelectWallColor(c.hex)}
-                      aria-label={c.name}
-                      className={`w-9 h-9 rounded-full border-2 transition-transform ${
-                        wallColorHex === c.hex ? 'border-white scale-110' : 'border-white/20'
-                      }`}
-                      style={{ backgroundColor: c.hex }}
-                    />
-                  ))}
-                  <input
-                    type="color"
-                    value={wallColorHex || '#ffffff'}
-                    onChange={(e) => handleSelectWallColor(e.target.value)}
-                    className="w-9 h-9 rounded-full border-2 border-white/20 bg-transparent cursor-pointer"
-                    aria-label="Custom wall color"
-                  />
-                </div>
+                <PaintColorPicker value={wallColorHex} onChange={handleSelectWallColor} label="Wall colour" />
               </div>
             )}
 
             {segmentationStatus === 'ready' && availableSurfaces.ceiling && (
               <div className="mt-4">
                 <p className="text-white/70 text-[13px] font-nunito mb-2">Ceiling Color</p>
-                <div className="flex flex-wrap gap-2.5">
-                  {PAINT_COLORS.map((c) => (
-                    <button
-                      key={c.hex}
-                      onClick={() => handleSelectCeilingColor(c.hex)}
-                      aria-label={`Ceiling ${c.name}`}
-                      className={`w-9 h-9 rounded-full border-2 transition-transform ${
-                        ceilingColorHex === c.hex ? 'border-white scale-110' : 'border-white/20'
-                      }`}
-                      style={{ backgroundColor: c.hex }}
-                    />
-                  ))}
-                  <input
-                    type="color"
-                    value={ceilingColorHex || '#ffffff'}
-                    onChange={(e) => handleSelectCeilingColor(e.target.value)}
-                    className="w-9 h-9 rounded-full border-2 border-white/20 bg-transparent cursor-pointer"
-                    aria-label="Custom ceiling color"
-                  />
-                </div>
+                <PaintColorPicker value={ceilingColorHex} onChange={handleSelectCeilingColor} label="Ceiling colour" defaultCollection="shvet" />
+                <p className="mt-1 text-white/40 text-[12px] font-nunito">Tip: whites and soft off-whites make a ceiling feel higher and brighter.</p>
               </div>
             )}
 
             {segmentationStatus === 'failed' && (
-              <div className="mt-5 flex flex-wrap gap-2.5">
-                {PAINT_COLORS.map((c) => (
-                  <button
-                    key={c.hex}
-                    onClick={() => handleSelectColor(c.hex)}
-                    aria-label={c.name}
-                    className={`w-9 h-9 rounded-full border-2 transition-transform ${
-                      selectedColor === c.hex ? 'border-white scale-110' : 'border-white/20'
-                    }`}
-                    style={{ backgroundColor: c.hex }}
-                  />
-                ))}
-                <input
-                  type="color"
-                  value={selectedColor}
-                  onChange={(e) => handleSelectColor(e.target.value)}
-                  className="w-9 h-9 rounded-full border-2 border-white/20 bg-transparent cursor-pointer"
-                  aria-label="Custom color"
-                />
+              <div className="mt-5">
+                <PaintColorPicker value={selectedColor} onChange={handleSelectColor} label="Colour" />
               </div>
             )}
 

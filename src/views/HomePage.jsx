@@ -9,8 +9,6 @@ import { useWhatsAppLink } from '@/hooks/useWhatsAppLink.js';
 import Reveal, { ImageReveal } from '@/components/kv/Reveal.jsx';
 import SectionHeading from '@/components/kv/SectionHeading.jsx';
 import SnapSlider from '@/components/kv/SnapSlider.jsx';
-import DiwaliHero from '@/components/offers/DiwaliHero.jsx';
-import { DIWALI_OFFER } from '@/constants/offers.js';
 
 // --- DATA CONSTANTS ---
 
@@ -55,7 +53,7 @@ const services = [
 
 const whyUsData = [
   { icon: Users, title: 'One Collaborative Expert Team', desc: "No juggling between multiple contractors. KailVarn's one expert team handles design, civil, electrical, carpentry, painting — all under one roof." },
-  { icon: PencilRuler, title: 'Free Interior Designer — No Extra Fees', desc: "Our interior designer is part of our team — included at zero extra cost. No need to hire a separate designer and pay lakhs separately." },
+  { icon: PencilRuler, title: 'Free Interior Designs Consultation — No Extra Fees', desc: "Our interior designer is part of our team — included at zero extra cost. No need to hire a separate designer and pay lakhs separately." },
   { icon: FileText, title: 'Work on Agreement — Zero Hidden Cost', desc: "Everything is written in the agreement — what you see is what you pay. No surprise charges, no extra bills after completion." },
   { icon: CheckSquare, title: 'Exact Same Execution as Design', desc: "We use modern tools and a trained team to ensure your final home looks exactly like the 3D design — no compromises, no shortcuts." },
   { icon: Umbrella, title: 'No Contractor Headache', desc: "No running after multiple contractors for each work. We handle everything — you just relax and trust the process." },
@@ -119,7 +117,7 @@ const sized = (url, w) => (url.startsWith('https://images.unsplash.com') ? `${ur
 const EASE = [0.16, 1, 0.3, 1];
 
 const heroBadgeIcons = [PencilRuler, FileText, CheckSquare, Umbrella, ShieldCheck, BadgeIndianRupee];
-const heroBadges = ['Free Interior Designer', 'No Hidden Cost', 'Same-as-Design Execution', 'No Contractor Hassle', 'Warranty on Work', 'Affordable Pricing'];
+const heroBadges = ['Free Interior Designs Consultation', 'No Hidden Cost', 'Same-as-Design Execution', 'No Contractor Hassle', 'Warranty on Work', 'Affordable Pricing'];
 
 // Asymmetric portfolio layout: wide / standard / tall, repeating.
 const projectLayout = [
@@ -175,8 +173,6 @@ export default function HomePage() {
   return (
     <div className="bg-[#FAFAF7] text-[#111111]">
       {/* ============ HERO ============ */}
-      {/* Festival offer replaces the regular hero while it runs (src/constants/offers.js) */}
-      {DIWALI_OFFER.active ? <DiwaliHero /> : (
       <section className="relative isolate flex items-end min-h-[calc(100svh-68px)] lg:min-h-[calc(100svh-80px)] overflow-hidden bg-[#070A25] text-white">
         <div className="absolute inset-0 -z-10">
           <img
@@ -255,7 +251,6 @@ export default function HomePage() {
           <span className="w-px h-16 bg-gradient-to-b from-[#F2B21B] to-transparent" />
         </div>
       </section>
-      )}
 
       {/* ============ TRUST STRIP ============ */}
       <section className="bg-[#0B103B] border-t border-[#F2B21B]/30" aria-label="Why homeowners choose KailVarn">
@@ -280,7 +275,7 @@ export default function HomePage() {
             title="Our Interior Services"
             emphasis="Services"
             lead="From full home transformation to a single wall — we handle everything under one expert roof."
-            split
+            leadClassName="lg:max-w-none lg:whitespace-nowrap"
           />
 
           {/* Phones: swipe slider. From md: 2-col grid where cards keep their
@@ -306,9 +301,6 @@ export default function HomePage() {
                       </span>
                     </Link>
                     <div className="pt-6 md:pt-8">
-                      <span className="block text-[11px] font-extrabold uppercase tracking-[0.3em] text-[#8A6A1C] mb-3" aria-hidden="true">
-                        {String(i + 1).padStart(2, '0')} / {String(services.length).padStart(2, '0')}
-                      </span>
                       <h3 className="font-serif text-[27px] md:text-[30px] lg:text-[36px] leading-[1.12] text-[#0B103B]">
                         <Link href={`/services#${svc.id}`} className="hover:text-[#8A6A1C] transition-colors">{svc.title}</Link>
                       </h3>

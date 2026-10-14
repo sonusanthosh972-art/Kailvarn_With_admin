@@ -9,6 +9,7 @@ import { useSamSelect } from '@/components/paint/useSamSelect.js';
 import { resizeToJpegBlob, readJsonResponse } from '@/lib/imageUpload.js';
 import { closestAspectRatio } from '@/constants/segmentationConfig.js';
 import { DIWALI_OFFER } from '@/constants/offers.js';
+import { usePromo } from '@/components/offers/PromoProvider.jsx';
 
 const MAX_DIMENSION = 900;
 
@@ -688,6 +689,7 @@ export default function PaintVisualizer() {
   const brushCursorRef = useRef(null);
   // Segment Anything in the browser: precise tap-to-select (falls back to
   // the colour flood fill while it loads, or if the device can't run it).
+  const promo = usePromo();
   const { status: samStatus, encode: samEncode, select: samSelect, reset: samReset } = useSamSelect();
   const smartSelect = samStatus === 'ready';
   const [selecting, setSelecting] = useState(false);
@@ -1073,13 +1075,13 @@ export default function PaintVisualizer() {
         </div>
 
         {/* Festival offer: from trying colours straight to booking the painters */}
-        {DIWALI_OFFER.active && (
+        {promo.active && (
           <Link
             href={DIWALI_OFFER.quotePath}
             className="group mb-5 flex items-center justify-between gap-3 rounded-xl border border-[#F2B21B]/50 bg-[linear-gradient(135deg,#3E080B_0%,#7A1418_100%)] px-4 py-3 font-nunito text-white"
           >
             <span className="text-[13.5px] sm:text-[14.5px] leading-snug">
-              <strong className="text-[#FFD66B]">Diwali offer: {DIWALI_OFFER.discount}% off painting</strong>
+              <strong className="text-[#FFD66B]">{promo.title} offer: {promo.discount}% off painting</strong>
               <span className="text-white/80"> with any paint brand. Like a colour? Get it painted.</span>
             </span>
             <span className="inline-flex shrink-0 items-center gap-1 text-[12px] font-bold uppercase tracking-[0.12em] text-[#F6D47C]">
@@ -1292,8 +1294,8 @@ export default function PaintVisualizer() {
                     <p className="mt-2 font-nunito text-[12px] text-white/50">
                       AI renders can change small details. Confirm the final shade on a physical shade card.
                     </p>
-                    <Link href={DIWALI_OFFER.active ? DIWALI_OFFER.quotePath : '/painting-quote'} className="btn-primary mt-4 w-full sm:w-auto">
-                      {DIWALI_OFFER.active ? `Love it? Get it painted with ${DIWALI_OFFER.discount}% off` : 'Love it? Get a painting quote'} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    <Link href={promo.active ? DIWALI_OFFER.quotePath : '/painting-quote'} className="btn-primary mt-4 w-full sm:w-auto">
+                      {promo.active ? `Love it? Get it painted with ${promo.discount}% off` : 'Love it? Get a painting quote'} <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </Link>
                   </>
                 ) : (

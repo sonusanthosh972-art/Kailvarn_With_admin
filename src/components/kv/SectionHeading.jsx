@@ -3,7 +3,7 @@ import Reveal from '@/components/kv/Reveal.jsx';
 // Eyebrow + serif heading + optional lead, in the studio's editorial style.
 // `emphasis` italicises (and golds) a trailing part of the SAME title text —
 // styling only, the words are unchanged.
-export default function SectionHeading({ eyebrow, title, emphasis, lead, dark = false, align = 'left', split = false, className = '' }) {
+export default function SectionHeading({ eyebrow, title, emphasis, lead, dark = false, align = 'left', split = false, className = '', leadClassName = '' }) {
   const center = align === 'center';
   let main = title;
   let em = null;
@@ -25,7 +25,7 @@ export default function SectionHeading({ eyebrow, title, emphasis, lead, dark = 
         </h2>
       </div>
       {lead && (
-        <p className={`kv-lead ${dark ? 'kv-lead--dark' : ''} ${center ? 'mx-auto mt-5' : split ? 'lg:max-w-[420px] lg:pb-2' : 'mt-5'}`}>
+        <p className={`kv-lead ${dark ? 'kv-lead--dark' : ''} ${center ? 'mx-auto mt-5' : split ? 'lg:max-w-[420px] lg:pb-2' : 'mt-5'} ${leadClassName}`}>
           {lead}
         </p>
       )}

@@ -1,7 +1,7 @@
 import 'server-only';
 import { z } from 'zod';
 import { ObjectId } from 'mongodb';
-import { OUR_DESIGN_DEFAULTS } from '@/constants/pageContent.js';
+import { OUR_DESIGN_DEFAULTS, PROMO_DEFAULTS } from '@/constants/pageContent.js';
 import { ADD_ONS, HOME_TYPES, LOCATIONS, PACKAGES, PROPERTY_STATUS, ROOM_ITEMS } from '@/constants/estimateConfig.js';
 
 // ---- Shared enums (also mirrored for the admin UI in src/constants/adminEnums.js)
@@ -197,6 +197,40 @@ export const PAGE_CONTENT = {
     // Current wording of the page = defaults (used until the admin edits it)
     defaults: OUR_DESIGN_DEFAULTS,
     maxHeroImages: 4,
+  },
+  // Site-wide advertisement popup + sticky side tab (Admin -> Advertisement)
+  promo: {
+    schema: z.object({
+      enabled: z.boolean(),
+      startDate: z.union([z.literal(''), z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a date like 2026-11-15')]),
+      endDate: z.union([z.literal(''), z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a date like 2026-11-15')]),
+      popup: z.enum(['always', 'session', 'daily', 'tab']),
+      title: str(24).min(1, 'Offer name is required'),
+      tabLabel: str(32).min(2, 'Tab text is required'),
+      eyebrow: str(40),
+      headline: str(70).min(2, 'Headline is required'),
+      headlineEmphasis: str(40),
+      lead: str(160),
+      discount: z.number({ error: 'Enter a discount from 1 to 90' }).int().min(1, 'Discount must be 1–90').max(90, 'Discount must be 1–90'),
+      offerText: str(40),
+      ribbonText: str(40),
+      feature1: str(40),
+      feature2: str(40),
+      feature3: str(40),
+      feature4: str(40),
+      ctaLabel: str(40).min(2, 'Button text is required'),
+      ctaHref: href.refine((v) => v !== '', 'Button link is required'),
+      showVisualizer: z.boolean(),
+      showConsultation: z.boolean(),
+    }).refine((d) => !d.startDate || !d.endDate || d.startDate <= d.endDate, {
+      message: 'End date must be on or after the start date',
+      path: ['endDate'],
+    }).refine((d) => !d.headlineEmphasis || d.headline.includes(d.headlineEmphasis), {
+      message: 'These words must appear in the headline',
+      path: ['headlineEmphasis'],
+    }),
+    defaults: PROMO_DEFAULTS,
+    maxHeroImages: 1,
   },
 };
 

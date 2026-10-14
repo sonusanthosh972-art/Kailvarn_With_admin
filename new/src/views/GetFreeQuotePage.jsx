@@ -45,7 +45,7 @@ function GetFreeQuotePage() {
 
   const usps = [
     { icon: UserX, title: "No Contractor Hassle", desc: "We handle everything from start to finish." },
-    { icon: Palette, title: "Free Interior Designer", desc: "Professional design included at no extra cost." },
+    { icon: Palette, title: "Free Interior Designs Consultation", desc: "Professional design included at no extra cost." },
     { icon: Receipt, title: "No Hidden Cost", desc: "Detailed agreement before work begins." },
     { icon: CheckCircle, title: "Same-as-Design Execution", desc: "Final result matches 3D renders exactly." },
     { icon: ShieldCheck, title: "Warranty on Work", desc: "Formal warranty for peace of mind." },

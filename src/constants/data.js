@@ -94,7 +94,7 @@ export const services = [
       'Single team handles design to execution',
       'No contractor coordination needed',
       'Transparent pricing with no hidden costs',
-      'Free interior designer consultation',
+      'Free interior designs consultation',
       'Execution matches design exactly',
       '5-year warranty on all work'
     ],
@@ -266,7 +266,7 @@ export const usps = [
   {
     id: 4,
     icon: 'Sparkles',
-    title: 'Free Interior Designer',
+    title: 'Free Interior Designs Consultation',
     description: 'Professional interior designer consultation and 3D design visualization absolutely free with every project.'
   },
   {

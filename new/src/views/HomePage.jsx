@@ -52,7 +52,7 @@ const services = [
 
 const whyUsData = [
   { icon: Users, title: 'One Collaborative Expert Team', desc: "No juggling between multiple contractors. KailVarn's one expert team handles design, civil, electrical, carpentry, painting — all under one roof." },
-  { icon: PencilRuler, title: 'Free Interior Designer — No Extra Fees', desc: "Our interior designer is part of our team — included at zero extra cost. No need to hire a separate designer and pay lakhs separately." },
+  { icon: PencilRuler, title: 'Free Interior Designs Consultation — No Extra Fees', desc: "Our interior designer is part of our team — included at zero extra cost. No need to hire a separate designer and pay lakhs separately." },
   { icon: FileText, title: 'Work on Agreement — Zero Hidden Cost', desc: "Everything is written in the agreement — what you see is what you pay. No surprise charges, no extra bills after completion." },
   { icon: CheckSquare, title: 'Exact Same Execution as Design', desc: "We use modern tools and a trained team to ensure your final home looks exactly like the 3D design — no compromises, no shortcuts." },
   { icon: Umbrella, title: 'No Contractor Headache', desc: "No running after multiple contractors for each work. We handle everything — you just relax and trust the process." },
@@ -150,7 +150,7 @@ export default function HomePage() {
             className="flex flex-row flex-wrap justify-center gap-[20px] mt-8 max-w-[800px] mx-auto"
           >
             {[
-              'Free Interior Designer', 'No Hidden Cost', 'Same-as-Design Execution', 
+              'Free Interior Designs Consultation', 'No Hidden Cost', 'Same-as-Design Execution', 
               'No Contractor Hassle', 'Warranty on Work', 'Affordable Pricing'
             ].map((badge, idx) => (
               <motion.div

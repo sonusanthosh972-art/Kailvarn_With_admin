@@ -14,3 +14,31 @@ export const OUR_DESIGN_DEFAULTS = {
   ctaSecondaryLabel: 'View Our Services',
   ctaSecondaryHref: '/services',
 };
+
+// Site-wide advertisement (Admin -> Advertisement). Shown as a popup on top of
+// the page; once closed it shrinks to a sticky tab on the right edge of every
+// page. In any text, "{discount}" becomes the discount number and "{title}"
+// the offer name (e.g. Diwali).
+export const PROMO_DEFAULTS = {
+  enabled: true,
+  startDate: '',
+  endDate: '',
+  popup: 'always', // always: every homepage load/refresh · session: once per visit · daily: once a day · tab: never pops up, tab only
+  title: 'Diwali', // offer name: used on the tab, quote page and saved leads
+  tabLabel: '{title} Offer',
+  eyebrow: 'This {title}',
+  headline: 'Bring New Colours to Your Home',
+  headlineEmphasis: 'New Colours', // painted in maroon; must be words from the headline
+  lead: 'Make this {title} brighter with professional painting services from KailVarn.',
+  discount: 25,
+  offerText: 'On Painting Services',
+  ribbonText: 'With Any Paint Brand',
+  feature1: 'Professional Painting Services',
+  feature2: 'Premium Finish',
+  feature3: 'Clean & Timely Work',
+  feature4: 'Limited Time {title} Offer',
+  ctaLabel: 'Claim {discount}% Off',
+  ctaHref: '/painting-quote',
+  showVisualizer: true,
+  showConsultation: true,
+};

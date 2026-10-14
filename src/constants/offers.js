@@ -1,13 +1,10 @@
-// Seasonal offer shown as the homepage hero and on /painting-quote.
-// Set `active: false` after the festival: the homepage falls back to its
-// regular hero and the quote page drops the offer wording.
+// Fixed links used by the advertisement and painting pages. The offer itself
+// (on/off, discount, title, dates, text) is edited in Admin -> Advertisement
+// and read with usePromo() from src/components/offers/PromoProvider.jsx.
 export const DIWALI_OFFER = {
-  active: true,
-  discount: 25,
-  // Saved on the lead so the team can see which offer the customer claimed.
-  leadService: 'Painting (Diwali 25% Off)',
   quotePath: '/painting-quote',
   visualizerPath: '/paint-visualizer',
+  consultationPath: '/paint-consultation',
 };
 
 // Hero photo, pre-sized from kailvarn-site/assets/img/Luxury Diwali Living Room Glow.png
@@ -30,13 +27,91 @@ export const PAINT_SCOPES = [
   { id: 'exterior', label: 'Exterior walls', hint: 'Outside walls & balcony' },
   { id: 'both', label: 'Interior + Exterior', hint: 'Complete home painting' },
 ];
-export const PAINT_FINISHES = [
-  { id: 'budget', label: 'Budget-friendly', tagline: 'A fresh, clean look at a smart price.', features: ['Smooth matt finish', 'Good for rentals & quick refresh'] },
-  { id: 'premium', label: 'Premium washable', tagline: 'The family favourite for everyday living.', features: ['Wipe off stains & crayon marks', 'Richer colour that lasts longer'], popular: true },
-  { id: 'luxury', label: 'Luxury sheen', tagline: 'Soft glow and a high-end feel.', features: ['Silky sheen finish', 'Best durability & colour depth'] },
-  { id: 'help', label: 'Help me choose', tagline: 'Our expert will suggest the right finish at the site visit.', features: [] },
+// Painting quote: brand (step 3) -> that brand's interior range (step 4).
+// tier: 'luxury' | 'premium' | 'mid' | 'economy' | 'decorative' | 'specialty'
+export const PAINT_TIERS = {
+  luxury: 'Luxury',
+  premium: 'Premium',
+  mid: 'Mid-range',
+  economy: 'Economy',
+  decorative: 'Designer / Textures',
+  specialty: 'Specialty',
+};
+
+// Last option on every brand's range step.
+export const PAINT_RANGE_HELP = { id: 'help', label: 'Help me choose', tier: '', examples: 'Our expert suggests the right range for your walls and budget at the site visit.' };
+
+export const PAINT_BRANDS = [
+  {
+    id: 'asian-paints',
+    label: 'Asian Paints',
+    ranges: [
+      { id: 'royale', label: 'Royale', tier: 'luxury', examples: 'Royale Luxury Emulsion, Royale Shyne, Royale Matt, Royale Aspira, Royale Glitz' },
+      { id: 'apcolite', label: 'Apcolite', tier: 'premium', examples: 'Apcolite Premium Emulsion, Apcolite Advanced Shyne, Apcolite Satin' },
+      { id: 'tractor', label: 'Tractor', tier: 'economy', examples: 'Tractor Sparc, Tractor Shyne' },
+      { id: 'textures', label: 'Textures & special finishes', tier: 'decorative', examples: 'Royale Lustre and texture finishes' },
+    ],
+  },
+  {
+    id: 'berger',
+    label: 'Berger',
+    ranges: [
+      { id: 'silk', label: 'Silk', tier: 'luxury', examples: 'Silk Glamor Dazzle, Silk Glamor High Sheen, Silk Glamor Soft Sheen, Silk Glamor Matt' },
+      { id: 'easy-clean', label: 'Easy Clean', tier: 'premium', examples: 'Easy Clean, Easy Clean Fresh, Easy Clean Silky Touch' },
+      { id: 'rangoli', label: 'Rangoli', tier: 'mid', examples: 'Rangoli Rich Matt, Rangoli Total Care' },
+      { id: 'bison', label: 'Bison', tier: 'economy', examples: 'Bison Emulsion, Bison Glow, Bison Lite' },
+      { id: 'glamart', label: 'Silk GlamArt', tier: 'decorative', examples: 'Metallica, Stucco, Vintage, Stone & Tones, Non-Metallic' },
+    ],
+  },
+  {
+    id: 'nerolac',
+    label: 'Nerolac',
+    ranges: [
+      { id: 'impressions', label: 'Impressions', tier: 'luxury', examples: 'Impressions Kashmir, Impressions Ultra HD, Impressions HD, Impressions Sheen, Impressions Ultra Fresh' },
+      { id: 'beauty-gold', label: 'Beauty Gold', tier: 'premium', examples: 'Beauty Gold Washable, Beauty Gold Washable NXT, Beauty Gold Washable Plus' },
+      { id: 'beauty', label: 'Beauty', tier: 'mid', examples: 'Beauty Gold, Beauty Sheen, Beauty Smooth' },
+      { id: 'little-master', label: 'Little Master', tier: 'economy', examples: 'Beauty Little Master, Beauty Little Master Sheen' },
+      { id: 'designer', label: 'Special / Designer', tier: 'decorative', examples: 'Impressions Kashmir and other decorative / special-effect finishes' },
+    ],
+  },
+  {
+    id: 'dulux',
+    label: 'Dulux',
+    ranges: [
+      { id: 'velvet-touch', label: 'Velvet Touch', tier: 'luxury', examples: 'Velvet Touch Eterna, Diamond Glo, Pearl Glo, Platinum Glo' },
+      { id: 'superclean', label: 'SuperClean', tier: 'premium', examples: 'SuperClean, SuperClean 3in1' },
+      { id: 'supercover', label: 'SuperCover', tier: 'mid', examples: 'SuperCover Ultra' },
+      { id: 'promise', label: 'Promise', tier: 'economy', examples: 'Promise Interior, Promise Sheen Interior, Promise SmartChoice' },
+      { id: 'better-living', label: 'Better Living', tier: 'specialty', examples: 'Better Living Air Clean Biobased' },
+      { id: 'simply-refresh', label: 'Simply Refresh', tier: 'specialty', examples: 'Simply Refresh' },
+    ],
+  },
+  {
+    id: 'nippon',
+    label: 'Nippon',
+    ranges: [
+      { id: 'aircare', label: 'AirCare VG', tier: 'luxury', examples: 'AirCare VG' },
+      { id: 'satin-glo', label: 'Satin Glo', tier: 'luxury', examples: 'Satin Glo Prime, Satin Glo+, Satin Glo Aura' },
+      { id: 'spotless', label: 'Spot-less', tier: 'premium', examples: 'Spot-less NXT' },
+      { id: 'matex', label: 'Matex', tier: 'mid', examples: 'Matex Gold, Matex EZ Wash' },
+      { id: 'vinilex', label: 'Vinilex', tier: 'mid', examples: 'Vinilex' },
+      { id: 'breeze', label: 'Breeze', tier: 'economy', examples: 'Breeze' },
+      { id: 'easy-coat', label: 'Easy Coat', tier: 'economy', examples: 'Easy Coat 2.0' },
+    ],
+  },
+  {
+    // Undecided: choose by budget instead of a brand's range names.
+    id: 'suggest',
+    label: 'Not sure, suggest the best',
+    ranges: [
+      { id: 'luxury', label: 'Luxury finish', tier: 'luxury', examples: 'Richest colour and sheen, longest life (e.g. Royale, Silk, Impressions, Velvet Touch)' },
+      { id: 'premium', label: 'Premium washable', tier: 'premium', examples: 'Wipe off stains and crayon marks, family favourite (e.g. Apcolite, Easy Clean, Beauty Gold)' },
+      { id: 'mid', label: 'Mid-range', tier: 'mid', examples: 'Good finish at a fair price (e.g. Rangoli, Beauty, Matex)' },
+      { id: 'economy', label: 'Budget-friendly', tier: 'economy', examples: 'Fresh, clean look for less (e.g. Tractor, Bison, Promise)' },
+    ],
+  },
 ];
-export const PAINT_BRANDS = ['Asian Paints', 'Berger', 'Nerolac', 'Dulux', 'JSW Paints', 'Any / suggest best'];
+
 export const PAINT_EXTRAS = [
   { id: 'damp', label: 'Damp & seepage treatment', hint: 'Damp patches, peeling or salt marks' },
   { id: 'putty', label: 'Wall putty & crack repair', hint: 'Smooth walls before painting' },
@@ -45,7 +120,7 @@ export const PAINT_EXTRAS = [
   { id: 'terrace', label: 'Terrace waterproofing', hint: 'Stop leaks before the monsoon' },
 ];
 export const PAINT_TIMING = [
-  { id: 'diwali', label: 'Before Diwali', hint: 'Limited festive slots' },
+  { id: 'diwali', label: 'Before the festival', hint: 'Limited festive slots' },
   { id: 'month', label: 'Within a month', hint: 'Flexible dates' },
   { id: 'exploring', label: 'Just checking prices', hint: 'Planning ahead' },
 ];

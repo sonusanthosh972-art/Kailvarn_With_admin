@@ -9,6 +9,7 @@ import PaintQuoteWizard from '@/components/offers/PaintQuoteWizard.jsx';
 import Diya from '@/components/offers/Diya.jsx';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { DIWALI_OFFER, DIWALI_HERO_IMAGE } from '@/constants/offers.js';
+import { usePromo } from '@/components/offers/PromoProvider.jsx';
 
 const included = [
   'Free site visit & colour advice at home',
@@ -26,10 +27,10 @@ const steps = [
   { title: 'Painted & cleaned', desc: 'We paint on the agreed dates and hand over a clean home.' },
 ];
 
-const faqs = (offer) => [
+const faqs = (offer, promo) => [
   offer && {
-    q: `Does the ${DIWALI_OFFER.discount}% off work with any paint brand?`,
-    a: `Yes. Choose Asian Paints, Berger, Nerolac, Dulux, JSW or any brand you trust. The Diwali discount applies to our painting service, whichever brand you pick.`,
+    q: `Does the ${promo.discount}% off work with any paint brand?`,
+    a: `Yes. Choose Asian Paints, Berger, Nerolac, Dulux, JSW or any brand you trust. The discount applies to our painting service, whichever brand you pick.`,
   },
   {
     q: 'Is the site visit really free?',
@@ -44,20 +45,21 @@ const faqs = (offer) => [
     a: 'No. You get a fixed, written quote after the site visit. Anything extra is only done if you approve it in writing first.',
   },
   offer && {
-    q: 'Can you finish before Diwali?',
-    a: 'Slots before Diwali are limited and booked in order. Request your quote early and we will confirm your dates at the site visit.',
+    q: `Can you finish before ${promo.title}?`,
+    a: `Slots before ${promo.title} are limited and booked in order. Request your quote early and we will confirm your dates at the site visit.`,
   },
 ].filter(Boolean);
 
 export default function PaintingQuotePage() {
-  const offer = DIWALI_OFFER.active;
+  const promo = usePromo();
+  const offer = promo.active;
 
   return (
     <div className="bg-[#FAFAF7] text-[#111111]">
       <PageHero
         image={DIWALI_HERO_IMAGE.src}
-        eyebrow={offer ? `Diwali Offer · ${DIWALI_OFFER.discount}% Off Painting` : 'Painting Quote'}
-        title={offer ? `Claim ${DIWALI_OFFER.discount}% Off Your Home Painting` : 'Get a Quote for Your Home Painting'}
+        eyebrow={offer ? `${promo.title} Offer · ${promo.discount}% Off Painting` : 'Painting Quote'}
+        title={offer ? `Claim ${promo.discount}% Off Your Home Painting` : 'Get a Quote for Your Home Painting'}
         emphasis="Home Painting"
         lead="Tell us about your walls in under a minute. Our painting expert visits for free, helps you choose colours and gives you a fixed written price."
         badges={['Free Site Visit', 'Any Paint Brand', 'Fixed Written Price']}
@@ -78,14 +80,14 @@ export default function PaintingQuotePage() {
                 <div className="kv-offer-aura rounded-lg border border-[#F2B21B]/60 bg-[linear-gradient(135deg,#3E080B_0%,#7A1418_55%,#3E080B_100%)] p-6 text-white">
                   <div className="flex items-center gap-3">
                     <Diya className="h-11 w-11 shrink-0" />
-                    <p className="text-[12px] font-bold uppercase tracking-[0.22em] text-[#F6D47C]">Diwali Special</p>
+                    <p className="text-[12px] font-bold uppercase tracking-[0.22em] text-[#F6D47C]">{promo.title} Special</p>
                   </div>
-                  <p className="mt-3 font-serif text-[40px] font-bold leading-none text-[#FFD66B]">Flat {DIWALI_OFFER.discount}% Off</p>
+                  <p className="mt-3 font-serif text-[40px] font-bold leading-none text-[#FFD66B]">Flat {promo.discount}% Off</p>
                   <p className="mt-2 font-nunito text-[15px] leading-[1.6] text-white/85">
                     on painting services, with any paint brand you choose.
                   </p>
                   <p className="mt-4 border-t border-white/15 pt-4 font-nunito text-[13.5px] text-white/75">
-                    Limited Diwali slots. Book your free site visit early.
+                    Limited {promo.title} slots. Book your free site visit early.
                   </p>
                 </div>
               )}
@@ -120,7 +122,7 @@ export default function PaintingQuotePage() {
                     <Phone className="h-4 w-4" aria-hidden="true" /> Call 8460150027
                   </a>
                   <a
-                    href={`https://wa.me/918460150027?text=${encodeURIComponent(`Hi KailVarn! I'd like a painting quote${offer ? ` with the Diwali ${DIWALI_OFFER.discount}% offer` : ''}.`)}`}
+                    href={`https://wa.me/918460150027?text=${encodeURIComponent(`Hi KailVarn! I'd like a painting quote${offer ? ` with the ${promo.title} ${promo.discount}% offer` : ''}.`)}`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex min-h-[40px] items-center gap-2 font-nunito text-[15px] font-bold text-[#1A8F47] hover:underline"
@@ -160,7 +162,7 @@ export default function PaintingQuotePage() {
         <div className="kv-wrap max-w-[860px]">
           <Reveal as="h2" className="kv-subhead">Questions families ask us</Reveal>
           <Accordion type="single" collapsible className="space-y-3">
-            {faqs(offer).map((f, i) => (
+            {faqs(offer, promo).map((f, i) => (
               <AccordionItem key={f.q} value={`faq-${i}`} className="rounded-lg border border-[#0B103B]/10 bg-white px-5 sm:px-6">
                 <AccordionTrigger className="py-5 text-left font-nunito text-[16px] font-bold text-[#0B103B] hover:no-underline">
                   {f.q}
@@ -173,7 +175,7 @@ export default function PaintingQuotePage() {
           </Accordion>
           <div className="mt-10 text-center">
             <a href="#paint-quote" className="btn-primary">
-              {offer ? `Claim ${DIWALI_OFFER.discount}% Off Now` : 'Get My Free Quote'} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              {offer ? `Claim ${promo.discount}% Off Now` : 'Get My Free Quote'} <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
         </div>

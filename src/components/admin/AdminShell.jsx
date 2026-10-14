@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, Images, LayoutTemplate, UploadCloud, FileText, CalendarCheck, Mail, Sparkles, Settings, LogOut, Menu, X, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, Images, LayoutTemplate, Megaphone, UploadCloud, FileText, CalendarCheck, Mail, Sparkles, Settings, LogOut, Menu, X, ExternalLink } from 'lucide-react';
 import { adminApi } from '@/lib/adminApi.js';
 
 const NAV = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin/designs', label: 'Designs', icon: Images },
   { href: '/admin/content/our-design', label: 'Our Design Page', icon: LayoutTemplate },
+  { href: '/admin/content/advertisement', label: 'Advertisement', icon: Megaphone },
   { href: '/admin/upload', label: 'Upload Images', icon: UploadCloud },
   { href: '/admin/quotes', label: 'Quote Requests', icon: FileText },
   { href: '/admin/consultations', label: 'Consultations', icon: CalendarCheck },

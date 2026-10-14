@@ -13,32 +13,47 @@ import { submitLead } from '@/lib/submitLead.js';
 import { useWhatsAppLink } from '@/hooks/useWhatsAppLink.js';
 import { LOCATIONS } from '@/constants/estimateConfig.js';
 import {
-  DIWALI_OFFER, PAINT_BRANDS, PAINT_EXTRAS, PAINT_FINISHES, PAINT_HOMES, PAINT_SCOPES, PAINT_TIMING,
+  DIWALI_OFFER, PAINT_BRANDS, PAINT_EXTRAS, PAINT_HOMES, PAINT_RANGE_HELP, PAINT_SCOPES, PAINT_TIERS, PAINT_TIMING,
 } from '@/constants/offers.js';
 import { Field, OptionCard, ProgressBar, StepHeading } from '@/components/estimate/WizardParts.jsx';
+import { usePromo } from '@/components/offers/PromoProvider.jsx';
 
 // Step-by-step painting quote, same pattern as the interior EstimateWizard:
-// home & scope -> location -> finish & brand -> extras & timing -> contact.
+// home & scope -> location -> paint brand -> that brand's range -> extras &
+// timing -> contact.
 // Saved through /api/quotes; the choices travel in projectType / budget /
 // message so they show in the admin Quotes list without a schema change.
 
-const STEPS = ['Home', 'Location', 'Finish', 'Extras', 'Details'];
+const STEPS = ['Home', 'Location', 'Brand', 'Range', 'Extras', 'Details'];
+const DETAILS = STEPS.length - 1;
 const HOME_ICONS = { villa: House, shop: Store };
 const SCOPE_ICONS = { interior: Sofa, exterior: Building, both: Layers };
 const EXTRA_ICONS = { damp: Droplets, putty: Hammer, texture: Sparkles, wood: DoorOpen, terrace: Umbrella };
 const TIMING_ICONS = { diwali: Gift, month: CalendarClock, exploring: Search };
 
 const label = (list, id) => list.find((x) => x.id === id)?.label || '';
+const findBrand = (id) => PAINT_BRANDS.find((b) => b.id === id);
+const rangesOf = (brandId) => [...(findBrand(brandId)?.ranges || []), PAINT_RANGE_HELP];
+
+// "Asian Paints · Royale (Luxury)" for the summary and the saved lead.
+function paintChoice(sel) {
+  const brand = findBrand(sel.brand);
+  const range = rangesOf(sel.brand).find((r) => r.id === sel.range);
+  if (!brand || !range) return '';
+  if (range.id === 'help') return `${brand.id === 'suggest' ? 'Brand & range' : `${brand.label} · range`} to be suggested`;
+  const tier = PAINT_TIERS[range.tier];
+  return brand.id === 'suggest' ? `${range.label} (any brand)` : `${brand.label} · ${range.label}${tier ? ` (${tier})` : ''}`;
+}
 
 export default function PaintQuoteWizard() {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [sel, setSel] = useState({ home: '', scope: '', city: '', locality: '', finish: '', brand: '', extras: [], timing: '' });
+  const [sel, setSel] = useState({ home: '', scope: '', city: '', locality: '', brand: '', range: '', extras: [], timing: '' });
   const [sent, setSent] = useState(null);
   const topRef = useRef(null);
 
   const update = (patch) => setSel((s) => ({ ...s, ...patch }));
-  const canContinue = [Boolean(sel.home && sel.scope), Boolean(sel.city), Boolean(sel.finish), true][step];
+  const canContinue = [Boolean(sel.home && sel.scope), Boolean(sel.city), Boolean(sel.brand), Boolean(sel.range), true][step];
 
   const go = (next) => {
     setDirection(next > step ? 1 : -1);
@@ -56,15 +71,14 @@ export default function PaintQuoteWizard() {
   const summary = [
     `Painting: ${label(PAINT_SCOPES, sel.scope)} (${label(PAINT_HOMES, sel.home)})`,
     `Location: ${sel.city}${sel.locality.trim() ? `, ${sel.locality.trim()}` : ''}`,
-    `Finish: ${label(PAINT_FINISHES, sel.finish)}`,
-    sel.brand && `Brand: ${sel.brand}`,
+    `Paint: ${paintChoice(sel)}`,
     sel.extras.length > 0 && `Extras: ${sel.extras.map((id) => label(PAINT_EXTRAS, id)).join(', ')}`,
     sel.timing && `When: ${label(PAINT_TIMING, sel.timing)}`,
   ].filter(Boolean);
 
   const restart = () => {
     setSent(null);
-    setSel({ home: '', scope: '', city: '', locality: '', finish: '', brand: '', extras: [], timing: '' });
+    setSel({ home: '', scope: '', city: '', locality: '', brand: '', range: '', extras: [], timing: '' });
     setDirection(-1);
     setStep(0);
   };
@@ -88,13 +102,14 @@ export default function PaintQuoteWizard() {
               >
                 {step === 0 && <HomeStep sel={sel} update={update} />}
                 {step === 1 && <LocationStep sel={sel} update={update} />}
-                {step === 2 && <FinishStep sel={sel} update={update} />}
-                {step === 3 && <ExtrasStep sel={sel} update={update} />}
-                {step === 4 && <ContactStep sel={sel} summary={summary} onBack={() => go(3)} onDone={setSent} />}
+                {step === 2 && <BrandStep sel={sel} update={update} />}
+                {step === 3 && <RangeStep sel={sel} update={update} />}
+                {step === 4 && <ExtrasStep sel={sel} update={update} />}
+                {step === DETAILS && <ContactStep sel={sel} summary={summary} onBack={() => go(DETAILS - 1)} onDone={setSent} />}
               </motion.div>
             </AnimatePresence>
           </div>
-          {step < 4 && (
+          {step < DETAILS && (
             <div className="mt-8 flex items-center justify-between gap-3 border-t border-[#0B103B]/10 pt-6">
               {step > 0 ? (
                 <button type="button" onClick={() => go(step - 1)} className="inline-flex min-h-[48px] items-center gap-2 rounded-lg px-3 font-nunito text-[14px] font-bold text-[#0B103B] hover:bg-[#0B103B]/[0.05]">
@@ -102,7 +117,7 @@ export default function PaintQuoteWizard() {
                 </button>
               ) : <span />}
               <button type="button" disabled={!canContinue} onClick={() => go(step + 1)} className="btn-primary min-w-[160px]">
-                {step === 3 && !sel.extras.length && !sel.timing ? 'Skip' : 'Next'} <ArrowRight className="kv-arrow h-4 w-4" aria-hidden="true" />
+                {step === 4 && !sel.extras.length && !sel.timing ? 'Skip' : 'Next'} <ArrowRight className="kv-arrow h-4 w-4" aria-hidden="true" />
               </button>
             </div>
           )}
@@ -180,49 +195,39 @@ function LocationStep({ sel, update }) {
   );
 }
 
-function FinishStep({ sel, update }) {
+const TIER_STYLES = {
+  luxury: 'bg-[#0B103B] text-[#F6D47C]',
+  premium: 'bg-[#8E1B1F] text-white',
+  mid: 'bg-[#F2B21B]/25 text-[#6B4E00]',
+  economy: 'bg-[#1F7A4D]/[0.12] text-[#16613C]',
+  decorative: 'bg-[#6B3FA0]/[0.12] text-[#5A2F8A]',
+  specialty: 'bg-[#2B5DD8]/10 text-[#1E3F9A]',
+};
+
+function BrandStep({ sel, update }) {
+  const promo = usePromo();
   return (
     <>
-      <StepHeading title="Choose your finish" lead={`Not sure? Pick "Help me choose" and our expert will guide you.`} />
-      <div role="radiogroup" aria-label="Paint finish" className="space-y-3">
-        {PAINT_FINISHES.map((f) => (
-          <OptionCard key={f.id} selected={sel.finish === f.id} onClick={() => update({ finish: f.id })} className="p-5">
-            <div className="flex flex-wrap items-center gap-2 pr-8">
-              <span className="font-playfair text-[21px] font-medium text-[#0B103B]">{f.label}</span>
-              {f.popular && <span className="rounded-full bg-[#0B103B] px-2.5 py-0.5 font-nunito text-[10.5px] font-extrabold uppercase tracking-[0.12em] text-[#F6D47C]">Most popular</span>}
-            </div>
-            <p className="mt-1 font-nunito text-[14px] text-[#57534C]">{f.tagline}</p>
-            {f.features.length > 0 && (
-              <ul className="mt-3 grid grid-cols-1 gap-x-4 gap-y-1.5 sm:grid-cols-2">
-                {f.features.map((x) => (
-                  <li key={x} className="flex items-start gap-2 font-nunito text-[13px] text-[#2A2A2A]">
-                    <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#D9A441]" strokeWidth={3} aria-hidden="true" /> {x}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </OptionCard>
-        ))}
-      </div>
-
-      <p className="mb-3 mt-8 font-nunito text-[13.5px] font-semibold text-[#2A2A2A]">
-        Preferred paint brand <span className="font-normal text-[#57534C]">(optional{DIWALI_OFFER.active ? `, the ${DIWALI_OFFER.discount}% off works with any` : ''})</span>
-      </p>
-      <div role="radiogroup" aria-label="Paint brand" className="flex flex-wrap gap-2.5">
+      <StepHeading
+        title="Which paint brand do you prefer?"
+        lead={promo.active ? `The ${promo.discount}% ${promo.title} discount works with every brand.` : 'We work with every major brand.'}
+      />
+      <div role="radiogroup" aria-label="Paint brand" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {PAINT_BRANDS.map((b) => {
-          const on = sel.brand === b;
+          const suggest = b.id === 'suggest';
           return (
-            <button
-              key={b}
-              type="button"
-              role="radio"
-              aria-checked={on}
-              onClick={() => update({ brand: on ? '' : b })}
-              className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-full border px-4 font-nunito text-[14px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F2B21B] ${on ? 'border-[#D9A441] bg-[#FFFBF0] text-[#0B103B] shadow-[0_0_0_1px_#D9A441]' : 'border-[#0B103B]/15 bg-white text-[#2A2A2A] hover:border-[#D9A441]/60'}`}
+            <OptionCard
+              key={b.id}
+              selected={sel.brand === b.id}
+              // A new brand means its own ranges, so clear the range picked for the old one.
+              onClick={() => update(sel.brand === b.id ? {} : { brand: b.id, range: '' })}
+              className={`flex min-h-[92px] flex-col justify-center p-4 pr-9 ${suggest ? 'col-span-2 sm:col-span-1' : ''}`}
             >
-              {on && <Check className="h-3.5 w-3.5 text-[#D9A441]" strokeWidth={3} aria-hidden="true" />}
-              {b}
-            </button>
+              <span className={`block font-nunito font-bold text-[#0B103B] ${suggest ? 'text-[15px]' : 'text-[17px]'}`}>{b.label}</span>
+              <span className="mt-0.5 block font-nunito text-[12.5px] text-[#57534C]">
+                {suggest ? 'Choose by budget instead' : `${b.ranges.length} interior ranges`}
+              </span>
+            </OptionCard>
           );
         })}
       </div>
@@ -230,8 +235,37 @@ function FinishStep({ sel, update }) {
   );
 }
 
+function RangeStep({ sel, update }) {
+  const brand = findBrand(sel.brand);
+  const ranges = rangesOf(sel.brand);
+  return (
+    <>
+      <StepHeading
+        title={brand?.id === 'suggest' ? 'What finish are you looking for?' : `Choose your ${brand?.label} range`}
+        lead={brand?.id === 'suggest' ? 'Pick by budget; our expert suggests the best brand for it.' : 'From luxury to budget. Not sure? Pick "Help me choose".'}
+      />
+      <div role="radiogroup" aria-label={`${brand?.label} range`} className="space-y-3">
+        {ranges.map((r) => (
+          <OptionCard key={r.id} selected={sel.range === r.id} onClick={() => update({ range: r.id })} className="p-4 sm:p-5">
+            <div className="flex flex-wrap items-center gap-2 pr-8">
+              <span className="font-playfair text-[20px] font-medium text-[#0B103B]">{r.label}</span>
+              {r.tier && (
+                <span className={`rounded-full px-2.5 py-0.5 font-nunito text-[10.5px] font-extrabold uppercase tracking-[0.1em] ${TIER_STYLES[r.tier]}`}>
+                  {PAINT_TIERS[r.tier]}
+                </span>
+              )}
+            </div>
+            <p className="mt-1 font-nunito text-[13.5px] leading-[1.55] text-[#57534C]">{r.examples}</p>
+          </OptionCard>
+        ))}
+      </div>
+    </>
+  );
+}
+
 function ExtrasStep({ sel, update }) {
-  const timing = PAINT_TIMING.filter((t) => DIWALI_OFFER.active || t.id !== 'diwali');
+  const promo = usePromo();
+  const timing = PAINT_TIMING.filter((t) => promo.active || t.id !== 'diwali');
   const toggle = (id) => update({ extras: sel.extras.includes(id) ? sel.extras.filter((x) => x !== id) : [...sel.extras, id] });
   return (
     <>
@@ -282,7 +316,8 @@ function ExtrasStep({ sel, update }) {
 }
 
 function ContactStep({ sel, summary, onBack, onDone }) {
-  const offer = DIWALI_OFFER.active;
+  const promo = usePromo();
+  const offer = promo.active;
   const [error, setError] = useState('');
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     mode: 'onTouched',
@@ -296,12 +331,12 @@ function ContactStep({ sel, summary, onBack, onDone }) {
       phone: form.phone.replace(/\D/g, '').slice(-10),
       email: form.email,
       city: sel.locality.trim() ? `${sel.city}, ${sel.locality.trim()}` : sel.city,
-      service: offer ? DIWALI_OFFER.leadService : 'Painting',
+      service: offer ? promo.leadService : 'Painting',
       projectType: `${label(PAINT_SCOPES, sel.scope)} · ${label(PAINT_HOMES, sel.home)}`,
-      budget: label(PAINT_FINISHES, sel.finish),
+      budget: paintChoice(sel),
       contactMethod: form.whatsapp ? 'WhatsApp' : 'Phone call',
-      source: offer ? 'Diwali offer page' : 'Painting quote page',
-      message: [...summary.slice(3), form.notes.trim() && `Notes: ${form.notes.trim()}`].filter(Boolean).join('\n'),
+      source: offer ? `${promo.title} offer (advertisement)` : 'Painting quote page',
+      message: [...summary.slice(2), form.notes.trim() && `Notes: ${form.notes.trim()}`].filter(Boolean).join('\n'),
       website: form.website,
     });
     if (!result.ok) {
@@ -320,7 +355,7 @@ function ContactStep({ sel, summary, onBack, onDone }) {
       {offer && (
         <p className="mb-6 flex items-center gap-3 rounded-xl border border-[#D9A441]/60 bg-[#FFFBF0] px-4 py-3 font-nunito text-[14px] text-[#2A2A2A]">
           <Gift className="h-5 w-5 shrink-0 text-[#D9A441]" strokeWidth={1.6} aria-hidden="true" />
-          <span>Your <strong className="text-[#0B103B]">{DIWALI_OFFER.discount}% Diwali discount</strong> will be noted on this request.</span>
+          <span>Your <strong className="text-[#0B103B]">{promo.discount}% {promo.title} discount</strong> will be noted on this request.</span>
         </p>
       )}
 
@@ -364,7 +399,7 @@ function ContactStep({ sel, summary, onBack, onDone }) {
         <button type="submit" disabled={isSubmitting} className="btn-primary min-w-[200px]">
           {isSubmitting
             ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Sending…</>
-            : <>{offer ? `Claim ${DIWALI_OFFER.discount}% off` : 'Get my quote'} <ArrowRight className="kv-arrow h-4 w-4" aria-hidden="true" /></>}
+            : <>{offer ? `Claim ${promo.discount}% off` : 'Get my quote'} <ArrowRight className="kv-arrow h-4 w-4" aria-hidden="true" /></>}
         </button>
       </div>
       <p className="mt-4 flex items-center justify-center gap-1.5 text-center font-nunito text-[12px] text-[#57534C]">
@@ -375,9 +410,10 @@ function ContactStep({ sel, summary, onBack, onDone }) {
 }
 
 function Success({ name, summary, onRestart }) {
-  const offer = DIWALI_OFFER.active;
+  const promo = usePromo();
+  const offer = promo.active;
   const { openWhatsApp } = useWhatsAppLink();
-  const text = `Hi KailVarn, I just requested a painting quote${offer ? ` with the Diwali ${DIWALI_OFFER.discount}% offer` : ''}.\n\n${summary.join('\n')}`;
+  const text = `Hi KailVarn, I just requested a painting quote${offer ? ` with the ${promo.title} ${promo.discount}% offer` : ''}.\n\n${summary.join('\n')}`;
   return (
     <div className="py-4 text-center" role="status">
       <div className="animate-scale-in mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#F2B21B]/15">
@@ -386,7 +422,7 @@ function Success({ name, summary, onRestart }) {
       <h2 className="mt-5 font-playfair text-[26px] font-medium leading-tight text-[#0B103B] md:text-[30px]">Thank you, {name}!</h2>
       <p className="mx-auto mt-3 max-w-[460px] font-nunito text-[15px] leading-[1.7] text-[#57534C]">
         Our painting expert will call you shortly to fix your free site visit.
-        {offer && <> Your <strong className="text-[#0B103B]">{DIWALI_OFFER.discount}% Diwali discount</strong> is noted on your request.</>}
+        {offer && <> Your <strong className="text-[#0B103B]">{promo.discount}% {promo.title} discount</strong> is noted on your request.</>}
       </p>
       <ul className="mx-auto mt-6 max-w-[440px] space-y-1.5 rounded-xl bg-[#F5F1E8] px-5 py-4 text-left font-nunito text-[13.5px] text-[#2A2A2A]">
         {summary.map((line) => <li key={line}>{line}</li>)}

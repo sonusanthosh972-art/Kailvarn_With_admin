@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Room Test</title>
+  <style>
+    body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: sans-serif; color: white; }
+    .container { position: relative; width: 400px; height: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    svg { display: block; width: 100%; height: auto; }
+    .buttons { margin-top: 15px; display: flex; gap: 10px; }
+    button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Real Living Room - Paint Preview Test</h2>
+  <div class="container">
+    <svg viewBox="0 0 576 1024" id="roomSvg">
+      <defs>
+        <mask id="wall-mask">
+          <rect width="576" height="1024" fill="black" />
+          <path d="M 0.0,318.5 L 75.5,320.5 L 75.5,598.0 L 0.0,650.2 Z M 75.5,320.5 L 465.4,320.5 L 465.4,576.5 L 360.6,574.5 L 360.6,562.2 L 250.6,563.2 L 247.7,562.2 L 127.3,561.2 L 127.3,361.5 L 366.9,361.5 L 366.9,565.2 L 360.6,565.2 L 360.6,574.5 L 259.8,573.4 L 258.6,599.0 L 180.9,596.0 L 178.6,576.5 L 140.0,578.6 L 139.4,599.0 L 75.5,598.0 Z M 465.4,320.5 L 576.0,239.6 L 576.0,603.1 L 527.0,570.4 L 527.0,321.5 L 465.4,320.5 Z" fill="white" />
+          <path d="M 127.3,361.5 L 246.0,361.5 L 246.0,561.2 L 127.3,561.2 Z M 250.6,358.4 L 366.9,361.5 L 366.9,565.2 L 250.6,563.2 Z M 471.2,321.5 L 527.0,321.5 L 527.0,570.4 L 471.2,570.4 Z M 523.6,447.5 L 530.5,390.1 L 543.7,365.6 L 558.1,362.5 L 571.4,392.2 L 575.4,442.4 L 571.4,494.6 L 556.4,525.3 L 539.7,527.4 L 527.0,497.7 Z M 0.0,458.8 L 65.1,458.8 L 65.1,563.2 L 0.0,570.4 Z M 0.0,549.9 L 110.0,549.9 L 110.0,622.6 L 31.7,678.9 L 0.0,678.9 Z M 103.1,461.8 L 156.1,461.8 L 213.1,504.8 L 203.9,556.0 L 167.0,570.4 L 172.2,578.6 L 179.7,590.8 L 178.0,611.3 L 164.2,618.5 L 144.0,618.5 L 135.9,610.3 L 138.8,582.7 L 131.3,558.1 L 112.9,529.4 L 104.8,488.4 Z M 177.4,606.2 L 260.4,606.2 L 260.4,662.5 L 251.7,695.3 L 177.4,695.3 L 177.4,645.1 Z M 259.8,538.6 L 408.4,536.6 L 451.6,536.6 L 551.2,585.7 L 576.0,602.1 L 576.0,657.4 L 562.2,696.3 L 447.6,710.7 L 390.5,720.9 L 390.5,696.3 L 360.6,647.2 L 360.6,577.5 L 259.8,577.5 Z M 482.1,659.5 L 574.3,659.5 L 574.3,735.2 L 512.1,773.1 L 482.1,739.3 Z M 0.0,699.4 L 85.2,722.9 L 84.1,804.9 L 0.0,863.2 Z M 304.7,457.7 L 337.5,498.7 L 423.9,544.8 L 425.7,541.7 L 362.3,478.2 L 321.4,464.9 Z M 214.8,567.3 L 257.5,567.3 L 251.7,585.7 L 237.9,616.4 L 218.3,606.2 Z M 402.0,468.0 L 429.1,520.2 L 456.2,470.0 L 440.1,508.9 L 426.2,544.8 L 417.0,544.8 Z M 0.0,650.2 L 110.0,606.2 L 139.4,599.0 L 180.9,596.0 L 260.4,599.0 L 360.6,574.5 L 360.6,647.2 L 465.4,576.5 L 471.2,570.4 L 527.0,570.4 L 576.0,603.1 L 576.0,732.2 L 574.3,775.2 L 482.1,739.3 L 512.1,773.1 L 482.1,659.5 L 390.5,720.9 L 0.0,863.2 Z" fill="black" />
+        </mask>
+      </defs>
+      
+      <!-- Base photograph -->
+      <image href="/living-room-real.jpg" width="576" height="1024" />
+
+      <!-- Color overlay -->
+      <rect id="wallColor" width="576" height="1024" fill="#FBE0D0" mask="url(#wall-mask)" style="mix-blend-mode: multiply; opacity: 0.85; transition: fill 0.3s;" />
+      <rect id="wallTint" width="576" height="1024" fill="#FBE0D0" mask="url(#wall-mask)" style="mix-blend-mode: color; opacity: 0.35; transition: fill 0.3s;" />
+    </svg>
+  </div>
+  <div class="buttons">
+    <button onclick="setColor('#FBE0D0')" style="background: #FBE0D0; color: #333;">Peach</button>
+    <button onclick="setColor('#3D5A80')" style="background: #3D5A80; color: white;">Ocean Blue</button>
+    <button onclick="setColor('#606C38')" style="background: #606C38; color: white;">Sage Green</button>
+    <button onclick="setColor('#BC6C25')" style="background: #BC6C25; color: white;">Terracotta</button>
+    <button onclick="setColor('#E9D8A6')" style="background: #E9D8A6; color: #333;">Warm Cream</button>
+  </div>
+  <script>
+    function setColor(c) {
+      document.getElementById('wallColor').setAttribute('fill', c);
+      document.getElementById('wallTint').setAttribute('fill', c);
+    }
+  </script>
+</body>
+</html>

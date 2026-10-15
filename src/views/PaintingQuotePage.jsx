@@ -30,7 +30,7 @@ const steps = [
 const faqs = (offer, promo) => [
   offer && {
     q: `Does the ${promo.discount}% off work with any paint brand?`,
-    a: `Yes. Choose Asian Paints, Berger, Nerolac, Dulux, JSW or any brand you trust. The discount applies to our painting service, whichever brand you pick.`,
+    a: `Yes. Choose Asian Paints, Berger, Nerolac, Dulux, Nippon, Birla Opus or any brand you trust. The discount applies to our painting service, whichever brand you pick.`,
   },
   {
     q: 'Is the site visit really free?',

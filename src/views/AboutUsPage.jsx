@@ -456,7 +456,7 @@ function AboutUsPage() {
                 <strong className="text-[#0B103B]">Not sure whether we serve your location?</strong> Call or WhatsApp us — we&apos;ll be happy to check.
               </p>
               <div className="flex flex-wrap items-center gap-3.5">
-                <a href="tel:8460150027" className="btn-navy inline-flex items-center gap-2">
+                <a href="tel:8460150027" className="btn-primary">
                   <Phone aria-hidden="true" className="w-4 h-4" /> Call 8460150027
                 </a>
                 <a
